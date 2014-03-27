@@ -1,0 +1,70 @@
+%\VignetteIndexEntry{Smooth Transition AR Models in Twinkle}
+%\VignetteKeywords{STAR}
+%\VignettePackage{twinkle}
+\documentclass[11pt,a4paper]{article}
+%\usepackage[utf8]{inputenc}
+\usepackage[round]{natbib}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{anysize}
+\usepackage{amsfonts}
+\usepackage{lscape}
+\usepackage{ctable}
+\usepackage{subfig}
+\usepackage{hyperref}
+\usepackage{fancyvrb}
+\usepackage{xcolor}
+\usepackage{listings}
+\marginsize{2cm}{2cm}{1cm}{1cm}
+\setlength{\textwidth}{16cm}
+\setlength{\oddsidemargin}{0cm}
+\setlength{\textheight}{24cm}
+\setlength{\headheight}{2cm}
+\newtheorem{proof}{Proof}
+%\usepackage{Sweave}
+\definecolor{codegrey}{rgb}{0.25,0.25,0.25}
+\definecolor{codebackground}{rgb}{0.97,1,1}
+\lstset{% setup listings
+	language=R,% set programming language
+	backgroundcolor=\color{codebackground},
+    	belowcaptionskip=1\baselineskip,
+    	prebreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+    	showtabs=false,
+    	stringstyle=\color{lightgrey},
+    	showspaces=false,
+    	frame=lines,
+    	rulecolor=\color{gray},
+	basicstyle=\color{codegrey}\ttfamily\small,% basic font style
+	keywordstyle=\color{blue}\bfseries,% keyword style
+    	commentstyle=\color{gray},% comment style
+	numbers=left,% display line numbers on the left side
+	numberstyle=\scriptsize,% use small line numbers
+	numbersep=10pt,% space between line numbers and code
+	tabsize=3,% sizes of tabs
+	showstringspaces=false,% do not replace spaces in strings by a certain character
+	captionpos=b,% positioning of the caption below
+    	breaklines=false,% automatic line breaking
+    	escapeinside={(*}{*)},% escaping to LaTeX
+    	fancyvrb=true,% verbatim code is typset by listings
+    	extendedchars=false,% prohibit extended chars (chars of codes 128--255)
+    	literate={"}{{\texttt{"}}}1{<-}{{$\bm\leftarrow$}}1{<<-}{{$\bm\twoheadleftarrow$}}1
+    	{~}{{$\bm\sim$}}1{<=}{{$\bm\le$}}1{>=}{{$\bm\ge$}}1{!=}{{$\bm\neq$}}1{^}{{$^{\bm\wedge}$}}1,%item to replace, text, length of chars
+    	alsoletter={.<-},% becomes a letter
+    	alsoother={$},% becomes other
+    	otherkeywords={starspec,>,!=, ~, $, \&, \%/\%, \%*\%, \%\%, <-, <<-, /},% other keywords
+    	deletekeywords={c,model,transform,log}% remove keywords
+}
+\bibliographystyle{plainnat}
+\begin{document}
+\title{Smooth Transition AR Models in Twinkle.\\
+(Version 1.0)}
+\author{Alexios Ghalanos}
+\date{\today}
+\maketitle
+\tableofcontents
+\newpage
+\input{twinkle.tex}
+\clearpage
+\bibliography{starbib}
+\end{document}

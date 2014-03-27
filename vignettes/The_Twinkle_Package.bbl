@@ -1,0 +1,138 @@
+\begin{thebibliography}{21}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Astatkie et~al.(1997)Astatkie, Watts, and Watt]{Astatkie1997}
+T~Astatkie, DG~Watts, and WE~Watt.
+\newblock Nested threshold autoregressive (netar) models.
+\newblock \emph{International Journal of Forecasting}, 13\penalty0
+  (1):\penalty0 105--116, 1997.
+
+\bibitem[Billings and Voon(1983)]{Billings1983}
+SA~Billings and WSF Voon.
+\newblock Structure detection and model validity tests in the identification of
+  nonlinear systems.
+\newblock In \emph{IEE Proceedings D (Control Theory and Applications)}, volume
+  130, pages 193--199. IET, 1983.
+
+\bibitem[Billings and Voon(1986)]{Billings1986}
+SA~Billings and WSF Voon.
+\newblock Correlation based model validity tests for non-linear models.
+\newblock \emph{International journal of Control}, 44\penalty0 (1):\penalty0
+  235--244, 1986.
+
+\bibitem[Carmichael(1928)]{Carmichael1928}
+FL~Carmichael.
+\newblock The arc tangent in trend determination.
+\newblock \emph{Journal of the American Statistical Association}, 23\penalty0
+  (163):\penalty0 253--262, 1928.
+
+\bibitem[Chan and McAleer(2002)]{Chan2002}
+Felix Chan and Michael McAleer.
+\newblock Maximum likelihood estimation of star and star-garch models: theory
+  and monte carlo evidence.
+\newblock \emph{Journal of Applied Econometrics}, 17\penalty0 (5):\penalty0
+  509--534, 2002.
+
+\bibitem[Chan and McAleer(2003)]{Chan2003}
+Felix Chan and Michael McAleer.
+\newblock Estimating smooth transition autoregressive models with garch errors
+  in the presence of extreme observations and outliers.
+\newblock \emph{Applied Financial Economics}, 13\penalty0 (8):\penalty0
+  581--592, 2003.
+
+\bibitem[Chan and Tong(1986)]{ChanTong1986}
+K.~S. Chan and H.~Tong.
+\newblock On estimating thresholds in autoregressive models.
+\newblock \emph{Journal of Time Series Analysis}, 7:\penalty0 178--190., 1986.
+
+\bibitem[Dijk et~al.(2002)Dijk, Ter{\"a}svirta, and Franses]{Dijk2002}
+Dick~van Dijk, Timo Ter{\"a}svirta, and Philip~Hans Franses.
+\newblock Smooth transition autoregressive models—a survey of recent
+  developments.
+\newblock \emph{Econometric Reviews}, 21\penalty0 (1):\penalty0 1--47, 2002.
+
+\bibitem[Kauppi and Saikkonen(2008)]{Kauppi2008}
+Heikki Kauppi and Pentti Saikkonen.
+\newblock Predicting us recessions with dynamic binary response models.
+\newblock \emph{The Review of Economics and Statistics}, 90\penalty0
+  (4):\penalty0 777--791, 2008.
+
+\bibitem[Lin and Ter{\"a}svirta(1994)]{Lin1994}
+Chien-Fu~Jeff Lin and Timo Ter{\"a}svirta.
+\newblock Testing the constancy of regression parameters against continuous
+  structural change.
+\newblock \emph{Journal of Econometrics}, 62\penalty0 (2):\penalty0 211--228,
+  1994.
+
+\bibitem[Lundbergh et~al.(2003)Lundbergh, Ter{\"a}svirta, and
+  Dijk]{Lundbergh2003}
+Stefan Lundbergh, Timo Ter{\"a}svirta, and Dick~van Dijk.
+\newblock Time-varying smooth transition autoregressive models.
+\newblock \emph{Journal of Business \& Economic Statistics}, 21\penalty0
+  (1):\penalty0 104--121, 2003.
+
+\bibitem[Luukkonen et~al.(1988)Luukkonen, Saikkonen, and
+  Ter{\"a}svirta]{Luukkonen1988}
+Ritva Luukkonen, Pentti Saikkonen, and Timo Ter{\"a}svirta.
+\newblock Testing linearity against smooth transition autoregressive models.
+\newblock \emph{Biometrika}, 75\penalty0 (3):\penalty0 491--499, 1988.
+
+\bibitem[May(1976)]{May1976}
+Robert~M. May.
+\newblock Simple mathematical models with very complicated dynamics.
+\newblock \emph{Nature}, 261\penalty0 (5560):\penalty0 459--467, 1976.
+
+\bibitem[Nyberg(2010)]{Nyberg2010}
+Henri Nyberg.
+\newblock Dynamic probit models and financial variables in recession
+  forecasting.
+\newblock \emph{Journal of Forecasting}, 29\penalty0 (1-2):\penalty0 215--230,
+  2010.
+
+\bibitem[Quandt(1958)]{Quandt1958}
+Richard~E Quandt.
+\newblock The estimation of the parameters of a linear regression system
+  obeying two separate regimes.
+\newblock \emph{Journal of the american statistical association}, 53\penalty0
+  (284):\penalty0 873--880, 1958.
+
+\bibitem[Ter{\"a}svirta(1994)]{Terasvirta1994}
+T.~Ter{\"a}svirta.
+\newblock Specification, estimation, and evaluation of smooth transition
+  autoregressive models.
+\newblock \emph{Journal of the American Statistical Association}, 89:\penalty0
+  208--218, 1994.
+
+\bibitem[Tong(1990)]{Tong1990}
+Howell Tong.
+\newblock \emph{Non-linear time series: a dynamical system approach}.
+\newblock Oxford University Press, 1990.
+
+\bibitem[Tong and Ghaddar(1981)]{Tong1981}
+Howell Tong and DK~Ghaddar.
+\newblock Data transformation and self-exciting threshold autoregression.
+\newblock \emph{Journal of the Royal Statistical Society, series C},
+  30:\penalty0 238--248, 1981.
+
+\bibitem[Tong and Lim(1980)]{Tong1980}
+Howell Tong and K.S Lim.
+\newblock Threshold autoregression, limit cycles and cyclical data.
+\newblock \emph{Journal of the Royal Statistical Society, Series B},
+  42\penalty0 (3):\penalty0 245--292, 1980.
+
+\bibitem[van Dijk and Franses(1999)]{Dijk1999}
+Dick van Dijk and Philip~Hans Franses.
+\newblock Modeling multiple regimes in the business cycle.
+\newblock \emph{Macroeconomic Dynamics}, 3:\penalty0 311--340, 1999.
+
+\bibitem[Zhu and Billings(1993)]{Zhu1993}
+Q.M. Zhu and S.~Billings.
+\newblock Parameter estimation for stochastic nonlinear rational models.
+\newblock \emph{International Journal of Control}, 57\penalty0 (2):\penalty0
+  309--333, 1993.
+
+\end{thebibliography}
