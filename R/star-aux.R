@@ -926,7 +926,7 @@ check_fun = function(fun, n=1)
 	arglist$transform = FALSE
 	fit = list()
 	if(is.null(hess)){
-		fit$hessian = hessian(func = f, x = ipars[estidx, 1], method="Richardson", method.args=list(), arglist = arglist)
+		fit$hessian = hessian(func = f, x = ipars[estidx, 1], method="Richardson", method.args=list(zero.tol=.Machine$double.eps), arglist = arglist)
 	} else{
 		fit$hessian = hess
 	}
@@ -979,7 +979,7 @@ check_fun = function(fun, n=1)
 			arglist$returnType="LHT"
 			tmp = rugarch:::robustvcv(fun = f, pars = ipars[estidx, 1], nlag = 0, hess = fit$hessian, n = T, arglist = arglist)
 			fit$robust.cvar = tmp$vcv
-			fit$scores = jacobian(func = f, x = ipars[estidx, 1], method="Richardson", method.args=list(), arglist = arglist)
+			fit$scores = jacobian(func = f, x = ipars[estidx, 1], method="Richardson", method.args=list(zero.tol=.Machine$double.eps), arglist = arglist)
 			colnames(fit$scores) = names(ipars[estidx, 1])
 			fit$se.coef = sqrt(diag(abs(fit$cvar)))
 			fit$tval = fit$coef[-fixed]/fit$se.coef
@@ -1012,7 +1012,7 @@ check_fun = function(fun, n=1)
 			arglist$returnType = "LHT"
 			tmp = rugarch:::robustvcv(fun = f, pars = ipars[estidx,1], nlag = nlag, hess = fit$hessian, n = T, arglist = arglist)
 			fit$robust.cvar = tmp$vcv
-			fit$scores = jacobian(func = f, x = ipars[estidx, 1], method="Richardson", method.args=list(), arglist = arglist) 
+			fit$scores = jacobian(func = f, x = ipars[estidx, 1], method="Richardson", method.args=list(zero.tol=.Machine$double.eps), arglist = arglist) 
 			colnames(fit$scores) = names(ipars[estidx, 1])
 			fit$se.coef = sqrt(diag(abs(fit$cvar)))
 			fit$tval = fit$coef/fit$se.coef
