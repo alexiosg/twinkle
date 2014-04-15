@@ -510,7 +510,7 @@
 	modelinc = model$modelinc
 	solver.control = list(trace=0, method="BFGS", reltol=1e-6, maxit=1000)
 	idx = spec@model$pos.matrix
-	idx_lin = 1:max(idx[1:17,2])
+	if(max(idx[1:17,2])>0) idx_lin = 1:max(idx[1:17,2]) else idx_lin = NULL
 	if(max(idx[18:26,2])==0) stop("\nstarfit-->error: strategy cannot be used when (most probably) state probabilities are fixed...")
 	idx_state = (max(idx[1:17,2])+1):max(idx[18:26,2])
 	idx_other = (max(idx_state)+1):max(idx[27:40,2])
@@ -1121,27 +1121,31 @@
 	modelinc = model$modelinc
 	yfun = model$modeldata$fun
 	# max of AR & MA terms and STAR dynamics in the case that y is used
-	mar = max(c(modelinc[c(2,6,10,13,4,8,12,16,17)], ifelse(modelinc[46]==1, max(model$modeldata$ylags), 0)))
+	mar = max(c(modelinc[c(2,6,10,14,4,8,12,16,17)], ifelse(modelinc[46]==1, max(model$modeldata$ylags), 0)))
 	m = max(c(modelinc[29:30], mar))
 	
 	idx = model$pidx
 	ipars = fit@fit$ipars
 	ylags = model$modeldata$ylags
 	# check if necessary the external regressor forecasts provided first
-	xreg = .simregressors(model, xregsim, vregsim, ssim, N, n, m.sim)	
+	xreg = .simregressors(model, xregsim, vregsim, ssim, N, n, m.sim)
 	mexsim = xreg$mexsimlist
 	vexsim = xreg$vexsimlist
 	ssim   = xreg$ssimlist
 	# Random Samples from the Distribution
 	if(length(sseed) == 1){
-		zmatrix = data.frame(dist = model$modeldesc$distribution, lambda = ipars[idx["ghlambda",1], 1], 
-				skew = ipars[idx["skew",1], 1], shape = ipars[idx["shape",1], 1], n = n * m.sim, seed = sseed[1])
-		z = .custzdist(custom.dist, zmatrix, m.sim, n)
+		set.seed(sseed)
+		z = .custzdist(custom.dist = custom.dist, distribution = model$modeldesc$distribution, n = n, m.sim = m.sim, 
+				mu = 0, sigma = 1, lambda = ipars[idx["ghlambda",1], 1], 
+				skew = ipars[idx["skew",1], 1], shape = ipars[idx["shape",1],1])
 	} else{
-		zmatrix = data.frame(dist = rep(model$modeldesc$distribution, m.sim), lambda = rep(ipars[idx["ghlambda",1], 1], m.sim), 
-				skew = rep(ipars[idx["skew",1], 1], m.sim), shape = rep(ipars[idx["shape",1], 1], m.sim), 
-				n = rep(n, m.sim), seed = sseed)
-		z = .custzdist(custom.dist, zmatrix, m.sim, n)
+		z = matrix(0, ncol = m.sim, nrow = n)
+		for(i in 1:m.sim){
+			set.seed(sseed[i])
+			z[,i] = .custzdist(custom.dist = custom.dist, distribution = model$modeldesc$distribution, n = n, m.sim = 1, 
+					mu = 0, sigma = 1, lambda = ipars[idx["ghlambda",1], 1], skew = ipars[idx["skew",1], 1], 
+					shape = ipars[idx["shape",1],1])
+		}
 	}
 	z = rbind(matrix(tail(fit@fit$z, m), nrow = m, ncol = m.sim), z)
 	
@@ -1169,15 +1173,13 @@
 	}
 	
 	# input vectors/matrices
-	h = c(presigma^2, rep(0, n))
-	x = c(prereturns, rep(0, n))	
 	# outpus matrices
 	sigmaSim =  matrix(0, ncol = m.sim, nrow = n.sim)
 	seriesSim = matrix(0, ncol = m.sim, nrow = n.sim)
 	residSim =  matrix(0, ncol = m.sim, nrow = n.sim)
 	condmSim = probSim  =  vector(mode="list", length = m.sim)
 	z[is.na(z) | is.nan(z) | !is.finite(z)] = 0
-	constm = matrix(0, ncol = modelinc[38], nrow = n)
+	constm = matrix(0, ncol = modelinc[43], nrow = n)
 	# 2 cases for the star model:
 	# case 1: probability determined by external regressors in which case
 	# the simulation is quite fast
@@ -1192,6 +1194,9 @@
 	arglist$probs = probs
 	
 	for(i in 1:m.sim){
+		h = c(presigma^2, rep(0, n))
+		x = c(prereturns, rep(0, n))
+		
 		if(modelinc[47]==2){
 			ngrd = which(preres<0)
 			tmpr = rep(0, length(preres))
@@ -1218,7 +1223,6 @@
 		residSim[,i] = ans1$res[(n.start + m + 1):(n+m)]
 		# since m = max(garchOrder, mar)
 		simres = tail(ans1$res,n+mar)
-		# ToDo: change to accomodate modelinc[20]
 		for(j in 1:modelinc[43]){
 			if(modelinc[c(1,5,9,13)[j]]>0) constm[,j] = as.numeric(ipars[idx[paste("s",j,".phi0",sep=""),1],1])
 		}
@@ -1249,11 +1253,13 @@
 			probSim[[i]]  = tail(ptmp$probs, n.sim)
 			condmSim[[i]]  = tail(matrix(rsim$s, ncol = modelinc[43]), n.sim)
 			colnames(condmSim[[i]]) = colnames(probSim[[i]]) = paste("state[",1:modelinc[43],"]",sep="")
-			rownames(condmSim[[i]]) = rownames(probSim[[i]]) = paste("T+",1:n.sim)			
+			rownames(condmSim[[i]]) = rownames(probSim[[i]]) = paste("T+",1:n.sim,sep="")			
 		} else{
 			# NOTE: would probably benefit from using .Call and performing the whole process in C++ with a call to R for "yfun"...
 			ndx = length(data)
 			y = c(data, rep(0, n))
+			y[(N-mar+1):N] = prereturns
+			
 			psim = matrix(0, ncol = modelinc[43], nrow = mar+n)
 			xcondm = matrix(0, ncol = modelinc[43], nrow = mar+n)
 			for(j in 1:n){
@@ -1293,11 +1299,11 @@
 			probSim[[i]]  = tail(ptmp$probs, n.sim)
 			condmSim[[i]] = tail(xcondm, n.sim)
 			colnames(probSim[[i]]) = paste("state[",1:modelinc[43],"]",sep="")
-			rownames(probSim[[i]]) = paste("T+",1:n.sim)
+			rownames(probSim[[i]]) = paste("T+",1:n.sim,sep="")
 		}
 	}
 	residSim = tail(residSim, n.sim)
-	rownames(residSim) = rownames(seriesSim) = rownames(sigmaSim) = paste("T+",1:n.sim)
+	rownames(residSim) = rownames(seriesSim) = rownames(sigmaSim) = paste("T+",1:n.sim,sep="")
 	# check:
 	# u=3
 	# xtmp = (ipars["s1.phi0",1] + ipars["s1.phi1",1]*x[u-1]+ipars["s1.phi2",1]*x[u-2])*psim[u,1]+ (ipars["s2.phi0",1] + ipars["s2.phi1",1]*x[u-1]+ipars["s2.phi2",1]*x[u-2])*(psim[u,2]) + simres[u]
@@ -1380,8 +1386,6 @@
 	if(is.na(prereturns[1])){
 		prereturns = tail(data, mar)
 	}
-	# input vectors/matrices
-	x = c(prereturns, rep(0, n))	
 	# outpus matrices
 	residSim =  matrix(0, ncol = m.sim, nrow = n.sim)
 	sigmaSim =  matrix(0, ncol = m.sim, nrow = n.sim)
@@ -1401,6 +1405,8 @@
 	arglist$model = model
 	arglist$probs = probs
 	for(i in 1:m.sim){
+		x = c(prereturns, rep(0, n))	
+		
 		for(j in 1:modelinc[43]){
 			if(modelinc[c(1,5,9,13)[j]]>0) constm[,j] = as.numeric(ipars[idx[paste("s",j,".phi0",sep=""),1],1])
 		}
@@ -1414,8 +1420,8 @@
 			# get probabilities
 			ptmp = switch(modelinc[43], dstar1sim(arglist), dstar2sim(arglist), dstar3sim(arglist), dstar4sim(arglist))
 			# This is a 2 state model
-			ssim = ptmp$probs[,1]*sig1 + ptmp$probs[,2]*sig2
-			simres = c(preres, zresidSim[,i]*ssim)
+			sigsim = tail(ptmp$probs[,1]*sig1 + ptmp$probs[,2]*sig2, n)
+			simres = c(preres, zresidSim[,i]*sigsim)
 			
 			rsim = switch(modelinc[43],
 					try(.C("starxsim1", model = as.integer(modelinc), pars = as.double(ipars[,1]), idx = as.integer(idx[,1]-1), 
@@ -1432,15 +1438,16 @@
 									constm = as.double(constm), m = as.integer(mar), T = as.integer(mar+n), PACKAGE="twinkle"), silent = TRUE)
 			)			
 			seriesSim[,i] = tail(rsim$x, n.sim)
-			residSim[,i] = tail(zresidSim[,i]*ssim,n.sim)
-			sigmaSim[,i] = tail(ssim,n.sim)
+			residSim[,i] = tail(zresidSim[,i]*sigsim,n.sim)
+			sigmaSim[,i] = tail(sigsim,n.sim)
 			probSim[[i]]  = tail(ptmp$probs, n.sim)
 			condmSim[[i]]  = tail(matrix(rsim$s, ncol = modelinc[43]), n.sim)
 			colnames(condmSim[[i]]) = colnames(probSim[[i]]) = paste("state[",1:modelinc[43],"]",sep="")
-			rownames(condmSim[[i]]) = rownames(probSim[[i]]) = paste("T+",1:n.sim)			
+			rownames(condmSim[[i]]) = rownames(probSim[[i]]) = paste("T+",1:n.sim,sep="")			
 		} else{
 			# NOTE: would probably benefit from using .Call and performing the whole process in C++ with a call to R for "yfun"...
-			ssim = simres = c(rep(0, mar+n))
+			sigsim = simres = c(rep(0, mar+n))
+			simres[1:mar] = preres
 			ndx = length(data)
 			y = c(data, rep(0, n))
 			psim = matrix(0, ncol = modelinc[43], nrow = mar+n)
@@ -1456,8 +1463,8 @@
 				arglist$XL = XL
 				ptmp = switch(modelinc[43], dstar1sim(arglist), dstar2sim(arglist), dstar3sim(arglist), dstar4sim(arglist))
 				psim[mar+j,] = tail(ptmp$probs, 1)
-				ssim[mar+j] = psim[mar+j,1]*sig1+psim[mar+j,2]*sig2
-				simres[mar+j] = zresidSim[mar+j,i]*ssim[mar+j]
+				sigsim[mar+j] = psim[mar+j,1]*sig1+psim[mar+j,2]*sig2
+				simres[mar+j] = zresidSim[j,i]*sigsim[mar+j]
 				rsim = switch(modelinc[43],
 						try(.C("starxsim1", model = as.integer(modelinc), pars = as.double(ipars[,1]), idx = as.integer(idx[,1]-1), 
 										x = as.double(x), s = double(modelinc[43]*(mar+j)), res = as.double(simres[1:(mar+j)]),
@@ -1482,14 +1489,14 @@
 			}
 			seriesSim[,i] = tail(x, n,sim)
 			residSim[,i] = tail(simres, n.sim)
-			sigmaSim[,i] = tail(ssim, n.sim)
+			sigmaSim[,i] = tail(sigsim, n.sim)
 			probSim[[i]]  = tail(ptmp$probs, n.sim)
 			condmSim[[i]] = tail(xcondm, n.sim)
 			colnames(probSim[[i]]) = paste("state[",1:modelinc[43],"]",sep="")
-			rownames(probSim[[i]]) = paste("T+",1:n.sim)
+			rownames(probSim[[i]]) = paste("T+",1:n.sim,sep="")
 		}
 	}
-	rownames(residSim) = rownames(seriesSim) = paste("T+",1:n.sim)
+	rownames(residSim) = rownames(seriesSim) = paste("T+",1:n.sim,sep="")
 	# check:
 	# u=3
 	# xtmp = (ipars["s1.phi0",1] + ipars["s1.phi1",1]*x[u-1]+ipars["s1.phi2",1]*x[u-2])*psim[u,1]+ (ipars["s2.phi0",1] + ipars["s2.phi1",1]*x[u-1]+ipars["s2.phi2",1]*x[u-2])*(psim[u,2]) + simres[u]
@@ -1566,7 +1573,6 @@
 		prereturns = tail(data, mar)
 	}
 	# input vectors/matrices
-	x = c(prereturns, rep(0, n))
 	# outpus matrices
 	seriesSim = matrix(0, ncol = m.sim, nrow = n.sim)
 	condmSim = probSim  =  vector(mode="list", length = m.sim)
@@ -1584,6 +1590,8 @@
 	arglist$model = model
 	arglist$probs = probs
 	for(i in 1:m.sim){
+		x = c(prereturns, rep(0, n))	
+		
 		simres = c(preres, residSim[,i])
 		# ToDo: change to accomodate modelinc[20]
 		for(j in 1:modelinc[43]){
@@ -1594,7 +1602,7 @@
 		}
 		constm = rbind(matrix(0, ncol=modelinc[43], nrow=mar), constm)
 		if(modelinc[46]==2){
-			arglist$XL = xsim[[i]]
+			arglist$XL = ssim[[i]]
 			# sim starts at (m=mar) and end at n+mar
 			# get probabilities
 			ptmp = switch(modelinc[43], dstar1sim(arglist), dstar2sim(arglist), dstar3sim(arglist), dstar4sim(arglist))
@@ -1621,7 +1629,7 @@
 			probSim[[i]]  = tail(ptmp$probs, n.sim)
 			condmSim[[i]]  = tail(matrix(rsim$s, ncol = modelinc[43]), n.sim)
 			colnames(condmSim[[i]]) = colnames(probSim[[i]]) = paste("state[",1:modelinc[43],"]",sep="")
-			rownames(condmSim[[i]]) = rownames(probSim[[i]]) = paste("T+",1:n.sim)			
+			rownames(condmSim[[i]]) = rownames(probSim[[i]]) = paste("T+",1:n.sim,sep="")			
 		} else{
 			# NOTE: would probably benefit from using .Call and performing the whole process in C++ with a call to R for "yfun"...
 			ndx = length(data)
@@ -1667,11 +1675,11 @@
 			probSim[[i]]  = tail(ptmp$probs, n.sim)
 			condmSim[[i]] = tail(xcondm, n.sim)
 			colnames(probSim[[i]]) = paste("state[",1:modelinc[43],"]",sep="")
-			rownames(probSim[[i]]) = paste("T+",1:n.sim)
+			rownames(probSim[[i]]) = paste("T+",1:n.sim,sep="")
 		}
 	}
 	residSim = tail(residSim, n.sim)
-	rownames(residSim) = rownames(seriesSim) = paste("T+",1:n.sim)
+	rownames(residSim) = rownames(seriesSim) = paste("T+",1:n.sim,sep="")
 	# check:
 	# u=3
 	# xtmp = (ipars["s1.phi0",1] + ipars["s1.phi1",1]*x[u-1]+ipars["s1.phi2",1]*x[u-2])*psim[u,1]+ (ipars["s2.phi0",1] + ipars["s2.phi1",1]*x[u-1]+ipars["s2.phi2",1]*x[u-2])*(psim[u,2]) + simres[u]
@@ -1685,7 +1693,7 @@
 
 
 .starpath.static = function(spec, n.sim = 1000, n.start = 0, m.sim = 1, prereturns = NA,
-		preresiduals = NA, pres = NA, rseed = NA, custom.dist = list(name = NA, distfit = NA), 
+		preresiduals = NA, rseed = NA, custom.dist = list(name = NA, distfit = NA), 
 		xregsim = NULL, ssim = NULL, probsim = NULL)
 {
 	# some checks
@@ -1718,7 +1726,7 @@
 	n = n.sim + n.start
 	m = spec@model$maxOrder
 	N = 0
-	xreg = .simregressorspath(model, xregsim = xregsim, vregsim = NULL, pres = pres, ssim = ssim, n, m.sim)
+	xreg = .simregressorspath(model, xregsim = xregsim, vregsim = NULL, ssim = ssim, n, m.sim)
 	mexsim = xreg$mexsimlist
 	ssim = xreg$ssimlist
 	distribution = model$modeldesc$distribution	
@@ -1748,19 +1756,20 @@
 	if(!is.na(prereturns[1])){
 		prereturns = as.vector(prereturns)
 		if(length(prereturns)<mar) stop(paste("\nstarpath-->error: prereturns must be of length ", mar, sep=""))
+		prereturnsx = tail(prereturns, mar)
+		prereturnsy = prereturns
+		yfn = length(prereturnsy)
 	} else{
 		stop("\nstarpath-->error: prereturns cannot be NA when using starpath method.")
 	}
 	if(!is.na(preresiduals[1])){
 		preresiduals = as.vector(preresiduals)
 		if(length(preresiduals)<mar) stop(paste("\nstarpath-->error: preresiduals must be of length ", mar, sep=""))
-		preres = preresiduals
+		preres = tail(preresiduals, mar)
 	} else{
 		preres = rep(0, mar)
 	}
-	
 	# input vectors/matrices
-	x = c(prereturns, rep(0, n))
 	# outpus matrices
 	seriesSim = matrix(0, ncol = m.sim, nrow = n.sim)
 	condmSim = probSim  =  vector(mode="list", length = m.sim)
@@ -1778,6 +1787,8 @@
 	arglist$probs = matrix(0, ncol=modelinc[43], nrow=n)
 	
 	for(i in 1:m.sim){
+		x = c(prereturnsx, rep(0, n))	
+		
 		simres = c(preres, residSim[,i])
 		for(j in 1:modelinc[43]){
 			if(modelinc[c(1,5,9,13)[j]]>0) constm[,j] = as.numeric(ipars[idx[paste("s",j,".phi0",sep=""),1],1])
@@ -1787,8 +1798,7 @@
 		}
 		constm = rbind(matrix(0, ncol=modelinc[43], nrow=mar), constm)
 		if(modelinc[46]==2){
-			# need to lag the external regressors (builmatrix)
-			arglist$XL = xsim[[i]]
+			arglist$XL = ssim[[i]]
 			# sim starts at (m=mar) and end at n+mar
 			# get probabilities
 			ptmp = switch(modelinc[43], dstar1path(arglist), dstar2path(arglist), dstar3path(arglist), dstar4path(arglist))
@@ -1814,11 +1824,20 @@
 		} else{
 			# NOTE: would probably benefit from using .Call and performing the whole process in C++ with a call to R for "yfun"...
 			# y is padded with pre-returns
-			y = x = c(prereturns, rep(0, n))
+			x = c(prereturnsx, rep(0, n))
+			y = c(prereturnsx, rep(0, n))
+			# NOTE: sometimes the user may need to pass a vector which is longer since yfun may have
+			# a lag structure (see base example with vDF dataset).
+			yf = c(prereturnsy, rep(0, n))
 			psim = matrix(0, ncol = modelinc[43], nrow = mar+n)
 			xcondm = matrix(0, ncol = modelinc[43], nrow = mar+n)
 			for(j in 1:n){
-				if(modelinc[45]==1) ytmp = c(yfun(as.numeric(y[1:(mar+j-1)])), NA) else ytmp = c(as.numeric(y[1:(mar+j-1)]),NA)	
+				if(modelinc[45]==1){
+					ytmp = c(yfun(as.numeric(yf[1:(yfn+j-1)])), NA)
+					ytmp = tail(ytmp, mar+j)
+				} else{
+					ytmp = c(as.numeric(y[1:(mar+j-1)]),NA)	
+				}
 				XL = matrix(NA, ncol = length(ylags), nrow = mar+j)
 				nXL = nrow(XL)
 				for(k in 1:ncol(XL)){
@@ -1848,6 +1867,7 @@
 				)
 				x[mar+j] = rsim$x[mar+j]
 				y[mar+j] = rsim$x[mar+j]
+				yf[yfn+j] = y[mar+j]
 				xcondm[mar+j,] = tail(matrix(rsim$s, ncol = modelinc[43]),1)
 			}
 			seriesSim[,i] = tail(x, n.sim)
@@ -1872,7 +1892,7 @@
 
 
 .starpath.dynamic = function(spec, n.sim = 1000, n.start = 0, m.sim = 1, presigma = NA, 
-		prereturns = NA, preresiduals = NA, pres = NA, rseed = NA, 
+		prereturns = NA, preresiduals = NA, rseed = NA, 
 		custom.dist = list(name = NA, distfit = NA), xregsim = NULL, 
 		vregsim = NULL, ssim = NULL, probsim = NULL)
 {
@@ -1904,9 +1924,10 @@
 	# Enlarge Series:
 	n = n.sim + n.start
 	N = 0
-	xreg = .simregressorspath(model, xregsim, vregsim, pres = pres, ssim, n, m.sim)
+	xreg = .simregressorspath(model, xregsim = xregsim, vregsim = vregsim, ssim = ssim, n, m.sim)
 	mexsim = xreg$mexsimlist
-	xsim = xreg$xsimlist
+	ssim = xreg$ssimlist
+	vexsim = xreg$vexsimlist
 	distribution = model$modeldesc$distribution	
 	sig = ipars["sigma",1]
 	yfun = model$modeldata$fun
@@ -1914,21 +1935,19 @@
 	m = max(c(modelinc[29:30], mar))
 	ylags = model$modeldata$ylags
 	gfun = switch(modelinc[43],"starxsim1", "starxsim2","starxsim3","starxsim4")
-	# check if necessary the external regressor forecasts provided first
-	xreg = .simregressors(model, mexsimdata, vexsimdata, xsimdata, N, n, m.sim)	
-	mexsim = xreg$mexsimlist
-	vexsim = xreg$vexsimlist
-	xsim = xreg$xsimlist
-	# Random Samples from the Distribution
 	if(length(sseed) == 1){
-		zmatrix = data.frame(dist = model$modeldesc$distribution, lambda = ipars[idx["ghlambda",1], 1], 
-				skew = ipars[idx["skew",1], 1], shape = ipars[idx["shape",1], 1], n = n * m.sim, seed = sseed[1])
-		z = .custzdist(custom.dist, zmatrix, m.sim, n)
+		set.seed(sseed)
+		z = .custzdist(custom.dist = custom.dist, distribution = model$modeldesc$distribution, n = n, m.sim = m.sim, 
+				mu = 0, sigma = 1, lambda = ipars[idx["ghlambda",1], 1], 
+				skew = ipars[idx["skew",1], 1], shape = ipars[idx["shape",1],1])
 	} else{
-		zmatrix = data.frame(dist = rep(model$modeldesc$distribution, m.sim), lambda = rep(ipars[idx["ghlambda",1], 1], m.sim), 
-				skew = rep(ipars[idx["skew",1], 1], m.sim), shape = rep(ipars[idx["shape",1], 1], m.sim), 
-				n = rep(n, m.sim), seed = sseed)
-		z = .custzdist(custom.dist, zmatrix, m.sim, n)
+		z = matrix(0, ncol = m.sim, nrow = n)
+		for(i in 1:m.sim){
+			set.seed(sseed[i])
+			z[,i] = .custzdist(custom.dist = custom.dist, distribution = model$modeldesc$distribution, n = n, m.sim = 1, 
+					mu = 0, sigma = 1, lambda = ipars[idx["ghlambda",1], 1], skew = ipars[idx["skew",1], 1], 
+					shape = ipars[idx["shape",1],1])
+		}
 	}
 	z = rbind(matrix(rep(0, m), nrow = m, ncol = m.sim), z)
 	
@@ -1936,19 +1955,23 @@
 	if(!is.na(presigma[1])){
 		presigma = as.vector(presigma)
 		if(length(presigma)<m) stop(paste("\nstarpath-->error: presigma must be of length ", m, sep=""))
+		presigma = tail(presigma,m)
 	} else{
 		stop("\nstarpath-->error: presigma cannot be NA when using starpath method.")
 	}
 	if(!is.na(prereturns[1])){
 		prereturns = as.vector(prereturns)
 		if(length(prereturns)<mar) stop(paste("\nstarpath-->error: prereturns must be of length ", mar, sep=""))
+		prereturnsx = tail(prereturns, mar)
+		prereturnsy = prereturns
+		yfn = length(prereturnsy)
 	} else{
 		stop("\nstarpath-->error: prereturns cannot be NA when using starpath method.")	
 	}
 	if(!is.na(preresiduals[1])){
 		preresiduals = as.vector(preresiduals)
 		if(length(preresiduals)<m) stop(paste("\nstarpath-->error: preresiduals must be of length ", m, sep=""))
-		preres = as.vector(preresiduals)
+		preres = tail(as.vector(preresiduals),m)
 		z[1:m,] = preres/presigma
 	} else{
 		warning("\nstarpath-->warning: preresiduals not provided...setting to zero.")
@@ -1956,8 +1979,6 @@
 	}
 	
 	# input vectors/matrices
-	h = c(presigma^2, rep(0, n))
-	x = c(prereturns, rep(0, n))
 	# outpus matrices
 	sigmaSim =  matrix(0, ncol = m.sim, nrow = n.sim)
 	seriesSim = matrix(0, ncol = m.sim, nrow = n.sim)
@@ -1977,6 +1998,9 @@
 	arglist$model = model
 	arglist$probs = matrix(0, ncol=modelinc[38], nrow=n)
 	for(i in 1:m.sim){
+		h = c(presigma^2, rep(0, n))
+		x = c(prereturnsx, rep(0, n))
+		
 		if(modelinc[47]==2){
 			ngrd = which(preres<0)
 			tmpr = rep(0, length(preres))
@@ -2010,18 +2034,7 @@
 		}
 		constm = rbind(matrix(0, ncol=modelinc[43], nrow=mar), constm)
 		if(modelinc[46]==2){
-			# need to lag the external regressors (builmatrix)
-			stmp = xsim[[i]]
-			nst = nrow(stmp)
-			XL = matrix(NA, ncol = length(ylags), nrow = nst)
-			nXL = nrow(XL)
-			for(j in 1:ncol(stmp)){
-				XL[(ylags[j]+1):nst,j] = stmp[1:(nst-ylags[j]),j]
-			}
-			XL[is.na(XL)]=0
-			arglist$XL = XL
-			# sim starts at (m=mar) and end at n+mar
-			# get probabilities
+			arglist$XL = ssim[[i]]
 			ptmp = switch(modelinc[43], dstar1path(arglist), dstar2path(arglist), dstar3path(arglist), dstar4path(arglist))
 			rsim = switch(modelinc[43],
 					try(.C("starxsim1", model = as.integer(modelinc), pars = as.double(ipars[,1]), idx = as.integer(idx[,1]-1), 
@@ -2045,14 +2058,21 @@
 			probSim[[i]]  = tail(ptmp$probs, n.sim)
 			condmSim[[i]]  = tail(matrix(rsim$s, ncol = modelinc[43]), n.sim)
 			colnames(condmSim[[i]]) = colnames(probSim[[i]]) = paste("state[",1:modelinc[43],"]",sep="")
-			rownames(condmSim[[i]]) = rownames(probSim[[i]]) = paste("T+",1:n.sim)	
+			rownames(condmSim[[i]]) = rownames(probSim[[i]]) = paste("T+",1:n.sim,sep="")	
 		} else{
 			# NOTE: would probably benefit from using .Call and performing the whole process in C++ with a call to R for "yfun"...
-			y = x = c(prereturns, rep(0, n))
+			x = c(prereturnsx, rep(0, n))
+			y = c(prereturnsx, rep(0, n))
+			yf = c(prereturnsy, rep(0, n))
 			psim = matrix(0, ncol = modelinc[43], nrow = mar+n)
 			xcondm = matrix(0, ncol = modelinc[43], nrow = mar+n)
 			for(j in 1:n){
-				if(modelinc[45]==1) ytmp = c(yfun(as.numeric(y[1:(mar+j-1)])), NA) else ytmp = c(as.numeric(y[1:(mar+j-1)]),NA)	
+				if(modelinc[45]==1){
+					ytmp = c(yfun(as.numeric(yf[1:(yfn+j-1)])), NA)
+					ytmp = tail(ytmp, mar+j)
+				} else{
+					ytmp = c(as.numeric(y[1:(mar+j-1)]),NA)	
+				}
 				XL = matrix(NA, ncol = length(ylags), nrow = mar+j)
 				nXL = nrow(XL)
 				for(k in 1:ncol(XL)){
@@ -2082,17 +2102,18 @@
 				)
 				x[mar+j] = rsim$x[mar+j]
 				y[mar+j] = rsim$x[mar+j]
+				yf[yfn+j] = y[mar+j]
 				xcondm[mar+j,] = tail(matrix(rsim$s, ncol = modelinc[43]),1)
 			}
 			seriesSim[,i] = tail(x, n.sim)
 			probSim[[i]]  = tail(ptmp$probs, n.sim)
 			condmSim[[i]] = tail(xcondm, n.sim)
 			colnames(probSim[[i]]) = paste("state[",1:modelinc[43],"]",sep="")
-			rownames(probSim[[i]]) = paste("T+",1:n.sim)
+			rownames(probSim[[i]]) = paste("T+",1:n.sim,sep="")
 		}
 	}
 	residSim = tail(residSim, n.sim)
-	rownames(residSim) = rownames(seriesSim) = rownames(sigmaSim) = paste("T+",1:n.sim)
+	rownames(residSim) = rownames(seriesSim) = rownames(sigmaSim) = paste("T+",1:n.sim,sep="")
 	# check:
 	# u=3
 	# xtmp = (ipars["s1.phi0",1] + ipars["s1.phi1",1]*x[u-1]+ipars["s1.phi2",1]*x[u-2])*psim[u,1]+ (ipars["s2.phi0",1] + ipars["s2.phi1",1]*x[u-1]+ipars["s2.phi2",1]*x[u-2])*(psim[u,2]) + simres[u]
@@ -2105,7 +2126,7 @@
 }
 
 .starpath.mixture = function(spec, n.sim = 1000, n.start = 0, m.sim = 1, prereturns = NA, preresiduals = NA, 
-		prex = NA, rseed = NA, custom.dist = list(name = NA, distfit = NA), mexsimdata = NULL, xsimdata = NULL, 
+		rseed = NA, custom.dist = list(name = NA, distfit = NA), xregsim = NULL, ssim = NULL, 
 		probsim = NULL)
 {
 	# some checks
@@ -2139,12 +2160,10 @@
 	N = 0
 	sig1 = ipars["s1.sigma",1]
 	sig2 = ipars["s2.sigma",1]
-	xreg = .simregressorspath(model, mexsimdata = mexsimdata, vexsimdata = NULL, 
-			prex = prex, xsimdata = xsimdata, n, m.sim)
+	xreg = .simregressorspath(model, xregsim = xregsim, vregsim = NULL, ssim = ssim, n, m.sim)
 	mexsim = xreg$mexsimlist
-	xsim = xreg$xsimlist
+	ssim = xreg$ssimlist
 	distribution = model$modeldesc$distribution	
-	sig = ipars["sigma",1]
 	yfun = model$modeldata$fun
 	# max of AR terms and STAR dynamics in the case that y is used
 	mar = max(c(modelinc[c(2,6,10,14,4,8,12,16,17)], ifelse(modelinc[46]==1, max(model$modeldata$ylags), 0)))
@@ -2170,18 +2189,20 @@
 	if(!is.na(prereturns[1])){
 		prereturns = as.vector(prereturns)
 		if(length(prereturns)<mar) stop(paste("\nstarpath-->error: prereturns must be of length ", mar, sep=""))
+		prereturnsx = tail(prereturns, mar)
+		prereturnsy = prereturns
+		yfn = length(prereturnsy)
 	} else{
 		stop("\nstarpath-->error: prereturns cannot be NA when using starpath method.")
 	}
 	if(!is.na(preresiduals[1])){
 		preresiduals = as.vector(preresiduals)
 		if(length(preresiduals)<mar) stop(paste("\nstarpath-->error: preresiduals must be of length ", mar, sep=""))
-		preres = preresiduals
+		preres = tail(preresiduals, mar)
 	} else{
 		preres = rep(0, mar)
 	}
 	# input vectors/matrices
-	x = c(prereturns, rep(0, n))	
 	# outpus matrices
 	residSim =  matrix(0, ncol = m.sim, nrow = n.sim)
 	sigmaSim =  matrix(0, ncol = m.sim, nrow = n.sim)
@@ -2200,6 +2221,8 @@
 	arglist$model = model
 	arglist$probs = matrix(0, ncol=modelinc[43], nrow=n)
 	for(i in 1:m.sim){
+		x = c(prereturnsx, rep(0, n))
+		
 		for(j in 1:modelinc[43]){
 			if(modelinc[c(1,5,9,13)[j]]>0) constm[,j] = as.numeric(ipars[idx[paste("s",j,".phi0",sep=""),1],1])
 		}
@@ -2208,22 +2231,11 @@
 		}
 		constm = rbind(matrix(0, ncol=modelinc[43], nrow=mar), constm)
 		if(modelinc[46]==2){
-			# need to lag the external regressors (builmatrix)
-			stmp = xsim[[i]]
-			nst = nrow(stmp)
-			XL = matrix(NA, ncol = length(ylags), nrow = nst)
-			nXL = nrow(XL)
-			for(j in 1:ncol(stmp)){
-				XL[(ylags[j]+1):nst,j] = stmp[1:(nst-ylags[j]),j]
-			}
-			XL[is.na(XL)]=0
-			arglist$XL = XL
-			# sim starts at (m=mar) and end at n+mar
-			# get probabilities
+			arglist$XL = ssim[[i]]
 			ptmp = switch(modelinc[43], dstar1path(arglist), dstar2path(arglist), dstar3path(arglist), dstar4path(arglist))
 			# This is a 2 state model
-			ssim = ptmp$probs[,1]*sig1 + ptmp$probs[,2]*sig2
-			simres = c(preres, zresidSim[,i]*ssim)
+			sigsim = tail(ptmp$probs[,1]*sig1 + ptmp$probs[,2]*sig2,n)
+			simres = c(preres, zresidSim[,i]*sigsim)
 			rsim = switch(modelinc[43],
 					try(.C("starxsim1", model = as.integer(modelinc), pars = as.double(ipars[,1]), idx = as.integer(idx[,1]-1), 
 									x = as.double(x), s = double(modelinc[43]*(n+mar)), res = as.double(simres),
@@ -2243,20 +2255,31 @@
 									T = as.integer(mar+n), PACKAGE="twinkle"), silent = TRUE)
 			)
 			seriesSim[,i] = tail(rsim$x, n.sim)
-			residSim[,i] = tail(zresidSim[,i]*ssim,n.sim)
-			sigmaSim[,i] = tail(ssim,n.sim)
+			residSim[,i] = tail(zresidSim[,i]*sigsim,n.sim)
+			sigmaSim[,i] = tail(sigsim,n.sim)
 			probSim[[i]]  = tail(ptmp$probs, n.sim)
 			condmSim[[i]]  = tail(matrix(rsim$s, ncol = modelinc[43]), n.sim)
 			colnames(condmSim[[i]]) = colnames(probSim[[i]]) = paste("state[",1:modelinc[43],"]",sep="")
-			rownames(condmSim[[i]]) = rownames(probSim[[i]]) = paste("T+",1:n.sim)			
+			rownames(condmSim[[i]]) = rownames(probSim[[i]]) = paste("T+",1:n.sim,sep="")			
 		} else{
 			# NOTE: would probably benefit from using .Call and performing the whole process in C++ with a call to R for "yfun"...
-			y = x = c(prereturns, rep(0, n))
+			# y is padded with pre-returns
+			x = c(prereturnsx, rep(0, n))
+			y = c(prereturnsx, rep(0, n))
+			# NOTE: sometimes the user may need to pass a vector which is longer since yfun may have
+			# a lag structure (see base example with vDF dataset).
+			yf = c(prereturnsy, rep(0, n))
 			psim = matrix(0, ncol = modelinc[43], nrow = mar+n)
-			xcondm = matrix(0, ncol = modelinc[43], nrow = mar+n)		
-			ssim = simres = c(rep(0, mar+n))
+			xcondm = matrix(0, ncol = modelinc[43], nrow = mar+n)
+			sigsim = simres = c(rep(0, mar+n))
+			simres[1:mar] = preres
 			for(j in 1:n){
-				if(modelinc[45]==1) ytmp = c(yfun(as.numeric(y[1:(mar+j-1)])), NA) else ytmp = c(as.numeric(y[1:(mar+j-1)]),NA)	
+				if(modelinc[45]==1){
+					ytmp = c(yfun(as.numeric(yf[1:(yfn+j-1)])), NA)
+					ytmp = tail(ytmp, mar+j)
+				} else{
+					ytmp = c(as.numeric(y[1:(mar+j-1)]),NA)	
+				}
 				XL = matrix(NA, ncol = length(ylags), nrow = mar+j)
 				nXL = nrow(XL)
 				for(k in 1:ncol(XL)){
@@ -2266,8 +2289,9 @@
 				arglist$XL = XL
 				ptmp = switch(modelinc[43], dstar1path(arglist), dstar2path(arglist), dstar3path(arglist), dstar4path(arglist))
 				psim[mar+j,] = tail(ptmp$probs, 1)
-				ssim[mar+j] = psim[mar+j,1]*sig1+psim[mar+j,2]*sig2
-				simres[mar+j] = zresidSim[mar+j,i]*ssim[mar+j]
+				sigsim[mar+j] = psim[mar+j,1]*sig1+psim[mar+j,2]*sig2
+				# zresidSim is size (burnin+n.sim) x m.sim (no mar)
+				simres[mar+j] = zresidSim[j,i]*sigsim[mar+j]
 				rsim = switch(modelinc[43],
 						try(.C("starxsim1", model = as.integer(modelinc), pars = as.double(ipars[,1]), idx = as.integer(idx[,1]-1), 
 										x = as.double(x), s = double(modelinc[43]*(mar+j)),res = as.double(simres[1:(mar+j)]),
@@ -2288,18 +2312,19 @@
 				)
 				x[mar+j] = rsim$x[mar+j]
 				y[mar+j] = rsim$x[mar+j]
+				yf[yfn+j] = y[mar+j]
 				xcondm[mar+j,] = tail(matrix(rsim$s, ncol = modelinc[43]),1)
 			}
 			seriesSim[,i] = tail(x, n,sim)
 			residSim[,i] = tail(simres, n.sim)
-			sigmaSim[,i] = tail(ssim, n.sim)
+			sigmaSim[,i] = tail(sigsim, n.sim)
 			probSim[[i]]  = tail(ptmp$probs, n.sim)
 			condmSim[[i]] = tail(xcondm, n.sim)
 			colnames(probSim[[i]]) = paste("state[",1:modelinc[43],"]",sep="")
-			rownames(probSim[[i]]) = paste("T+",1:n.sim)
+			rownames(probSim[[i]]) = paste("T+",1:n.sim,sep="")
 		}
 	}
-	rownames(residSim) = rownames(seriesSim) = paste("T+",1:n.sim)
+	rownames(residSim) = rownames(seriesSim) = paste("T+",1:n.sim,sep="")
 	# check:
 	# u=3
 	# xtmp = (ipars["s1.phi0",1] + ipars["s1.phi1",1]*x[u-1]+ipars["s1.phi2",1]*x[u-2])*psim[u,1]+ (ipars["s2.phi0",1] + ipars["s2.phi1",1]*x[u-1]+ipars["s2.phi2",1]*x[u-2])*(psim[u,2]) + simres[u]

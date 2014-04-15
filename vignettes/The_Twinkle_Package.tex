@@ -14,8 +14,9 @@
 \usepackage{subfig}
 \usepackage{hyperref}
 \usepackage{fancyvrb}
-\usepackage{xcolor}
+\PassOptionsToPackage{usenames,dvipsnames}{xcolor}
 \usepackage{listings}
+\usepackage[dvipsnames]{xcolor}
 \marginsize{2cm}{2cm}{1cm}{1cm}
 \setlength{\textwidth}{16cm}
 \setlength{\oddsidemargin}{0cm}
@@ -25,6 +26,9 @@
 %\usepackage{Sweave}
 \definecolor{codegrey}{rgb}{0.25,0.25,0.25}
 \definecolor{codebackground}{rgb}{0.97,1,1}
+\definecolor{midnightblue}{rgb}{0.098039,0.098039,0.439216}
+\definecolor{steelblue}{rgb}{0.274510,0.509804,0.705882}
+\newcommand{\code}[1]{\textbf{\color{codegrey} #1}}
 \lstset{% setup listings
 	language=R,% set programming language
 	backgroundcolor=\color{codebackground},
@@ -52,12 +56,12 @@
     	{~}{{$\bm\sim$}}1{<=}{{$\bm\le$}}1{>=}{{$\bm\ge$}}1{!=}{{$\bm\neq$}}1{^}{{$^{\bm\wedge}$}}1,%item to replace, text, length of chars
     	alsoletter={.<-},% becomes a letter
     	alsoother={$},% becomes other
-    	otherkeywords={starspec,>,!=, ~, $, \&, \%/\%, \%*\%, \%\%, <-, <<-, /},% other keywords
+    	otherkeywords={>,!=, ~, $, \&, \%/\%, \%*\%, \%\%, <-, <<-, /},% other keywords
     	deletekeywords={c,model,transform,log}% remove keywords
 }
 \bibliographystyle{plainnat}
 \begin{document}
-\title{Smooth Transition AR Models in Twinkle.\\
+\title{Smooth Transition ARMAX Models in Twinkle.\\
 (Version 1.0)}
 \author{Alexios Ghalanos}
 \date{\today}

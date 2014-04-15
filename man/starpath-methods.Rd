@@ -11,7 +11,7 @@ which does not require a fitted object (see note below).
 }
 \usage{
 starpath(spec, n.sim = 1000, n.start = 0, m.sim = 1, presigma = NA, 
-    prereturns = NA, preresiduals = NA, pres = NA, rseed = NA, 
+    prereturns = NA, preresiduals = NA, rseed = NA, 
     custom.dist = list(name = NA, distfit = NA), xregsim = NULL, 
     vregsim = NULL, ssim = NULL, probsim = NULL, ...)
 }
@@ -32,12 +32,6 @@ Initialization values for sigma in the STAR-GARCH model (required in this model)
 Initialization value for returns data (required in all models).}
 \item{preresiduals}{
 Initialization values for residuals in the STAR-GARCH model (required in this model).}
-\item{pres}{
-Initialization values for s (state dynamics) (required when s instead of y is used).
-This should usually be a matrix with the number of rows equal to the maximum lag taken 
-by the ARMA system. In the case of no ARMA terms, it is possible to provide a 1-row matrix
-which is used to initialize the start-up of the state dynamics (instead of using the default
-startup equation).}
 \item{rseed}{
 Optional seeding value(s) for the random number generator. For m.sim>1, it is 
 possible to provide either a single seed to initialize all values, or one seed 

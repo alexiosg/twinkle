@@ -462,3 +462,6 @@ plot.1starforc = function(x, roll = 0, ...)
 			lty=c(1,1,1), lwd = c(1,1,2))
 	return(invisible(x))
 }
+
+
+# Plot Probabilities against returns (heatmap)

@@ -15,7 +15,7 @@
 ##
 #################################################################################
 
-
+# setwd("/Users/alexiosg/Development/Twinkle/twinkle.tests")
 twinkle.test1a = function(cluster = NULL){
 	tic = Sys.time()
 	# Table 3.7 Parameter estimates for a STAR model for weekly
@@ -40,14 +40,16 @@ twinkle.test1a = function(cluster = NULL){
 	spec1 = starspec(
 			mean.model = list(states = 2, include.intercept = c(1,1), arOrder = c(0,2), 
 					statevar = c("y","s")[2], s = dxv[idx]))
-	solver.control=list(maxit=150000, alpha=1, beta=0.4, gamma=1.2, reltol=1e-12, trace=1,method="BFGS")
-	set.seed(5)
-	fit1 = starfit(spec1, data = dx[idx], out.sample = 0, solver = "optim", solver.control = solver.control)
+	solver.control=list(maxit=150000, alpha=1, beta=0.4, gamma=1.2, reltol=1e-12, trace=1,method="BFGS",
+			n.restarts=3)
+	fit1 = starfit(spec1, data = dx[idx], out.sample = 0, solver = "msoptim", solver.control = solver.control)
 	#######################################################################	
 	vdfpars = c(-0.18019807, 0.05980984, 0.28705073, 0.21335697, 1.3554227, 4.3161180)
 	vdfse   = c( 0.13140430, 0.10138187, 0.10719107, 0.10026741, 0.1521352, 1.0771948)
 	names(vdfpars) = names(vdfse) = c("s1.phi0", "s2.phi0", "s2.phi1","s2.phi2", "c", "gamma")
 	twinklepars = coef(fit1)
+	# equivalent representation
+	# twinklepars["s1.c"] = twinklepars["s1.c"]/twinklepars["s1.alpha1"]
 	twinklese = sqrt(diag(vcov(fit1)))
 	
 	twinkleSSE = sum(residuals(fit1)^2)
@@ -68,29 +70,24 @@ twinkle.test1a = function(cluster = NULL){
 					statevar = c("y","s")[2], s = dxv[idx]))
 	solver.control=list(maxit=150000, alpha=1, beta=0.4, gamma=1.2, reltol=1e-12, trace=1,method="BFGS",
 			n.restarts = 4)
-	set.seed(5)
 	fit2 = starfit(spec2, data = dx[idx], out.sample = 0, solver = "msoptim", solver.control = solver.control)
 	
 	spec3 = starspec(
 			mean.model = list(states = 2, include.intercept = c(1,1), arOrder = c(1,1), 
 					maOrder=c(1,1), matype="state", statevar = c("y","s")[2], s = dxv[idx]))
 	solver.control=list(maxit=150000, alpha=1, beta=0.4, gamma=1.2, reltol=1e-12, trace=1,method="BFGS")
-	set.seed(25)
 	fit3 = starfit(spec3, data = dx[idx], out.sample = 0, solver = "strategy", solver.control = solver.control, n=5)
 	
 	spec4 = starspec(
 			mean.model = list(states = 2, include.intercept = c(1,1), arOrder = c(0,0), 
 					maOrder=c(1,1), matype="state", statevar = c("y","s")[2], s = dxv[idx]))
 	solver.control=list(maxit=150000, alpha=1, beta=0.4, gamma=1.2, reltol=1e-12, trace=1,method="BFGS")
-	set.seed(25)
 	fit4 = starfit(spec4, data = dx[idx], out.sample = 0, solver = "strategy", solver.control = solver.control, n=5)
 	
 	spec5 = starspec(
 			mean.model = list(states = 2, include.intercept = c(1,1), arOrder = c(1,1), 
 					maOrder=1, matype="linear", statevar = c("y","s")[2], s = dxv[idx]))
 	solver.control=list(maxit=150000, alpha=1, beta=0.4, gamma=1.2, reltol=1e-12, trace=1,method="BFGS")
-	
-	set.seed(25)
 	fit5 = starfit(spec5, data = dx[idx], out.sample = 0, solver = "strategy", solver.control = solver.control, n=5)
 	
 	models = c("2-STAR(0,2)", "2-STAR(1,1)", "2-STARMA([1,1],[1,1])", "2-STMA(2,2)", "2-STARLMA([1,1],[1]")
@@ -106,7 +103,6 @@ twinkle.test1a = function(cluster = NULL){
 	cfm[c(1,3,4,7,9:11), 4] = coef(fit4)
 	cfm[c(1,2,4,5,8:11), 5] = coef(fit5)
 	
-	options(width=150)
 	zz <- file("test1a-2.txt", open="wt")
 	sink(zz)
 	print(round(rbind(cfm, logl, AIC, BIC), 4))
@@ -142,7 +138,6 @@ twinkle.test1b = function(cluster = NULL){
 					statevar = c("y","s")[2], s = dxv[idx]), variance.model=list(dynamic=TRUE,
 					model="mixture"))
 	solver.control=list(maxit=150000, alpha=1, beta=0.4, gamma=1.2, reltol=1e-12, trace=1,method="BFGS")
-	set.seed(15)
 	fit1 = starfit(spec1, data = dx[idx], out.sample = 0, solver = "strategy", solver.control = solver.control, n=4)
 	
 	spec2 = starspec(
@@ -150,7 +145,6 @@ twinkle.test1b = function(cluster = NULL){
 					statevar = c("y","s")[2], s = dxv[idx]), variance.model=list(dynamic=TRUE,
 					model="eGARCH"))
 	solver.control=list(maxit=1500, alpha=1, beta=0.4, gamma=1.2, reltol=1e-12, trace=1,method="BFGS")
-	set.seed(25)
 	fit2 = starfit(spec2, data = dx[idx], out.sample = 0, solver = "optim", solver.control = solver.control, n=4)
 	
 	spec3 = starspec(
@@ -158,8 +152,6 @@ twinkle.test1b = function(cluster = NULL){
 					maOrder=c(1,1), matype="state", statevar = c("y","s")[2], s = dxv[idx]), 
 			variance.model=list(dynamic=TRUE, model="mixture"))
 	solver.control=list(maxit=1500, alpha=1, beta=0.4, gamma=1.2, reltol=1e-12, trace=1,method="BFGS")
-	
-	set.seed(125)
 	fit3 = starfit(spec3, data = dx[idx], out.sample = 0, solver = "strategy", solver.control = solver.control, n=4)
 	
 	
@@ -168,8 +160,6 @@ twinkle.test1b = function(cluster = NULL){
 					maOrder=c(1,1), matype="state", statevar = c("y","s")[2], s = dxv[idx]), 
 			variance.model=list(dynamic=TRUE, model="eGARCH"))
 	solver.control=list(maxit=1500, alpha=1, beta=0.4, gamma=1.2, reltol=1e-12, trace=1,method="BFGS")
-	
-	set.seed(125)
 	fit4 = starfit(spec4, data = dx[idx], out.sample = 0, solver = "strategy", solver.control = solver.control, n=4)
 	
 	models = c("2-STAR(0,2)-NorMix", "2-STAR(1,1)-eGARCH", "2-STARMA([1,1],[1,1])-NorMix", "2-STARMA([1,1],[1,1])-eGARCH")
@@ -185,7 +175,7 @@ twinkle.test1b = function(cluster = NULL){
 	cfm[c(1,2,3,4,5,7,8,9,13:16), 4] = coef(fit4)
 	
 	options(width=150)
-	zz <- file("test1b.txt", open="wt")
+	zz <- file("test1b-1.txt", open="wt")
 	sink(zz)
 	print(round(rbind(cfm, logl, AIC, BIC), 4))
 	sink(type="message")
@@ -217,7 +207,6 @@ twinkle.test1c = function(cluster = NULL){
 			mean.model = list(states = 2, include.intercept = c(1,1), arOrder = c(2,2), 
 					statevar = c("y","s")[1], ylags = 1, yfun = fun))
 	solver.control=list(maxit=10000, alpha=1, beta=0.4, gamma=1.4, reltol=1e-12, trace=1,method="BFGS")
-	set.seed(5)
 	fit1 = starfit(spec1, data = dx[1:521], out.sample = 10, solver = "strategy", solver.control = solver.control, n=5)
 	
 	dxv = runMean(abs(dx), n=4)
@@ -229,11 +218,10 @@ twinkle.test1c = function(cluster = NULL){
 			mean.model = list(states = 2, include.intercept = c(1,1), arOrder = c(2,2), 
 					statevar = c("y","s")[2], s = dxv[1:521]))
 	solver.control=list(maxit=10000, alpha=1, beta=0.4, gamma=1.4, reltol=1e-12, trace=1,method="BFGS")
-	set.seed(5)
 	fit2 = starfit(spec2, data = dx[1:521], out.sample = 10, solver = "strategy", solver.control = solver.control, n=5)
 	
 	options(width=150)
-	zz <- file("test1c.txt", open="wt")
+	zz <- file("test1c-1.txt", open="wt")
 	sink(zz)	
 	print(rbind(coef(fit1), coef(fit2)))
 	print(c(likelihood(fit1), likelihood(fit2)))
@@ -259,14 +247,14 @@ twinkle.test1d = function(cluster = NULL){
 					statevar = c("y","s")[2], s = x1),
 			variance.model = list(dynamic = FALSE), distribution.model = "norm")
 	solver.control=list(maxit=17000, alpha=1, beta=0.4, gamma=1.4,trace=1, method="BFGS")
-	fit0 = starfit(spec0, data = b1, solver = "optim", solver.control = solver.control, n=4)
+	fit0 = starfit(spec0, data = b1, solver = "strategy", solver.control = solver.control, n=4)
 	
 	options(width=150)
 	zz <- file("test1d-1.txt", open="wt")
 	sink(zz)	
 	cat("\nTrue states are N(0.1, 0.2) and N(-0.02, 0.2)\n")
 	print(coef(fit0))
-	print(fit1)
+	print(fit0)
 	sink(type="message")
 	sink()
 	close(zz)
@@ -292,12 +280,10 @@ twinkle.test1d = function(cluster = NULL){
 	spec1 = starspec(
 			mean.model = list(states = 2, include.intercept = c(1,1), arOrder = c(0,0), 
 					statevar = c("y","s")[2], s = x1),
-			variance.model = list(dynamic = TRUE, model="mixture"), distribution.model = "norm")
-	
+			variance.model = list(dynamic = TRUE, model="mixture"), distribution.model = "norm")	
 	solver.control=list(maxit=17000, alpha=1, beta=0.4, gamma=1.4,trace=1, method="BFGS")
-	fit1 = starfit(spec1, data = b1, solver = "optim", solver.control = solver.control)
+	fit1 = starfit(spec1, data = b1, solver = "strategy", solver.control = solver.control, n=6)
 	
-	options(width=150)
 	zz <- file("test1d-1x.txt", open="wt")
 	sink(zz)
 	cat("\nTrue states are N(0.1, 0.2) and N(0.1, 0.1)\n")
@@ -329,9 +315,8 @@ twinkle.test1d = function(cluster = NULL){
 			mean.model = list(states = 3, include.intercept = c(1,1,1), arOrder = c(0,0,0), 
 					statevar = c("y","s")[2], s = x2))
 	solver.control=list(maxit=10000, alpha=1, beta=0.4, gamma=1.4, reltol=1e-12, trace=1,method="BFGS")
-	fit2 = starfit(spec2, data = b2, solver = "optim", solver.control = solver.control)
+	fit2 = starfit(spec2, data = b2, solver = "strategy", solver.control = solver.control, n=6)
 	
-	options(width=150)
 	zz <- file("test1d-2.txt", open="wt")
 	sink(zz)
 	cat("\nTrue states are N(0.1, 0.1), N(-0.2, 0.1) and N(0.2, 0.1)\n")
@@ -340,22 +325,28 @@ twinkle.test1d = function(cluster = NULL){
 	sink()
 	close(zz)
 	
+	idxx = coef(fit2)[1:3]
+	idxx = match(c(0.1, -0.2, 0.2), round(idxx,2))
 	jpeg("plot_1d-2.jpeg", width = 800, height = 1200, quality=100)
 	mat = matrix(c(1,1,2,3,4,4),3,2,byrow=TRUE)
 	nf=layout(mat)
 	layout.show(nf)
-	plot(as.numeric(states(fit2)[,1]), ylim=c(0,1), main = "Prob[state={1,2,3}]", type="l", ylab="Probability", xlab="Time")
-	lines(as.numeric(states(fit2)[,2]), col=2, lty=2)
-	lines(as.numeric(states(fit2)[,3]), col=3, lty=3)
+	plot(as.numeric(states(fit2)[,idxx[1]]), ylim=c(0,1), main = "Prob[state={1,2,3}]", type="l", ylab="Probability", xlab="Time")
+	lines(as.numeric(states(fit2)[,idxx[2]]), col=2, lty=2)
+	lines(as.numeric(states(fit2)[,idxx[3]]), col=3, lty=3)
 	abline(v=1500)
 	abline(v=3000)
 	grid()
 	legend("topleft", c("[state=1]", "[state=2]", "[state=3]"), col=1:3, lty=c(1,2,3), bty="n")
-	plot(as.numeric(states(fit2, type="pmu")[,2]), main = "State Dynamics[1]", type="l", ylab="Time Trend Dynamics", xlab="Time")
-	abline(v=1500, h=0, col=2)
+	id1 = ifelse(idxx[1]>idxx[2], 1, 2)
+	id2 = ifelse(idxx[1]>idxx[2], 2, 1)
+	plot(as.numeric(states(fit2, type="pmu")[,id1]), main = "State Dynamics[1]", type="l", ylab="Time Trend Dynamics", xlab="Time")
+	idx = min(which(as.numeric(states(fit2, type="pmu")[,id1])>0))
+	abline(v=idx, h=0, col=2)
 	grid()
-	plot(as.numeric(states(fit2, type="pmu")[,1]), main = "State Dynamics[2]", type="l", ylab="Time Trend Dynamics", xlab="Time")
-	abline(v=3000, h=0, col=2)
+	plot(as.numeric(states(fit2, type="pmu")[,id2]), main = "State Dynamics[2]", type="l", ylab="Time Trend Dynamics", xlab="Time")
+	idx = min(which(as.numeric(states(fit2, type="pmu")[,id2])>0))
+	abline(v=idx, h=0, col=2)
 	grid()
 	plot(as.numeric(b2), main = "Fitted vs Actual", type="l", ylab="Value", xlab="Time")
 	lines(as.numeric(fitted(fit2)), col="steelblue", lwd=2)
@@ -368,10 +359,10 @@ twinkle.test1d = function(cluster = NULL){
 	b3 = xts(c(rnorm(1000, 0.1, 0.1), rnorm(1000, -0.2, 0.1), rnorm(1000, 0.2, 0.1), rnorm(1000, -0.1, 0.1)), as.Date(1:4000))
 	x3 = xts(seq(0, 1, length.out=4000), index(b3))
 	spec3 = starspec(
-			mean.model = list(regimes = 4, include.intercept = c(1,1,1,1), arOrder = c(0,0,0,0), 
-					statevar = c("y","x")[2], statelags = 1, x = x3))
+			mean.model = list(states = 4, include.intercept = c(1,1,1,1), arOrder = c(0,0,0,0), 
+					statevar = c("y","s")[2], ylags = 1, s = exp(x3)))
 	solver.control=list(maxit=10000, alpha=1, beta=0.4, gamma=1.4, reltol=1e-12, trace=1,method="BFGS")
-	fit3 = starfit(spec3, data = b3, solver = "optim", solver.control = solver.control)
+	fit3 = starfit(spec3, data = b3, solver = "strategy", solver.control = solver.control, n=6)
 	
 	
 	options(width=150)
@@ -384,33 +375,39 @@ twinkle.test1d = function(cluster = NULL){
 	sink()
 	close(zz)
 	
+	
+	idxx = coef(fit3)[1:4]
+	idxx = match(c(0.1, -0.2, 0.2, -0.1), round(idxx,2))
+	
 	jpeg("plot_1d-3.jpeg", width = 1000, height = 1200, quality=100)
 	mat = matrix(c(1,1,1,2,3,4,5,5,5),3,3,byrow=TRUE)
 	nf=layout(mat)
 	layout.show(nf)
-	plot(as.numeric(states(fit3)[,1]), ylim=c(0,1), main = "Prob[state={1,2,3,4}]", type="l", ylab="Probability", xlab="Time")
-	lines(as.numeric(states(fit3)[,2]), col=2, lty=2)
-	lines(as.numeric(states(fit3)[,3]), col=3, lty=2)
-	lines(as.numeric(states(fit3)[,4]), col=4, lty=2)
+	plot(as.numeric(states(fit3)[,idxx[1]]), ylim=c(0,1), main = "Prob[state={1,2,3,4}]", type="l", ylab="Probability", xlab="Time")
+	lines(as.numeric(states(fit3)[,idxx[2]]), col=2, lty=2)
+	lines(as.numeric(states(fit3)[,idxx[3]]), col=3, lty=2)
+	lines(as.numeric(states(fit3)[,idxx[4]]), col=4, lty=2)
 	abline(v=1000)
 	abline(v=2000)
 	abline(v=3000)
 	grid()
 	legend("topleft", c("[state=1]", "[state=2]", "[state=3]", "[state=4]"), col=c(3,4,1,2), lty=c(2,2,1,2), bty="n")
-	plot(as.numeric(states(fit3, type="pmu")[,3]), main = "State Dynamics[1]", type="l", ylab="Time Trend Dynamics", xlab="Time")
-	abline(v=1000, h=0, col=2)
+	plot(as.numeric(states(fit3, type="pmu")[,id1]), main = "State Dynamics[1]", type="l", ylab="Time Trend Dynamics", xlab="Time")
+	idx = min(which(as.numeric(states(fit3, type="pmu")[,id1])>0))
+	abline(v=idx, h=0, col=2)
 	grid()
-	plot(as.numeric(states(fit3, type="pmu")[,1]), main = "State Dynamics[2]", type="l", ylab="Time Trend Dynamics", xlab="Time")
-	abline(v=2000, h=0, col=2)
+	plot(as.numeric(states(fit3, type="pmu")[,id2]), main = "State Dynamics[2]", type="l", ylab="Time Trend Dynamics", xlab="Time")
+	idx = min(which(as.numeric(states(fit3, type="pmu")[,id2])>0))
+	abline(v=idx, h=0, col=2)
 	grid()
-	plot(as.numeric(states(fit3, type="pmu")[,2]), main = "State Dynamics[3]", type="l", ylab="Time Trend Dynamics", xlab="Time")
-	abline(v=3000, h=0, col=2)
+	plot(as.numeric(states(fit3, type="pmu")[,id3]), main = "State Dynamics[3]", type="l", ylab="Time Trend Dynamics", xlab="Time")
+	idx = min(which(as.numeric(states(fit3, type="pmu")[,id3])>0))
+	abline(v=idx, h=0, col=2)
 	grid()
 	plot(as.numeric(b3), main = "Fitted vs Actual", type="l", ylab="Value", xlab="Time")
 	lines(as.numeric(fitted(fit3)), col="steelblue", lwd=2)
 	grid()
 	dev.off()
-	
 }
 
 twinkle.test1f = function(cluster = NULL){

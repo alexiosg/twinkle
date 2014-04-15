@@ -150,7 +150,8 @@ starspec = function(
 	
 	if(is.null(variance.model$garchOrder)) variance.model$garchOrder = c(1,1)
 	if(is.null(variance.model$variance.targeting)) variance.model$variance.targeting = FALSE
-		
+	exn=NULL
+	
 	if(variance.model$dynamic){
 		valid.model = c("sGARCH", "eGARCH", "gjrGARCH","mixture")
 		if(is.null(variance.model$model)){
@@ -181,6 +182,9 @@ starspec = function(
 				if(!is.xts(variance.model$vreg)) stop("\nstarspec-->error: vreg must be an xts object.\n", call. = FALSE)
 				modeldata$vexdata = variance.model$vreg
 				modelinc[36] = dim( variance.model$vreg )[2]
+				exn = nrow(modeldata$vexdata)
+			} else{
+				exn = NULL
 			}
 			if(is.null(variance.model$variance.targeting)){
 				modelinc[28] = 1
@@ -207,7 +211,18 @@ starspec = function(
 	{
 		if(!is.xts(mean.model$xreg)) stop("\nstarspec-->error: xreg must be an xts object.\n", call. = FALSE)
 		xreg = mean.model$xreg
+		# check for matching indices
+		if(modelinc[36]>0){
+			if(!all.equal(index(xreg), index(modeldata$vexdata))){
+				stop("\nstarspec-->error: vreg and xreg indices do not match!")
+			}
+		}
+		
 		modeldata$mexdata = xreg
+		# if not vexdata then exn is NULL and overwritten here
+		# if vexdata, then exn is the same since indices match
+		exn = nrow(modeldata$mexdata)
+		
 		ncx = ncol(xreg)
 		modelinc[3] = ncx
 		if(modelinc[43]>1) modelinc[7] = ncx
@@ -267,7 +282,18 @@ starspec = function(
 	if(modelinc[46]==2){
 		if(!is.xts(mean.model$s)) stop("\nstarspec-->error: s must be an xts object (aligned to index of data)\n")
 		modeldata$s = mean.model$s
+		if(modelinc[36]>0){
+			if(!all.equal(index(modeldata$s), index(modeldata$vexdata))){
+				stop("\nstarspec-->error: vreg and s indices do not match!")
+			}
+		}
+		if(modelinc[3]>0){
+			if(!all.equal(index(modeldata$s), index(modeldata$mexdata))){
+				stop("\nstarspec-->error: xreg and s indices do not match!")
+			}
+		}
 		xm = ncol(modeldata$s)
+		exn = nrow(modeldata$s)
 		modelinc[19] = xm
 	} else{
 		xm = 1
@@ -308,6 +334,13 @@ starspec = function(
 	if(!is.null(fixed.prob)){
 		modelinc[18:26] = 0
 		modeldesc$statear=FALSE
+	}
+	# now check whether the supplied external data has enough rows to satisfy
+	# max(AR, MA, ylags)...this is important for methods which dispatch on the
+	# the STARspec class (filter and path simulation).
+	mar = max(c(modelinc[c(2,6,10,14,4,8,12,16,17)], ifelse(modelinc[46]==1, max(modeldata$ylags), 0)))
+	if(!is.null(exn)){
+		if(exn<mar) stop(paste("\nstarspec-->error: model has ", mar, " lags but externally provided dataset has only ", exn, " rows", sep=""))
 	}
 	pos = 1
 	pos.matrix = matrix(0, ncol = 3, nrow = 60)
@@ -1394,7 +1427,7 @@ setMethod("starsim", signature(fit = "STARfit"), .starsim)
 # path simulation method
 #------------------------------------------------------------------------------------
 starpath = function(spec, n.sim = 1000, n.start = 0, m.sim = 1, presigma = NA, 
-		prereturns = NA, preresiduals = NA, pres = NA, rseed = NA, 
+		prereturns = NA, preresiduals = NA, rseed = NA, 
 		custom.dist = list(name = NA, distfit = NA), xregsim = NULL, vregsim = NULL, 
 		ssim = NULL, probsim = NULL, ...)
 
@@ -1403,25 +1436,25 @@ starpath = function(spec, n.sim = 1000, n.start = 0, m.sim = 1, presigma = NA,
 }
 
 .starpath = function(spec, n.sim = 1000, n.start = 0, m.sim = 1, presigma = NA, 
-		prereturns = NA, preresiduals = NA, pres = NA, rseed = NA, 
+		prereturns = NA, preresiduals = NA, rseed = NA, 
 		custom.dist = list(name = NA, distfit = NA), xregsim = NULL, 
 		vregsim= NULL, ssim = NULL, probsim = NULL)
 {
 	if(spec@model$modelinc[47]>0){
 		if(spec@model$modelinc[47]==4){
 			ans = .starpath.mixture(spec = spec, n.sim = n.sim, n.start = n.start, m.sim = m.sim,
-					prereturns = prereturns, preresiduals = preresiduals, pres = pres, rseed = rseed,
+					prereturns = prereturns, preresiduals = preresiduals, rseed = rseed,
 					custom.dist = custom.dist, xregsim = xregsim, ssim = ssim, 
 					probsim = probsim)
 		} else{
 			ans = .starpath.dynamic(spec = spec, n.sim = n.sim, n.start = n.start, m.sim = m.sim,
 					presigma = presigma, prereturns = prereturns, preresiduals = preresiduals, 
-					pres = pres, rseed = rseed, custom.dist = custom.dist, xregsim = xregsim, 
+					rseed = rseed, custom.dist = custom.dist, xregsim = xregsim, 
 					vregsim = vregsim, ssim = ssim, probsim = probsim)
 		}
 	} else{
 		ans = .starpath.static(spec = spec, n.sim = n.sim, n.start = n.start, m.sim = m.sim, 
-				prereturns = prereturns, preresiduals = preresiduals, pres = pres, rseed = rseed, 
+				prereturns = prereturns, preresiduals = preresiduals, rseed = rseed, 
 				custom.dist = custom.dist, xregsim = xregsim, ssim = ssim, 
 				probsim = probsim)
 	}
@@ -1544,7 +1577,29 @@ setMethod("states", signature(object = "STARfilter"), .starstate)
 }
 setMethod("states", signature(object = "STARforecast"), .starstatef)
 
-# Need one for the simulation as well
+
+.starstatesim = function(object, type="prob", sim=1)
+{
+	sim = as.integer(max(sim,1))
+	m.sim = ncol(object@simulation$seriesSim)
+	if(sim>m.sim) stop("\ntwinkle-->error: sim>m.sim!")
+	if(type=="prob"){
+		ans = object@simulation$probSim[[sim]]
+		colnames(ans)<-paste("state[",1:ncol(ans),"]",sep="")
+		rownames(ans) = paste("T+",1:NROW(ans), sep="")
+	} else if(type=="condm"){
+		ans = object@simulation$condmSim[[sim]]
+		colnames(ans)<-paste("state[",1:ncol(ans),"]",sep="")
+		rownames(ans) = paste("T+",1:NROW(ans), sep="")
+	} else{
+			stop("\nOnly prob and condm type allowed for simulation objects.")
+	}
+	return(ans)
+}
+setMethod("states", signature(object = "STARsim"), .starstatesim)
+setMethod("states", signature(object = "STARpath"), .starstatesim)
+
+
 
 #------------------------------------------------------------------------------------
 # coef
@@ -1905,7 +1960,7 @@ setMethod("show",
 			cat(paste("\n*---------------------------------*", sep = ""))
 			cat(paste("\n*          STAR Model Spec        *", sep = ""))
 			cat(paste("\n*---------------------------------*", sep = ""))
-			cat(paste("\nstates      : ", modelinc[38], sep = ""))
+			cat(paste("\nstates       : ", modelinc[38], sep = ""))
 			if(modelinc[43]>1) cat(paste("\nstatevar     : ", c("y","s")[modelinc[46]], sep = ""))
 			if(modelinc[43]>1) cat(paste("\nstatear      : ", as.logical(modelinc[20]), sep = ""))
 			cnt = modelinc[c(1,5,9,13)]
@@ -1933,7 +1988,7 @@ setMethod("show",
 			cat(paste("\n*---------------------------------*", sep = ""))
 			cat(paste("\n*          STAR Model Fit         *", sep = ""))
 			cat(paste("\n*---------------------------------*", sep = ""))
-			cat(paste("\nstates      : ", modelinc[43], sep = ""))
+			cat(paste("\nstates       : ", modelinc[43], sep = ""))
 			cat(paste("\nstatevar     : ", c("y","s")[modelinc[46]], sep = ""))
 			cat(paste("\nstatear      : ", as.logical(modelinc[20]), sep = ""))
 			cat(paste("\nvariance     : ", if(modelinc[47]>0) "dynamic" else "static", sep = ""))
@@ -1988,7 +2043,7 @@ setMethod("show",
 			cat(paste("\n*---------------------------------*", sep = ""))
 			cat(paste("\n*          STAR Model Fit         *", sep = ""))
 			cat(paste("\n*---------------------------------*", sep = ""))
-			cat(paste("\nstates      : ", modelinc[43], sep = ""))
+			cat(paste("\nstates       : ", modelinc[43], sep = ""))
 			cat(paste("\nstatevar     : ", c("y","s")[modelinc[46]], sep = ""))
 			cat(paste("\nstatear      : ", as.logical(modelinc[20]), sep = ""))
 			cat(paste("\nvariance     : ", if(modelinc[47]>0) "dynamic" else "static", sep = ""))

@@ -4,6 +4,7 @@
 \alias{sigma,STARsim-method}
 \alias{fitted,STARsim-method}
 \alias{quantile,STARsim-method}
+\alias{states,STARsim-method}
 \alias{show,STARsim-method}
 \title{class: Univariate STAR Simulation Class}
 \description{Class for the univariate STAR simulation.}
@@ -29,6 +30,12 @@
 	\dQuote{probs}), the conditional quantile of the simulated object as an
 	n.sim by m.sim matrix (with the same type of headings as the sigma and
 	fitted methods).}
+	\item{states}{\code{signature(object = "STARsim")}: 
+	Extracts the state probabilities as a matrix. Optional argument \sQuote{type}
+	takes values \dQuote{prob} for the probabilities (default) and \dQuote{condm} for
+	the simulated values of each state, while \sQuote{sim} denotes the simulation run
+	to extract values from (based on argument m.sim in the \code{\link{starsim}} 
+	method).}
     \item{show}{\code{signature(object = "STARsim")}: 
     Simulation summary. }
 	 }

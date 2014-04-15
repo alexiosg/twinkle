@@ -1,4 +1,4 @@
-\begin{thebibliography}{21}
+\begin{thebibliography}{26}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -23,6 +23,13 @@ SA~Billings and WSF Voon.
 \newblock Correlation based model validity tests for non-linear models.
 \newblock \emph{International journal of Control}, 44\penalty0 (1):\penalty0
   235--244, 1986.
+
+\bibitem[Brockwell et~al.(1992)Brockwell, Liu, and Tweedie]{Brockwell1992}
+Peter~J Brockwell, Jian Liu, and Richard~L Tweedie.
+\newblock On the existence of stationary threshold autoregressive
+  moving-average process.
+\newblock \emph{Journal of Time Series Analysis}, 13\penalty0 (2):\penalty0
+  95--107, 1992.
 
 \bibitem[Carmichael(1928)]{Carmichael1928}
 FL~Carmichael.
@@ -55,6 +62,28 @@ Dick~van Dijk, Timo Ter{\"a}svirta, and Philip~Hans Franses.
   developments.
 \newblock \emph{Econometric Reviews}, 21\penalty0 (1):\penalty0 1--47, 2002.
 
+\bibitem[Franses and van Dijk(2000)]{Franses2000}
+Philip~Hans Franses and Dick van Dijk.
+\newblock \emph{Non-linear time series models in empirical finance}.
+\newblock Cambridge University Press, 2000.
+
+\bibitem[Gooijer(1998)]{Gooijer1998}
+Jan~De Gooijer.
+\newblock On threshold moving-average models.
+\newblock \emph{Journal of Time Series Analysis}, 19\penalty0 (1):\penalty0
+  1--18, 1998.
+
+\bibitem[Huerta et~al.(2003)Huerta, Jiang, and Tanner]{Huerta2003}
+Gabriel Huerta, Wenxin Jiang, and Martin~A Tanner.
+\newblock Time series modeling via hierarchical mixtures.
+\newblock \emph{Statistica Sinica}, 13\penalty0 (4):\penalty0 1097--1118, 2003.
+
+\bibitem[Kalliovirta et~al.(2012)Kalliovirta, Meitz, and
+  Saikkonen]{Kalliovirta2012}
+Leena Kalliovirta, Mika Meitz, and Pentti Saikkonen.
+\newblock A gaussian mixture autoregressive model for univariate time series.
+\newblock \emph{Working Paper}, 2012.
+
 \bibitem[Kauppi and Saikkonen(2008)]{Kauppi2008}
 Heikki Kauppi and Pentti Saikkonen.
 \newblock Predicting us recessions with dynamic binary response models.
@@ -81,11 +110,6 @@ Ritva Luukkonen, Pentti Saikkonen, and Timo Ter{\"a}svirta.
 \newblock Testing linearity against smooth transition autoregressive models.
 \newblock \emph{Biometrika}, 75\penalty0 (3):\penalty0 491--499, 1988.
 
-\bibitem[May(1976)]{May1976}
-Robert~M. May.
-\newblock Simple mathematical models with very complicated dynamics.
-\newblock \emph{Nature}, 261\penalty0 (5560):\penalty0 459--467, 1976.
-
 \bibitem[Nyberg(2010)]{Nyberg2010}
 Henri Nyberg.
 \newblock Dynamic probit models and financial variables in recession
@@ -100,17 +124,18 @@ Richard~E Quandt.
 \newblock \emph{Journal of the american statistical association}, 53\penalty0
   (284):\penalty0 873--880, 1958.
 
+\bibitem[So et~al.(2002)So, Li, and Lam]{So2002}
+Mike~KP So, WK~Li, and K~Lam.
+\newblock A threshold stochastic volatility model.
+\newblock \emph{Journal of Forecasting}, 21\penalty0 (7):\penalty0 473--500,
+  2002.
+
 \bibitem[Ter{\"a}svirta(1994)]{Terasvirta1994}
 T.~Ter{\"a}svirta.
 \newblock Specification, estimation, and evaluation of smooth transition
   autoregressive models.
 \newblock \emph{Journal of the American Statistical Association}, 89:\penalty0
   208--218, 1994.
-
-\bibitem[Tong(1990)]{Tong1990}
-Howell Tong.
-\newblock \emph{Non-linear time series: a dynamical system approach}.
-\newblock Oxford University Press, 1990.
 
 \bibitem[Tong and Ghaddar(1981)]{Tong1981}
 Howell Tong and DK~Ghaddar.
@@ -128,6 +153,12 @@ Howell Tong and K.S Lim.
 Dick van Dijk and Philip~Hans Franses.
 \newblock Modeling multiple regimes in the business cycle.
 \newblock \emph{Macroeconomic Dynamics}, 3:\penalty0 311--340, 1999.
+
+\bibitem[Zakoian(1994)]{Zakoian1994}
+Jean-Michel Zakoian.
+\newblock Threshold heteroskedastic models.
+\newblock \emph{Journal of Economic Dynamics and Control}, 18\penalty0
+  (5):\penalty0 931--955, 1994.
 
 \bibitem[Zhu and Billings(1993)]{Zhu1993}
 Q.M. Zhu and S.~Billings.

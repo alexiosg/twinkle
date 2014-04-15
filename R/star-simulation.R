@@ -132,13 +132,24 @@
 	return(list(mexsimlist = mexsimlist, vexsimlist = vexsimlist, ssimlist = ssimlist))
 }
 
-
-.simregressorspath = function(model, xregsim, vregsim, pres, ssim, n, m.sim)
+# use similar setup to aim
+.simregressorspath = function(model, xregsim, vregsim, ssim, n, m.sim)
 {
 	modelinc = model$modelinc
 	mxn = modelinc[3]
 	vxn = modelinc[36]
 	sxn = modelinc[19]
+	# do we have external data (their indices match so we can loop and check)?
+	N = NA
+	if(modelinc[46]==2){
+		N = nrow(model$modeldata$s)
+	}
+	if(modelinc[3]>0){
+		N = nrow(model$modeldata$mexdata)
+	}
+	if(modelinc[36]>0){
+		N = nrow(model$modeldata$vexdata)
+	}
 	# AR, MA (state), MA (linear) terms + ylags
 	mar = max(c(modelinc[c(2,6,10,14,4,8,12,16,17)], ifelse(modelinc[46]==1, max(model$modeldata$ylags), 0)))
 	m = max(c(modelinc[29:30], mar))
@@ -168,7 +179,12 @@
 		}
 		mexsimlist = vector(mode = "list", length = m.sim)
 		for(i in 1:m.sim){
-			mexsimlist[[i]] = xregsim[[i]]
+			if(mar>0){
+				premexdata = coredata(model$modeldata$mexdata[min(N,N-mar+1):N,,drop=FALSE])
+				mexsimlist[[i]] = matrix(rbind(premexdata, as.matrix(xregsim[[i]])), ncol = mxn)
+			} else{
+				mexsimlist[[i]] = as.matrix(xregsim[[i]])
+			}
 		}
 	} else{
 		mexsimlist = vector(mode = "list", length = m.sim)
@@ -198,7 +214,12 @@
 		}
 		vexsimlist = vector(mode = "list", length = m.sim)
 		for(i in 1:m.sim){
-			vexsimlist[[i]] = vregsim[[i]]
+			if(m>0){
+				prevexdata = coredata(model$modeldata$vexdata[min(N,N-m+1):N,,drop=FALSE])
+				vexsimlist[[i]] = matrix(rbind(prevexdata, as.matrix(vregsim[[i]])), ncol = vxn)
+			} else{
+				vexsimlist[[i]] = as.matrix(vregsim[[i]])
+			}
 		}
 	} else{
 		vexsimlist = vector(mode = "list", length = m.sim)
@@ -220,28 +241,20 @@
 				warning("\nstarpath-->warning: length of ssim list not equal to m.sim...\nreplicating first list element m.sim times.\n")
 			}
 			for(i in 1:m.sim){
-				if(dim(as.matrix(ssim[[i]]))[2] != xxn ) 
+				if(dim(as.matrix(ssim[[i]]))[2] != sxn ) 
 					stop(paste("\nstarpath-->error: ssim ", i," has wrong no. of column", sep=""))
 				if(dim(as.matrix(ssim[[i]]))[1] != n )
 					stop(paste("\nstarpath-->error: ssim ", i," has wrong no. of rows", sep=""))
 			}
 		}
 		ssimlist = vector(mode = "list", length = m.sim)
-		if(is.null(pres) && mar>0){
-			stop(paste("\nstarpath-->error: pres must be provided (matrix of dimensions: [maxlag] ", mar, " x ncol(x) ", sxn, sep=""))
-		} else{
-			if(!is.null(pres)){
-				if(!is.matrix(pres)) pres = as.matrix(pres)
-				if(ncol(pres)!=sxn) stop(paste("\nstarpath-->error: pres must have ", sxn, " columns", sep=""))
-				if(mar>0 && nrow(pres)<mar) stop(paste("\nstarpath-->error: pres must have ", mar, " rows", sep=""))
-				pres = tail(pres, max(mar, 1))
-				if(mar==0) usepres = TRUE
-			} else{
-				if(mar==0) usepres = FALSE				
-			}
-		}
 		for(i in 1:m.sim){
-			ssimlist[[i]] = matrix(rbind(pres, as.matrix(ssim[[i]])), ncol = xxn)
+			if(mar>0){
+				presdata = coredata(model$modeldata$s[min(N,N-mar+1):N,,drop=FALSE])
+				ssimlist[[i]] = matrix(rbind(presdata, as.matrix(ssim[[i]])), ncol = sxn)
+			} else{
+				ssimlist[[i]] = as.matrix(ssim[[i]])
+			}
 		}
 	} else{
 		ssimlist = vector(mode = "list", length = m.sim)
@@ -336,8 +349,8 @@ dstar3sim = function(arglist)
 	pmu2 = cnst2 + as.numeric(XL%*%alpha2)
 	if(modelinc[20]>0) pmu1 = .recfilter(as.double(pmu1), as.double(beta1), init = as.double(tail(arglist$pmu[,1],1)))
 	if(modelinc[23]>0) pmu2 = .recfilter(as.double(pmu2), as.double(beta2), init = as.double(tail(arglist$pmu[,2],1)))
-	p1 = 1/(1+exp(-pmu1))
-	p2 = 1/(1+exp(-pmu2))
+	p1 = 1/(1+exp(pmu1))
+	p2 = 1/(1+exp(pmu2))
 	p12 = p1+p2
 	p3 = 1/(1+p12)
 	p1 = p1/(1+p12)
@@ -385,9 +398,9 @@ dstar4sim = function(arglist)
 	if(modelinc[20]>0) pmu1 = .recfilter(as.double(pmu1), as.double(beta1), init = as.double(tail(arglist$pmu[,1],1)))
 	if(modelinc[23]>0) pmu2 = .recfilter(as.double(pmu2), as.double(beta2), init = as.double(tail(arglist$pmu[,2],1)))
 	if(modelinc[26]>0) pmu3 = .recfilter(as.double(pmu3), as.double(beta3), init = as.double(tail(arglist$pmu[,3],1)))
-	p1 = 1/(1+exp(-pmu1))
-	p2 = 1/(1+exp(-pmu2))
-	p3 = 1/(1+exp(-pmu3))
+	p1 = 1/(1+exp(pmu1))
+	p2 = 1/(1+exp(pmu2))
+	p3 = 1/(1+exp(pmu3))
 	p123 = p1+p2+p3
 	p4 = 1/(1+p123)
 	p1 = p1/(1+p123)
@@ -468,8 +481,8 @@ dstar3path = function(arglist)
 		init2 = (cnst2+sum(alpha2 * colMeans(XL))) /(1-beta2)
 		pmu2 = .recfilter(as.double(pmu2), as.double(beta2), init = as.double(init2))
 	}
-	p1 = 1/(1+exp(-pmu1))
-	p2 = 1/(1+exp(-pmu2))
+	p1 = 1/(1+exp(pmu1))
+	p2 = 1/(1+exp(pmu2))
 	p12 = p1+p2
 	p3 = 1/(1+p12)
 	p1 = p1/(1+p12)
@@ -526,9 +539,9 @@ dstar4path = function(arglist)
 		init3 = (cnst3+sum(alpha3 * colMeans(XL))) /(1-beta3)
 		pmu3 = .recfilter(as.double(pmu3), as.double(beta3), init = as.double(init3))
 	}	
-	p1 = 1/(1+exp(-pmu1))
-	p2 = 1/(1+exp(-pmu2))
-	p3 = 1/(1+exp(-pmu3))
+	p1 = 1/(1+exp(pmu1))
+	p2 = 1/(1+exp(pmu2))
+	p3 = 1/(1+exp(pmu3))
 	p123 = p1+p2+p3
 	p4 = 1/(1+p123)
 	p1 = p1/(1+p123)

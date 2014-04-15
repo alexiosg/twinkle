@@ -22,10 +22,11 @@
 	n.sim by m.sim matrix (with the same type of headings as the sigma and
 	fitted methods).}
 	\item{states}{\code{signature(object = "STARpath")}: 
-	Extracts the state probabilities as an xts matrix. Optional argument \sQuote{type}
-	takes values \dQuote{prob} for the probabilities (default), \dQuote{condm} for
-	the simulated values of each state, and anything else will return the untransformed state
-	dynamics.}
+	Extracts the state probabilities as a matrix. Optional argument \sQuote{type}
+	takes values \dQuote{prob} for the probabilities (default) and \dQuote{condm} for
+	the simulated values of each state, while \sQuote{sim} denotes the simulation run
+	to extract values from (based on argument m.sim in the \code{\link{starpath}} 
+	method).}
     \item{show}{\code{signature(object = "STARpath")}: path simulation summary. }
 	 }
 }

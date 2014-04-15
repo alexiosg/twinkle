@@ -3,48 +3,46 @@ Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
 The top-level auxiliary file: The_Twinkle_Package.aux
 The style file: plainnat.bst
 Database file #1: starbib.bib
-Warning--I didn't find a database entry for ""
-Warning--I didn't find a database entry for "("
 Warning--can't use both volume and number fields in Billings1983
-You've used 21 entries,
+You've used 26 entries,
             2773 wiz_defined-function locations,
-            763 strings with 8302 characters,
-and the built_in function-call counts, 9388 in all, are:
-= -- 884
-> -- 411
-< -- 19
-+ -- 141
-- -- 120
-* -- 748
-:= -- 1413
-add.period$ -- 64
-call.type$ -- 21
-change.case$ -- 102
-chr.to.int$ -- 21
-cite$ -- 43
-duplicate$ -- 436
-empty$ -- 844
-format.name$ -- 163
-if$ -- 1980
+            792 strings with 9116 characters,
+and the built_in function-call counts, 11757 in all, are:
+= -- 1098
+> -- 552
+< -- 20
++ -- 188
+- -- 162
+* -- 961
+:= -- 1777
+add.period$ -- 79
+call.type$ -- 26
+change.case$ -- 131
+chr.to.int$ -- 26
+cite$ -- 53
+duplicate$ -- 539
+empty$ -- 1036
+format.name$ -- 212
+if$ -- 2468
 int.to.chr$ -- 1
 int.to.str$ -- 1
-missing$ -- 22
-newline$ -- 113
-num.names$ -- 84
-pop$ -- 178
+missing$ -- 27
+newline$ -- 138
+num.names$ -- 104
+pop$ -- 228
 preamble$ -- 1
-purify$ -- 82
+purify$ -- 106
 quote$ -- 0
-skip$ -- 326
+skip$ -- 402
 stack$ -- 0
-substring$ -- 527
-swap$ -- 33
+substring$ -- 631
+swap$ -- 38
 text.length$ -- 2
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 226
+type$ -- 281
 warning$ -- 1
-while$ -- 100
+while$ -- 123
 width$ -- 0
-write$ -- 281
-(There were 3 warnings)
+write$ -- 345
+(There was 1 warning)
