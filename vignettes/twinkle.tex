@@ -110,10 +110,10 @@ the logistic CDF\footnote{At present only the Logistic STAR model is
 entertained and it is not likely that the exponential STAR model will be
 considered at all.} such that:
 \begin{equation}\label{eq:logistic_cdf}
-F\left( {{z_t};\gamma ,\alpha ,c} \right) = {\left( {1 + \exp \left\{ { -
-\gamma \left( {\alpha '{z_t} - c} \right)} \right\}} \right)^{ - 1}},\gamma  > 0
+F\left( {{z_{t-d}};\gamma ,\alpha ,c} \right) = {\left( {1 + \exp \left\{ { -
+\gamma \left( {\alpha '{z_{t-d} - c} \right)} \right\}} \right)^{ - 1}},\gamma  > 0
 \end{equation}
-where ${z_t} = {\left( {{z_{1t}},\dots,{z_{jt}}} \right)^\prime },j = 1,\dots,k$
+where ${z_{t-d}} = {\left( {{z_{1{t-d}}},\dots,{z_{j{t-d}}}} \right)^\prime },j = 1,\dots,k$
 is a vector of $k$ observed variables which are assumed to explain the state
 transition. These can be a set of explanatory variables or the lagged values of $y_t$ in which case
 the model is called 'self-exciting'. It is also possible that the variable is
@@ -139,7 +139,7 @@ follows:
 \begin{gathered}
   F\left( {{z_t};\alpha ,c,\beta} \right) = {\left( {1 + \exp \left\{ -{{\pi
   _t}} \right\}} \right)^{ - 1}} \hfill \\
-  {\pi _t} = \hat c + \hat \alpha '{z_t} + \beta '\pi _t^{\left( q \right)} \hfill \\
+  {\pi _t} = \hat c + \hat \alpha '{z_{t-d}} + \beta '\pi _t^{\left( q \right)} \hfill \\
   \pi _t^{\left( q \right)} = {\left( {{\pi _{t - 1}},\dots,{\pi _{t - q}}}
   \right)^\prime } \hfill \\
 \end{gathered}
