@@ -51,7 +51,7 @@ starspec = function(
 # modelinc[43] states (max 4)
 # modelinc[44] fixed.prob (FALSE/TRUE)
 # modelinc[45] yfun (TRUE/FALSE)
-# modelinc[46] type (1=y, 2=x)
+# modelinc[46] type (1=y, 2=s)
 # modelinc[47] garchmodel (1=sGARCH, 2=gjrGARCH, 3=eGARCH, 4=mixture)
 # if(modelinc[47]==0) then NOT dynamic
 # modelinc[48] AR type (1: \phi*(y_t-\mu-t), 0: \phi*(y_t) )

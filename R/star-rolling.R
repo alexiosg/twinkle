@@ -23,7 +23,7 @@
 		n.start = NULL, refit.every = 25, refit.window = c("recursive", "moving"), 
 		window.size = NULL, solver = "msoptim", fit.control = list(), solver.control = list(),
 		calculate.VaR = TRUE, VaR.alpha = c(0.01, 0.05), cluster = NULL,
-		keep.coef = TRUE, ...)
+		keep.coef = TRUE, n=12, ...)
 {
 	tic = Sys.time()
 	if(is.null(solver.control$trace)) trace = 0 else trace = solver.control$trace
@@ -38,7 +38,6 @@
 		warning(paste(c("unidentified option(s) in fit.control:\n", enx), sep="", collapse=" "), call. = FALSE, domain = NULL)
 	}
 	refit.window = refit.window[1]
-	datanames = names(data)
 	xdata = rugarch:::.extractdata(data)
 	data = xdata$data
 	index = xdata$index
@@ -46,7 +45,7 @@
 	T = NROW(data)
 	modelinc = spec@model$modelinc
 	
-	if(modelinc[39]==1){
+	if(modelinc[44]==1){
 		chk = all.equal(index(data), index(model$fixed.prob))
 		if(!is.logical(chk) | chk == FALSE){
 			print(paste("\n",chk,sep=""))
@@ -54,7 +53,7 @@
 		}
 		fprobs = model$fixed.prob
 		fex = TRUE
-	} else{
+	} else{s
 		fprobs = NULL
 		fex = FALSE
 	}
@@ -70,19 +69,19 @@
 		mexdata = NULL
 		mex = FALSE
 	}
-	if(modelinc[41]==2){
-		chk = all.equal(index(data), index(model$modeldata$x))
+	if(modelinc[46]==2){
+		chk = all.equal(index(data), index(model$modeldata$s))
 		if(!is.logical(chk) | chk == FALSE){
 			print(paste("\n",chk,sep=""))
-			stop("\nstarroll-->error: data and 'x' probability dynamics regressor indices do not match\n")
+			stop("\nstarroll-->error: data and 's' probability dynamics regressor indices do not match\n")
 		}
-		xdata = model$modeldata$x
-		xex = TRUE
+		sxdata = model$modeldata$s
+		sxex = TRUE
 	} else{
-		xdata = NULL
-		xex = FALSE
+		sxdata = NULL
+		sxex = FALSE
 	}
-	if(modelinc[31]>0){
+	if(modelinc[36]>0){
 		chk = all.equal(index(data), index(model$modeldata$vexdata))
 		if(!is.logical(chk) | chk == FALSE){
 			print(paste("\n",chk,sep=""))
@@ -131,36 +130,36 @@
 	
 	if( !is.null(cluster) ){
 		clusterEvalQ(cl = cluster, library(twinkle))
-		clusterExport(cluster, c("data", "x",  "index", "s","refit.every", 
+		clusterExport(cluster, c("data", "index", "s","refit.every", 
 						"keep.coef", "shaped", "skewed", "ghyp", 
-						"rollind", "spec", "out.sample", "mex", "vex", "xex", "fex",
-						"solver", "solver.control", "fit.control"), envir = environment())
+						"rollind", "spec", "out.sample", "mex", "vex", "sxex", "fex",
+						"solver", "solver.control", "fit.control", "n"), envir = environment())
 		if(mex) clusterExport(cluster, c("mexdata"), envir = environment())
 		if(vex) clusterExport(cluster, c("vexdata"), envir = environment())
 		if(fex) clusterExport(cluster, c("fprobs"), envir = environment())
-		if(xex) clusterExport(cluster, c("xdata"), envir = environment())
+		if(sxex) clusterExport(cluster, c("sxdata"), envir = environment())
 		
 		tmp = parLapply(cl = cluster, 1:m, fun = function(i){
 					if(mex) spec@model$modeldata$mexdata = mexdata[rollind[[i]],,drop=FALSE]
 					if(vex) spec@model$modeldata$vexdata = vexdata[rollind[[i]],,drop=FALSE]
-					if(xex) spec@model$modeldata$x = xdata[rollind[[i]],,drop=FALSE]
+					if(sxex) spec@model$modeldata$s = sxdata[rollind[[i]],,drop=FALSE]
 					if(fex) spec@model$fixed.prob = fprobs[rollind[[i]],,drop=FALSE]
 					fit = try(starfit(spec, xts::xts(data[rollind[[i]]], index[rollind[[i]]]), out.sample = out.sample[i], 
 									solver = solver, solver.control = solver.control, 
-									fit.control = fit.control), silent=TRUE)
+									fit.control = fit.control, n = n), silent=TRUE)
 					# 3 cases: General Error, Failure to Converge, Failure to invert Hessian (bad solution)
 					if(inherits(fit, 'try-error') || convergence(fit)!=0 || is.null(fit@fit$cvar)){
 						ans = list(y = NA, cf = NA, converge = FALSE, loglik = NA)
 					} else{
 						if(mex) fmex = tail(mexdata[rollind[[i]],,drop=FALSE], out.sample[i]) else fmex = NULL
 						if(vex) fvex = tail(vexdata[rollind[[i]],,drop=FALSE], out.sample[i]) else fvex = NULL
-						if(xex) fxex = tail(xdata[rollind[[i]],,drop=FALSE], out.sample[i]) else fxex = NULL
+						if(sxex) fsxex = tail(sxdata[rollind[[i]],,drop=FALSE], out.sample[i]) else fsxex = NULL
 						if(fex) ffex = tail(fprobs[rollind[[i]],,drop=FALSE], out.sample[i]) else ffex = NULL
 						f = starforecast(fit, n.ahead = 1, n.roll = out.sample[i]-1, 
-								external.forecasts = list(mregfor = fmex, vregfor = fvex, xregfor = fxex,
+								external.forecasts = list(xregfor = fmex, vregfor = fvex, sfor = fsxex,
 										probfor = ffex))
 						ret = as.numeric( fitted(f) )
-						if(spec@model$modelinc[22]==0) sig = as.numeric( sigma(f) ) else sig = rep(coef(fit)["sigma"], length(ret))
+						if(spec@model$modelinc[27]==0) sig = as.numeric( sigma(f) ) else sig = rep(coef(fit)["sigma"], length(ret))
 						if(shaped) shp = rep(coef(fit)["shape"], out.sample[i]) else shp = rep(0, out.sample[i])
 						if(skewed) skw = rep(coef(fit)["skew"], out.sample[i]) else skw = rep(0, out.sample[i])
 						if(ghyp) shpgig = rep(coef(fit)["ghlambda"], out.sample[i]) else shpgig = rep(0, out.sample[i])
@@ -179,23 +178,23 @@
 		tmp = lapply(as.list(1:m), FUN = function(i){
 					if(mex) spec@model$modeldata$mexdata = mexdata[rollind[[i]],,drop=FALSE]
 					if(vex) spec@model$modeldata$vexdata = vexdata[rollind[[i]],,drop=FALSE]
-					if(xex) spec@model$modeldata$x = xdata[rollind[[i]],,drop=FALSE]
+					if(sxex) spec@model$modeldata$s = sxdata[rollind[[i]],,drop=FALSE]
 					if(fex) spec@model$fixed.prob = fprobs[rollind[[i]],,drop=FALSE]
 					fit = try(starfit(spec, xts::xts(data[rollind[[i]]], index[rollind[[i]]]), out.sample = out.sample[i], 
 									solver = solver, solver.control = solver.control, 
-									fit.control = fit.control), silent=TRUE)
+									fit.control = fit.control, n = n), silent=TRUE)
 					if(inherits(fit, 'try-error') || convergence(fit)!=0 || is.null(fit@fit$cvar)){
 						ans = list(y = NA, cf = NA, converge = FALSE, loglik = NA)
 					} else{
 						if(mex) fmex = tail(mexdata[rollind[[i]],,drop=FALSE], out.sample[i]) else fmex = NULL
 						if(vex) fvex = tail(vexdata[rollind[[i]],,drop=FALSE], out.sample[i]) else fvex = NULL
-						if(xex) fxex = tail(xdata[rollind[[i]],,drop=FALSE], out.sample[i]) else fxex = NULL
+						if(sxex) fxex = tail(sxdata[rollind[[i]],,drop=FALSE], out.sample[i]) else sxex = NULL
 						if(fex) ffex = tail(fprobs[rollind[[i]],,drop=FALSE], out.sample[i]) else ffex = NULL
 						f = starforecast(fit, n.ahead = 1, n.roll = out.sample[i]-1, 
-								external.forecasts = list(mregfor = fmex, vregfor = fvex, xregfor = fxex,
+								external.forecasts = list(xregfor = fmex, vregfor = fvex, sfor = fsxex,
 										probfor = ffex))
 						ret = as.numeric( fitted(f) )
-						if(spec@model$modelinc[22]==0) sig = as.numeric( sigma(f) ) else sig = rep(coef(fit)["sigma"], length(ret))
+						if(spec@model$modelinc[27]==0) sig = as.numeric( sigma(f) ) else sig = rep(coef(fit)["sigma"], length(ret))
 						if(shaped) shp = rep(coef(fit)["shape"], out.sample[i]) else shp = rep(0, out.sample[i])
 						if(skewed) skw = rep(coef(fit)["skew"], out.sample[i]) else skw = rep(0, out.sample[i])
 						if(ghyp) shpgig = rep(coef(fit)["ghlambda"], out.sample[i]) else shpgig = rep(0, out.sample[i])
@@ -220,7 +219,6 @@
 		model$data = data
 		model$index = index
 		model$period = period
-		model$datanames = datanames
 		model$n.ahead = n.ahead
 		model$forecast.length = forecast.length 
 		model$n.start = n.start
@@ -298,7 +296,7 @@
 }
 
 
-.resumerollstar = function(object, solver = "msoptim", fit.control = list(), solver.control = list(), cluster = NULL)
+.resumerollstar = function(object, solver = "msoptim", fit.control = list(), solver.control = list(), cluster = NULL, n = 12)
 {
 	if(!is.null(object@model$noncidx)){
 		noncidx = object@model$noncidx
@@ -325,19 +323,53 @@
 		modelinc = spec@model$modelinc
 		calculate.VaR = model$calculate.VaR
 		VaR.alpha = model$VaR.alpha
-		if( modelinc[6]>0 ){
-			mexdata = spec@model$modeldata$mexdata
+		if(modelinc[44]==1){
+			chk = all.equal(index, index(model$fixed.prob))
+			if(!is.logical(chk) | chk == FALSE){
+				print(paste("\n",chk,sep=""))
+				stop("\nstarroll-->error: data and fixed.probs indices do not match\n")
+			}
+			fprobs = model$fixed.prob
+			fex = TRUE
+		} else{s
+			fprobs = NULL
+			fex = FALSE
+		}
+		if(modelinc[3] > 0){
+			chk = all.equal(index, index(model$modeldata$mexdata))
+			if(!is.logical(chk) | chk == FALSE){
+				print(paste("\n",chk,sep=""))
+				stop("\nstarroll-->error: data and external.regressor (mean) indices do not match\n")
+			}
+			mexdata = model$modeldata$mexdata
 			mex = TRUE
 		} else{
-			mex = FALSE
 			mexdata = NULL
+			mex = FALSE
 		}
-		if( modelinc[15]>0 ){
-			vexdata = spec@model$modeldata$vexdata
+		if(modelinc[46]==2){
+			chk = all.equal(index, index(model$modeldata$s))
+			if(!is.logical(chk) | chk == FALSE){
+				print(paste("\n",chk,sep=""))
+				stop("\nstarroll-->error: data and 's' probability dynamics regressor indices do not match\n")
+			}
+			sxdata = model$modeldata$s
+			sxex = TRUE
+		} else{
+			sxdata = NULL
+			sxex = FALSE
+		}
+		if(modelinc[36]>0){
+			chk = all.equal(index, index(model$modeldata$vexdata))
+			if(!is.logical(chk) | chk == FALSE){
+				print(paste("\n",chk,sep=""))
+				stop("\nstarroll-->error: data and external.regressor (variance) indices do not match\n")
+			}
+			vexdata = model$modeldata$vexdata
 			vex = TRUE
 		} else{
-			vex = FALSE
 			vexdata = NULL
+			vex = FALSE
 		}
 		n.ahead = model$n.ahead
 		n.start = model$n.start
@@ -345,12 +377,12 @@
 		refit.every = model$refit.every
 		refit.window = model$refit.window
 		window.size = model$window.size
-		if(n.ahead>1) stop("\nugarchroll:--> n.ahead>1 not supported...try again.")
+		if(n.ahead>1) stop("\nstarroll:--> n.ahead>1 not supported...try again.")
 		if(is.null(n.start)){
-			if(is.null(forecast.length)) stop("\nugarchroll:--> forecast.length amd n.start are both NULL....try again.")
+			if(is.null(forecast.length)) stop("\nstarroll:--> forecast.length amd n.start are both NULL....try again.")
 			n.start = T - forecast.length
 		}
-		if(T<=n.start) stop("\nugarchroll:--> start cannot be greater than length of data")
+		if(T<=n.start) stop("\nstarroll:--> start cannot be greater than length of data")
 		# the ending points of the estimation window
 		s = seq(n.start+refit.every, T, by = refit.every)
 		m = length(s)
@@ -381,34 +413,43 @@
 			clusterEvalQ(cl = cluster, library(twinkle))
 			clusterExport(cluster, c("data", "index","s","refit.every",
 							"keep.coef", "shaped", "skewed", "ghyp", 
-							"rollind", "spec", "out.sample", "mex", "vex", 
-							"noncidx", "solver", "solver.control", "fit.control"),
-					envir = environment())
+							"rollind", "spec", "out.sample", "mex", "vex", "sxex", "fex",
+							"solver", "solver.control", "fit.control", "n"), envir = environment())
 			if(mex) clusterExport(cluster, c("mexdata"), envir = environment())
 			if(vex) clusterExport(cluster, c("vexdata"), envir = environment())
+			if(fex) clusterExport(cluster, c("fprobs"), envir = environment())
+			if(sxex) clusterExport(cluster, c("sxdata"), envir = environment())
 			tmp = parLapply(cl = cluster, as.list(noncidx), fun = function(i){
 						if(mex) spec@model$modeldata$mexdata = mexdata[rollind[[i]],,drop=FALSE]
 						if(vex) spec@model$modeldata$vexdata = vexdata[rollind[[i]],,drop=FALSE]
-						fit = try(ugarchfit(spec, xts::xts(data[rollind[[i]]], index[rollind[[i]]]), out.sample = out.sample[i], 
-										solver=solver, solver.control = solver.control, 
-										fit.control = fit.control), silent=TRUE)
+						if(sxex) spec@model$modeldata$s = sxdata[rollind[[i]],,drop=FALSE]
+						if(fex) spec@model$fixed.prob = fprobs[rollind[[i]],,drop=FALSE]
+						fit = try(starfit(spec, xts::xts(data[rollind[[i]]], index[rollind[[i]]]), out.sample = out.sample[i], 
+										solver = solver, solver.control = solver.control, 
+										fit.control = fit.control, n = n), silent=TRUE)
+						# 3 cases: General Error, Failure to Converge, Failure to invert Hessian (bad solution)
 						if(inherits(fit, 'try-error') || convergence(fit)!=0 || is.null(fit@fit$cvar)){
 							ans = list(y = NA, cf = NA, converge = FALSE, loglik = NA)
 						} else{
 							if(mex) fmex = tail(mexdata[rollind[[i]],,drop=FALSE], out.sample[i]) else fmex = NULL
 							if(vex) fvex = tail(vexdata[rollind[[i]],,drop=FALSE], out.sample[i]) else fvex = NULL
-							f = ugarchforecast(fit, n.ahead = 1, n.roll = out.sample[i]-1, 
-									external.forecasts = list(mregfor = fmex, vregfor = fvex))
-							sig = as.numeric( sigma(f) )
+							if(sxex) fsxex = tail(sxdata[rollind[[i]],,drop=FALSE], out.sample[i]) else fsxex = NULL
+							if(fex) ffex = tail(fprobs[rollind[[i]],,drop=FALSE], out.sample[i]) else ffex = NULL
+							f = starforecast(fit, n.ahead = 1, n.roll = out.sample[i]-1, 
+									external.forecasts = list(xregfor = fmex, vregfor = fvex, sfor = fsxex,
+											probfor = ffex))
 							ret = as.numeric( fitted(f) )
+							if(spec@model$modelinc[27]==0) sig = as.numeric( sigma(f) ) else sig = rep(coef(fit)["sigma"], length(ret))
 							if(shaped) shp = rep(coef(fit)["shape"], out.sample[i]) else shp = rep(0, out.sample[i])
 							if(skewed) skw = rep(coef(fit)["skew"], out.sample[i]) else skw = rep(0, out.sample[i])
 							if(ghyp) shpgig = rep(coef(fit)["ghlambda"], out.sample[i]) else shpgig = rep(0, out.sample[i])
+							if(!fex) fp = coredata(states(f)) else fp = coredata(ffex)
 							rlz = tail(data[rollind[[i]]], out.sample[i])
 							# use xts for indexing the forecasts
-							y = as.data.frame(cbind(ret, sig, skw, shp, shpgig, rlz))
-							rownames(y) = tail(as.character(index[rollind[[i]]]), out.sample[i])
-							colnames(y) = c("Mu", "Sigma", "Skew", "Shape", "Shape(GIG)", "Realized")
+							y = as.data.frame(cbind(ret, sig, skw, shp, shpgig, fp, rlz))
+							stx = paste("Prob[State=",1:ncol(fp),"]",sep="")
+							rownames(y) = tail(as.character(index[rollind[[i]]]), out.sample[i])						
+							colnames(y) = c("Mu", "Sigma", "Skew", "Shape", "Shape(GIG)", stx, "Realized")
 							if(keep.coef) cf = fit@fit$robust.matcoef else cf = NA
 							ans = list(y = y, cf = cf, converge = TRUE, loglik = likelihood(fit))
 						}
@@ -417,26 +458,33 @@
 			tmp = lapply(as.list(noncidx), FUN = function(i){
 						if(mex) spec@model$modeldata$mexdata = mexdata[rollind[[i]],,drop=FALSE]
 						if(vex) spec@model$modeldata$vexdata = vexdata[rollind[[i]],,drop=FALSE]
-						fit = try(ugarchfit(spec, xts(data[rollind[[i]]], index[rollind[[i]]]), out.sample = out.sample[i], 
-										solver=solver, solver.control = solver.control, 
-										fit.control = fit.control), silent=TRUE)
+						if(sxex) spec@model$modeldata$s = sxdata[rollind[[i]],,drop=FALSE]
+						if(fex) spec@model$fixed.prob = fprobs[rollind[[i]],,drop=FALSE]
+						fit = try(starfit(spec, xts::xts(data[rollind[[i]]], index[rollind[[i]]]), out.sample = out.sample[i], 
+										solver = solver, solver.control = solver.control, 
+										fit.control = fit.control, n = n), silent=TRUE)
 						if(inherits(fit, 'try-error') || convergence(fit)!=0 || is.null(fit@fit$cvar)){
 							ans = list(y = NA, cf = NA, converge = FALSE, loglik = NA)
 						} else{
 							if(mex) fmex = tail(mexdata[rollind[[i]],,drop=FALSE], out.sample[i]) else fmex = NULL
 							if(vex) fvex = tail(vexdata[rollind[[i]],,drop=FALSE], out.sample[i]) else fvex = NULL
-							f = ugarchforecast(fit, n.ahead = 1, n.roll = out.sample[i]-1, 
-									external.forecasts = list(mregfor = fmex, vregfor = fvex))
-							sig = as.numeric( sigma(f) )
+							if(sxex) fxex = tail(sxdata[rollind[[i]],,drop=FALSE], out.sample[i]) else sxex = NULL
+							if(fex) ffex = tail(fprobs[rollind[[i]],,drop=FALSE], out.sample[i]) else ffex = NULL
+							f = starforecast(fit, n.ahead = 1, n.roll = out.sample[i]-1, 
+									external.forecasts = list(xregfor = fmex, vregfor = fvex, sfor = fsxex,
+											probfor = ffex))
 							ret = as.numeric( fitted(f) )
+							if(spec@model$modelinc[27]==0) sig = as.numeric( sigma(f) ) else sig = rep(coef(fit)["sigma"], length(ret))
 							if(shaped) shp = rep(coef(fit)["shape"], out.sample[i]) else shp = rep(0, out.sample[i])
 							if(skewed) skw = rep(coef(fit)["skew"], out.sample[i]) else skw = rep(0, out.sample[i])
 							if(ghyp) shpgig = rep(coef(fit)["ghlambda"], out.sample[i]) else shpgig = rep(0, out.sample[i])
+							if(!fex) fp = coredata(states(f)) else fp = coredata(ffex)
 							rlz = tail(data[rollind[[i]]], out.sample[i])
 							# use xts for indexing the forecasts
-							y = as.data.frame(cbind(ret, sig, skw, shp, shpgig, rlz))
-							rownames(y) = tail(as.character(index[rollind[[i]]]), out.sample[i])
-							colnames(y) = c("Mu", "Sigma", "Skew", "Shape", "Shape(GIG)", "Realized")
+							y = as.data.frame(cbind(ret, sig, skw, shp, shpgig, fp, rlz))
+							stx = paste("Prob[State=",1:ncol(fp),"]",sep="")
+							rownames(y) = tail(as.character(index[rollind[[i]]]), out.sample[i])						
+							colnames(y) = c("Mu", "Sigma", "Skew", "Shape", "Shape(GIG)", stx, "Realized")
 							if(keep.coef) cf = fit@fit$robust.matcoef else cf = NA
 							ans = list(y = y, cf = cf, converge = TRUE, loglik = likelihood(fit))
 						}
@@ -471,7 +519,7 @@
 			forecast = forecast
 			toc = Sys.time()-tic
 			model$elapsed = toc
-			ans = new("uGARCHroll",
+			ans = new("STARroll",
 					model = model,
 					forecast = forecast)
 			return( ans )			
@@ -525,7 +573,7 @@
 		}
 		toc = Sys.time()-tic
 		model$elapsed = toc
-		ans = new("uGARCHroll",
+		ans = new("STARroll",
 				model = model,
 				forecast = forecast)
 	} else{
