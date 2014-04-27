@@ -16,7 +16,7 @@
 #################################################################################
 
 # McLeod and Li Test of Heteroscedasticity:
-# asymptotically chisquared (m ��������� p ��������� q) distribution, assuming that 
+# asymptotically chisquared distribution, assuming that 
 # lags/n is small and lags is moderately large
 
 mclitest = function(x, lag.max = 10, p = 0, q = 0)
@@ -64,4 +64,77 @@ bgstartest = function(object, method = "Chisq", lag.max = 10)
 			data.name = "STARfit object", coeffficients = NULL)
 	class(test)<-"htest"
 	return(test)
+}
+
+
+# LM linearity testing against 2 regime STAR
+#
+#   Performs an 3rd order Taylor expansion LM test
+#
+#   str: an nlar.struct object
+#   rob
+#   sig
+linearityTest.star <- function(str, thVar, externThVar=FALSE,
+		rob=FALSE, sig=0.05, trace=TRUE, ...)
+{
+	n.used <- NROW(str$xx);  # The number of lagged samples
+	
+	# Build the regressand vector
+	y_t <- str$yy;
+	
+	# Regressors under the null
+	xH0 <- cbind(1, str$xx)
+	
+	# Get the transition variable
+	s_t <- thVar
+	
+	# Linear Model (null hypothesis)
+	linearModel <- lm(y_t ~ . , data=data.frame(xH0))
+	
+	u_t <- linearModel$residuals;
+	SSE0 <- sum(u_t^2)
+	
+	# Regressors under the alternative
+	if (externThVar) {
+#    if (rob) {} else {
+		tmp <- rep(s_t, NCOL(str$xx) + 1)
+		dim(tmp) <- c(length(s_t), NCOL(str$xx) + 1)
+		xH1 <- cbind(cbind(1, str$xx) * tmp, cbind(1, str$xx) * (tmp^2),
+				cbind(1, str$xx) * (tmp^3))
+	} else {
+#    if (rob) {} else {
+		tmp <- rep(s_t, NCOL(str$xx))
+		dim(tmp) <- c(length(s_t), NCOL(str$xx))
+		xH1 <- cbind(str$xx * tmp, str$xx * (tmp^2), str$xx * (tmp^3))
+	}
+	
+	# Standarize the regressors
+	Z <- cbind(xH0, xH1);
+	nZ <- NCOL(Z);
+	sdZ <- apply(Z,2,sd)
+	dim(sdZ) <- c(1, nZ)
+	sdZ <- kronecker(matrix(1,n.used,1), sdZ) # repeat sdZ n.used rows
+	Z[,2:nZ] <- Z[,2:nZ] / sdZ[,2:nZ]
+	
+	# Nonlinear model (alternative hypothesis)
+	nonlinearModel <- lm(u_t ~ ., data=data.frame(Z));
+	e_t <- nonlinearModel$residuals;
+	SSE1 <- sum(e_t^2)
+	
+	# Compute the test statistic
+	n <- NCOL(xH0);
+	m <- NCOL(xH1);
+	
+	F = ((SSE0 - SSE1) / m) / (SSE1 / (n.used - m - n));
+	
+	# Look up the statistic in the table, get the p-value
+	pValue <- pf(F, m, n.used - m - n, lower.tail = FALSE);
+	
+	if (pValue >= sig) {
+		return(list(isLinear = TRUE, pValue = pValue));
+	}
+	else {
+		return(list(isLinear = FALSE, pValue = pValue));
+	}
+	
 }

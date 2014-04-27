@@ -228,7 +228,7 @@
 				cluster = cluster)
 		sol = solution$sol
 		hess = solution$hess
-		timer = Sys.time()-tic
+		timer = Sys.time()-tic		
 		if(!is.null(sol$pars)){
 			ipars[estidx, 1] = sol$pars
 			if(modelinc[47]>0 && modelinc[28]==0){
