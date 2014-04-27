@@ -49,7 +49,7 @@
 		chk = all.equal(index(data), index(model$fixed.prob))
 		if(!is.logical(chk) | chk == FALSE){
 			print(paste("\n",chk,sep=""))
-			stop("\nstarroll-->error: data and fixed.probs indices do not match\n")
+			stop("\nrollstar-->error: data and fixed.probs indices do not match\n")
 		}
 		fprobs = model$fixed.prob
 		fex = TRUE
@@ -61,7 +61,7 @@
 		chk = all.equal(index(data), index(model$modeldata$mexdata))
 		if(!is.logical(chk) | chk == FALSE){
 			print(paste("\n",chk,sep=""))
-			stop("\nstarroll-->error: data and external.regressor (mean) indices do not match\n")
+			stop("\nrollstar-->error: data and external.regressor (mean) indices do not match\n")
 		}
 		mexdata = model$modeldata$mexdata
 		mex = TRUE
@@ -73,7 +73,7 @@
 		chk = all.equal(index(data), index(model$modeldata$s))
 		if(!is.logical(chk) | chk == FALSE){
 			print(paste("\n",chk,sep=""))
-			stop("\nstarroll-->error: data and 's' probability dynamics regressor indices do not match\n")
+			stop("\nrollstar-->error: data and 's' probability dynamics regressor indices do not match\n")
 		}
 		sxdata = model$modeldata$s
 		sxex = TRUE
@@ -85,7 +85,7 @@
 		chk = all.equal(index(data), index(model$modeldata$vexdata))
 		if(!is.logical(chk) | chk == FALSE){
 			print(paste("\n",chk,sep=""))
-			stop("\nstarroll-->error: data and external.regressor (variance) indices do not match\n")
+			stop("\nrollstar-->error: data and external.regressor (variance) indices do not match\n")
 		}
 		vexdata = model$modeldata$vexdata
 		vex = TRUE
@@ -93,14 +93,14 @@
 		vexdata = NULL
 		vex = FALSE
 	}
-	if(n.ahead>1) stop("\nstarroll:--> n.ahead>1 not supported...try again.")
+	if(n.ahead>1) stop("\nrollstar:--> n.ahead>1 not supported...try again.")
 	if(is.null(n.start)){
-		if(is.null(forecast.length)) stop("\nstarroll:--> forecast.length amd n.start are both NULL....try again.")
+		if(is.null(forecast.length)) stop("\nrollstar:--> forecast.length amd n.start are both NULL....try again.")
 		n.start = T - forecast.length
 	} else{
 		forecast.length = T - n.start
 	}
-	if(T<=n.start) stop("\nstarroll:--> start cannot be greater than length of data")
+	if(T<=n.start) stop("\nrollstar:--> start cannot be greater than length of data")
 	# the ending points of the estimation window
 	s = seq(n.start+refit.every, T, by = refit.every)
 	m = length(s)
@@ -116,7 +116,7 @@
 		rollind = lapply(1:m, FUN = function(i) 1:s[i])
 	} else{
 		if(!is.null(window.size)){
-			if(window.size<100) stop("\nstarroll:--> window size must be greater than 100.")
+			if(window.size<100) stop("\nrollstar:--> window size must be greater than 100.")
 			rollind = lapply(1:m, FUN = function(i) max(1, (s[i]-window.size-out.sample[i])):s[i])
 		} else{
 			rollind = lapply(1:m, FUN = function(i) (1+(i-1)*refit.every):s[i])
@@ -327,7 +327,7 @@
 			chk = all.equal(index, index(model$fixed.prob))
 			if(!is.logical(chk) | chk == FALSE){
 				print(paste("\n",chk,sep=""))
-				stop("\nstarroll-->error: data and fixed.probs indices do not match\n")
+				stop("\nrollstar-->error: data and fixed.probs indices do not match\n")
 			}
 			fprobs = model$fixed.prob
 			fex = TRUE
@@ -339,7 +339,7 @@
 			chk = all.equal(index, index(model$modeldata$mexdata))
 			if(!is.logical(chk) | chk == FALSE){
 				print(paste("\n",chk,sep=""))
-				stop("\nstarroll-->error: data and external.regressor (mean) indices do not match\n")
+				stop("\nrollstar-->error: data and external.regressor (mean) indices do not match\n")
 			}
 			mexdata = model$modeldata$mexdata
 			mex = TRUE
@@ -351,7 +351,7 @@
 			chk = all.equal(index, index(model$modeldata$s))
 			if(!is.logical(chk) | chk == FALSE){
 				print(paste("\n",chk,sep=""))
-				stop("\nstarroll-->error: data and 's' probability dynamics regressor indices do not match\n")
+				stop("\nrollstar-->error: data and 's' probability dynamics regressor indices do not match\n")
 			}
 			sxdata = model$modeldata$s
 			sxex = TRUE
@@ -363,7 +363,7 @@
 			chk = all.equal(index, index(model$modeldata$vexdata))
 			if(!is.logical(chk) | chk == FALSE){
 				print(paste("\n",chk,sep=""))
-				stop("\nstarroll-->error: data and external.regressor (variance) indices do not match\n")
+				stop("\nrollstar-->error: data and external.regressor (variance) indices do not match\n")
 			}
 			vexdata = model$modeldata$vexdata
 			vex = TRUE
@@ -377,12 +377,12 @@
 		refit.every = model$refit.every
 		refit.window = model$refit.window
 		window.size = model$window.size
-		if(n.ahead>1) stop("\nstarroll:--> n.ahead>1 not supported...try again.")
+		if(n.ahead>1) stop("\nrollstar:--> n.ahead>1 not supported...try again.")
 		if(is.null(n.start)){
-			if(is.null(forecast.length)) stop("\nstarroll:--> forecast.length amd n.start are both NULL....try again.")
+			if(is.null(forecast.length)) stop("\nrollstar:--> forecast.length amd n.start are both NULL....try again.")
 			n.start = T - forecast.length
 		}
-		if(T<=n.start) stop("\nstarroll:--> start cannot be greater than length of data")
+		if(T<=n.start) stop("\nrollstar:--> start cannot be greater than length of data")
 		# the ending points of the estimation window
 		s = seq(n.start+refit.every, T, by = refit.every)
 		m = length(s)
@@ -398,7 +398,7 @@
 			rollind = lapply(1:m, FUN = function(i) 1:s[i])
 		} else{
 			if(!is.null(window.size)){
-				if(window.size<100) stop("\nugarchroll:--> window size must be greater than 100.")
+				if(window.size<100) stop("\nrollstar:--> window size must be greater than 100.")
 				rollind = lapply(1:m, FUN = function(i) max(1, (s[i]-window.size-out.sample[i])):s[i])
 			} else{
 				rollind = lapply(1:m, FUN = function(i) (1+(i-1)*refit.every):s[i])
