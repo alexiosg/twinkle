@@ -138,3 +138,19 @@ linearityTest.star <- function(str, thVar, externThVar=FALSE,
 	}
 	
 }
+
+# GIRF\left(k,\delta,\Omega_{t-1}\right) = E\left[y_{t+k}\left|{\varepsilon_t = \delta,\Omega_{t-1} \right.}\right] - E\left[y_{t+k}\left|{\Omega_{t-1}\right.}\right]
+# k=0,1,\ldots,
+# shock (delta) = standardized shock
+# start (k)
+# end (simulation periods after shock)
+# sampling (type of simulation)
+# ssim = list of matrices (length = end-start) for the "s" variables
+star.girf = function(object, shock = 1, start=1, end = start+10, sampling = c("parametric","empirical","kernel","spd"), ssim = NULL)
+{
+	# choose the shock (assuming independence from other variables)
+	# simulate based on shock
+	for(i in 1:start){
+		
+	}
+}

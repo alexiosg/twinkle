@@ -5,8 +5,8 @@
 \description{
 The twinkle package provides an S4 framework for estimating and working with 
 logistic smooth transition ARMAX models with a maximum of 4 states. Models can
-be specified via the \code{link{starspec}} method which returns a 
-\code{\linkS4{STARspec}} object which in turn can be passed to the estimation
+be specified via the \code{\link{starspec}} method which returns a 
+\code{\linkS4class{STARspec}} object which in turn can be passed to the estimation
 method \code{link{starfit}}, filter method \code{\link{starfilter}} or path 
 simulation method \code{\link{starpath}}. The estimated object of class 
 \code{linkS4{STARfit}} can be passed to the forecast method 
@@ -28,27 +28,24 @@ methodology implemented.
 \tabular{ll}{
 Package: \tab twinkle\cr
 Type: \tab Package\cr
-Title: \tab Smooth Transition ARMAX models\cr
-Version: \tab 1.0\cr
-Date: \tab 2014-03-13\cr
-Author: \tab Alexios Ghalanos <alexios@4dscape.com>\cr
-Maintainer: \tab Alexios Ghalanos <alexios@4dscape.com>\cr
-Depends: \tab R (>= 2.10), methods\cr
-LinkingTo: \tab Rcpp, RcppArmadillo\cr\cr
-Imports: \tab Rsolnp, nloptr, ks, numDeriv, spd, xts, zoo, chron, SkewHyperbolic\cr
-Description: \tab A complete modelling environment for Smooth Transition ARMAX Models.\cr
+Title: \tab Dynamic Smooth Transition AutoRegressive Models\cr
+Version: \tab 0.9-1\cr
+Date: \tab 2014-03-30\cr
+Author: \tab alexios ghalanos <alexios@4dscape.com>\cr
+Maintainer: \tab alexios ghalanos <alexios@4dscape.com>\cr
+Description: \tab Smooth Transition ARMAX models and extensions\cr
+Depends: \tab R (>= 2.10), methods, rugarch\cr
+Imports: \tab numDeriv, ks, KernSmooth, Rsolnp, lattice, parallel, zoo, xts, parma, RcppDE, SkewHyperbolic\cr
 LazyLoad: \tab yes\cr
-URL: \tab http://www.unstarched.net, https://bitbucket.org/alexiosg/twinkle/\cr
 License: \tab GPL-3\cr}
 }
 \section{How to cite this package}{
   Whenever using this package, please cite as\cr
-
  \preformatted{@Manual{Ghalanos_2014,
  author       = {Alexios Ghalanos},
- title        = {{twinkle}: Smooth Transition ARMAX Models.},
+ title        = {{twinkle}: Smooth Transition ARMAX models and extensions.},
  year         = {2014},
- note         = {R package version 1.0-0.},}}
+ note         = {R package version 0.9-1.},}}
 \emph{}
 }
 \section{License}{

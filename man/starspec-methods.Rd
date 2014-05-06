@@ -19,8 +19,8 @@ start.pars = list(), fixed.pars = list(), fixed.prob = NULL, ...)
 }
 \arguments{
 \item{mean.model}{
-List containing the mean model specification:\cr
-\code{states} The number of states (1-4) to estimate.
+List containing the conditional mean specification:\cr
+\code{states} The number of states (1-4) to estimate.\cr
 \code{include.intercept} Whether to include an intercept in each state (a vector
 of length equal to the number of states).\cr
 \code{arOrder} The autoregressive order (ar) for each state (A vector
@@ -46,7 +46,7 @@ regressors to include in each state (which is passed in the estimation function)
 variable.\cr
 }
 \item{variance.model}{
-List containing the variance model specification:\cr
+List containing the conditional variance model:\cr
 \code{dynamic} Whether to use a GARCH model for the variance (i.e. time varying).\cr
 \code{model} The following models are allowed: \dQuote{sGARCH}, \dQuote{eGARCH}
 and \dQuote{gjrGARCH}.\cr
