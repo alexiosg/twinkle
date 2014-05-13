@@ -21,8 +21,8 @@
 starspec = function(
 		mean.model = list(states = 2, include.intercept = c(1,1), arOrder = c(1,1), 
 				maOrder = c(0,0), matype = "linear", statevar = c("y","s"), s = NULL, 
-				ylags = 1, xreg = NULL, statear = FALSE, yfun = NULL, 
-				transform = "log"), 
+				ylags = 1, statear = FALSE, yfun = NULL, xreg = NULL,
+				transform = "logis"), 
 		variance.model = list(dynamic = FALSE, model = "sGARCH", 
 				garchOrder = c(1, 1), submodel = NULL, vreg = NULL,
 				variance.targeting = FALSE), 
@@ -55,12 +55,12 @@ starspec = function(
 # modelinc[47] garchmodel (1=sGARCH, 2=gjrGARCH, 3=eGARCH, 4=mixture)
 # if(modelinc[47]==0) then NOT dynamic
 # modelinc[48] AR type (1: \phi*(y_t-\mu-t), 0: \phi*(y_t) )
-# modelinc[49] = lag type (1 = log, 2 = exp)
+# modelinc[49] = lag type (1 = logis, 2 = exp)
 .xstarspec = function( 
 		mean.model = list(states = 2, include.intercept = c(1,1), arOrder = c(1,1), 
 				maOrder = c(0,0), matype = "linear", statevar = c("y","s"), s = NULL, 
-				ylags = 1, xreg = NULL, statear = FALSE, yfun = NULL, 
-				transform = "log"), 
+				ylags = 1, statear = FALSE, yfun = NULL, xreg = NULL, 
+				transform = "logis"), 
 		variance.model = list(dynamic = FALSE, model = "sGARCH", 
 				garchOrder = c(1, 1), submodel = NULL, vreg = NULL,
 				variance.targeting = FALSE), 
@@ -1848,6 +1848,13 @@ setMethod("sigma", signature(object = "STARforecast"), .starsigma)
 setMethod("as.data.frame", signature(x = "STARroll"), .starrolldf)
 
 #------------------------------------------------------------------------------------
+# resume rollstar
+#------------------------------------------------------------------------------------
+
+setMethod("resume", signature(object = "STARroll"),  definition = .resumerollstar)
+
+
+#------------------------------------------------------------------------------------
 # quantile
 #------------------------------------------------------------------------------------
 .starquantile = function(x, probs=c(0.01, 0.05))
@@ -1995,10 +2002,8 @@ setMethod("show",
 			cat(paste("\ndistribution : ", dist, sep = ""))
 			if(convergence(object)==0){
 				cat("\n\n")
-				cat("\nOptimal Parameters")
+				cat("\nOptimal Parameters (Robust Standard Errors)")
 				cat(paste("\n------------------------------------\n",sep=""))
-				print(round(object@fit$matcoef,6), digits = 5)
-				cat("\nRobust Standard Errors:\n")
 				print(round(object@fit$robust.matcoef,6), digits = 5)
 				cat("\nLogLikelihood :", likelihood(object), "\n")
 				itestm = infocriteria(object)

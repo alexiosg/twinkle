@@ -388,7 +388,7 @@ starfmix = function(arglist)
 			arglist$probs[N+j,] = arglist$pxfi[N+j,]
 		} else{
 			if(modelinc[45]==1) ytmp = arglist$yfun(as.numeric(arglist$y[1:(N+j-1)])) else ytmp = as.numeric(arglist$y[1:(N+j-1)]) 
-			arglist$XL = build.lagmatrix(modelinc, s = arglist$sxfi[1:(N+j),], y = c(ytmp, NA), arglist$lags)
+			arglist$XL = build.lagmatrix(modelinc, s = arglist$sxfi[1:(N+j),], y = c(ytmp, NA), arglist$ylags)
 			ptmp = dstar2f(arglist)
 			arglist$probs = ptmp$probs
 			arglist$pmu = ptmp$pmu

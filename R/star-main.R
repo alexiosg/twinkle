@@ -287,7 +287,7 @@
 
 
 
-.starfitx = function(spec, data, out.sample = 0, solver.control = lis(),
+.starfitx = function(spec, data, out.sample = 0, solver.control = list(),
 		fit.control = list(stationarity = 0, fixed.se = 0, rec.init = 'all'), n = 10, 
 		only.start = FALSE, usepars=FALSE, transform.result = TRUE, ...)
 {

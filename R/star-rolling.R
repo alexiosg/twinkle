@@ -44,7 +44,7 @@
 	period = xdata$period
 	T = NROW(data)
 	modelinc = spec@model$modelinc
-	
+	model = spec@model
 	if(modelinc[44]==1){
 		chk = all.equal(index(data), index(model$fixed.prob))
 		if(!is.logical(chk) | chk == FALSE){
@@ -53,7 +53,7 @@
 		}
 		fprobs = model$fixed.prob
 		fex = TRUE
-	} else{s
+	} else{
 		fprobs = NULL
 		fex = FALSE
 	}
@@ -130,6 +130,7 @@
 	
 	if( !is.null(cluster) ){
 		clusterEvalQ(cl = cluster, library(twinkle))
+		clusterEvalQ(cl = cluster, library(xts))
 		clusterExport(cluster, c("data", "index", "s","refit.every", 
 						"keep.coef", "shaped", "skewed", "ghyp", 
 						"rollind", "spec", "out.sample", "mex", "vex", "sxex", "fex",
@@ -144,7 +145,7 @@
 					if(vex) spec@model$modeldata$vexdata = vexdata[rollind[[i]],,drop=FALSE]
 					if(sxex) spec@model$modeldata$s = sxdata[rollind[[i]],,drop=FALSE]
 					if(fex) spec@model$fixed.prob = fprobs[rollind[[i]],,drop=FALSE]
-					fit = try(starfit(spec, xts::xts(data[rollind[[i]]], index[rollind[[i]]]), out.sample = out.sample[i], 
+					fit = try(starfit(spec, xts(data[rollind[[i]]], index[rollind[[i]]]), out.sample = out.sample[i], 
 									solver = solver, solver.control = solver.control, 
 									fit.control = fit.control, n = n), silent=TRUE)
 					# 3 cases: General Error, Failure to Converge, Failure to invert Hessian (bad solution)
@@ -159,7 +160,7 @@
 								external.forecasts = list(xregfor = fmex, vregfor = fvex, sfor = fsxex,
 										probfor = ffex))
 						ret = as.numeric( fitted(f) )
-						if(spec@model$modelinc[27]==0) sig = as.numeric( sigma(f) ) else sig = rep(coef(fit)["sigma"], length(ret))
+						if(spec@model$modelinc[47]>0) sig = as.numeric( sigma(f) ) else sig = rep(coef(fit)["sigma"], length(ret))
 						if(shaped) shp = rep(coef(fit)["shape"], out.sample[i]) else shp = rep(0, out.sample[i])
 						if(skewed) skw = rep(coef(fit)["skew"], out.sample[i]) else skw = rep(0, out.sample[i])
 						if(ghyp) shpgig = rep(coef(fit)["ghlambda"], out.sample[i]) else shpgig = rep(0, out.sample[i])
@@ -188,13 +189,13 @@
 					} else{
 						if(mex) fmex = tail(mexdata[rollind[[i]],,drop=FALSE], out.sample[i]) else fmex = NULL
 						if(vex) fvex = tail(vexdata[rollind[[i]],,drop=FALSE], out.sample[i]) else fvex = NULL
-						if(sxex) fxex = tail(sxdata[rollind[[i]],,drop=FALSE], out.sample[i]) else sxex = NULL
+						if(sxex) fsxex = tail(sxdata[rollind[[i]],,drop=FALSE], out.sample[i]) else fsxex = NULL
 						if(fex) ffex = tail(fprobs[rollind[[i]],,drop=FALSE], out.sample[i]) else ffex = NULL
 						f = starforecast(fit, n.ahead = 1, n.roll = out.sample[i]-1, 
 								external.forecasts = list(xregfor = fmex, vregfor = fvex, sfor = fsxex,
 										probfor = ffex))
 						ret = as.numeric( fitted(f) )
-						if(spec@model$modelinc[27]==0) sig = as.numeric( sigma(f) ) else sig = rep(coef(fit)["sigma"], length(ret))
+						if(spec@model$modelinc[47]>0) sig = as.numeric( sigma(f) ) else sig = rep(coef(fit)["sigma"], length(ret))
 						if(shaped) shp = rep(coef(fit)["shape"], out.sample[i]) else shp = rep(0, out.sample[i])
 						if(skewed) skw = rep(coef(fit)["skew"], out.sample[i]) else skw = rep(0, out.sample[i])
 						if(ghyp) shpgig = rep(coef(fit)["ghlambda"], out.sample[i]) else shpgig = rep(0, out.sample[i])
@@ -331,7 +332,7 @@
 			}
 			fprobs = model$fixed.prob
 			fex = TRUE
-		} else{s
+		} else{
 			fprobs = NULL
 			fex = FALSE
 		}
@@ -411,6 +412,7 @@
 		if(any(distribution==c("ghyp"))) ghyp = TRUE else ghyp = FALSE
 		if( !is.null(cluster) ){
 			clusterEvalQ(cl = cluster, library(twinkle))
+			clusterEvalQ(cl = cluster, library(xts))
 			clusterExport(cluster, c("data", "index","s","refit.every",
 							"keep.coef", "shaped", "skewed", "ghyp", 
 							"rollind", "spec", "out.sample", "mex", "vex", "sxex", "fex",
@@ -424,7 +426,7 @@
 						if(vex) spec@model$modeldata$vexdata = vexdata[rollind[[i]],,drop=FALSE]
 						if(sxex) spec@model$modeldata$s = sxdata[rollind[[i]],,drop=FALSE]
 						if(fex) spec@model$fixed.prob = fprobs[rollind[[i]],,drop=FALSE]
-						fit = try(starfit(spec, xts::xts(data[rollind[[i]]], index[rollind[[i]]]), out.sample = out.sample[i], 
+						fit = try(starfit(spec, xts(data[rollind[[i]]], index[rollind[[i]]]), out.sample = out.sample[i], 
 										solver = solver, solver.control = solver.control, 
 										fit.control = fit.control, n = n), silent=TRUE)
 						# 3 cases: General Error, Failure to Converge, Failure to invert Hessian (bad solution)
@@ -439,7 +441,7 @@
 									external.forecasts = list(xregfor = fmex, vregfor = fvex, sfor = fsxex,
 											probfor = ffex))
 							ret = as.numeric( fitted(f) )
-							if(spec@model$modelinc[27]==0) sig = as.numeric( sigma(f) ) else sig = rep(coef(fit)["sigma"], length(ret))
+							if(spec@model$modelinc[47]>0) sig = as.numeric( sigma(f) ) else sig = rep(coef(fit)["sigma"], length(ret))
 							if(shaped) shp = rep(coef(fit)["shape"], out.sample[i]) else shp = rep(0, out.sample[i])
 							if(skewed) skw = rep(coef(fit)["skew"], out.sample[i]) else skw = rep(0, out.sample[i])
 							if(ghyp) shpgig = rep(coef(fit)["ghlambda"], out.sample[i]) else shpgig = rep(0, out.sample[i])
@@ -468,13 +470,13 @@
 						} else{
 							if(mex) fmex = tail(mexdata[rollind[[i]],,drop=FALSE], out.sample[i]) else fmex = NULL
 							if(vex) fvex = tail(vexdata[rollind[[i]],,drop=FALSE], out.sample[i]) else fvex = NULL
-							if(sxex) fxex = tail(sxdata[rollind[[i]],,drop=FALSE], out.sample[i]) else sxex = NULL
+							if(sxex) fsxex = tail(sxdata[rollind[[i]],,drop=FALSE], out.sample[i]) else fsxex = NULL
 							if(fex) ffex = tail(fprobs[rollind[[i]],,drop=FALSE], out.sample[i]) else ffex = NULL
 							f = starforecast(fit, n.ahead = 1, n.roll = out.sample[i]-1, 
 									external.forecasts = list(xregfor = fmex, vregfor = fvex, sfor = fsxex,
 											probfor = ffex))
 							ret = as.numeric( fitted(f) )
-							if(spec@model$modelinc[27]==0) sig = as.numeric( sigma(f) ) else sig = rep(coef(fit)["sigma"], length(ret))
+							if(spec@model$modelinc[47]>0) sig = as.numeric( sigma(f) ) else sig = rep(coef(fit)["sigma"], length(ret))
 							if(shaped) shp = rep(coef(fit)["shape"], out.sample[i]) else shp = rep(0, out.sample[i])
 							if(skewed) skw = rep(coef(fit)["skew"], out.sample[i]) else skw = rep(0, out.sample[i])
 							if(ghyp) shpgig = rep(coef(fit)["ghlambda"], out.sample[i]) else shpgig = rep(0, out.sample[i])

@@ -11,7 +11,7 @@ Method for creating a STARX specification object prior to estimation.
 starspec(mean.model = list(states = 2, include.intercept = c(1,1), 
 arOrder = c(1,1), maOrder = c(0,0), matype = "linear", 
 statevar = c("y","s"), s = NULL, ylags=1, statear = FALSE, 
-xreg = NULL, yfun = NULL, transform = "log"), 
+yfun = NULL, xreg = NULL, transform = "logis"), 
 variance.model = list(dynamic = FALSE, model = "sGARCH", 
 garchOrder = c(1, 1), submodel = NULL, vreg = NULL, 
 variance.targeting = FALSE), distribution.model = "norm", 

@@ -96,40 +96,47 @@ collaborated on the new representation and research publication in this area.
 Consider the standard representation of a 2-state STAR model (adapted from
 \cite{Dijk1999})
 \begin{equation}\label{eq:star_original}
-{y_t} = {{\phi '}_1}y_t^{\left( p \right)}\left( {F\left( {{z_t};\gamma
-,\alpha ,c} \right)} \right) + {{\phi '}_2}y_t^{\left( p \right)}\left( {1 - F\left( {{z_t};\gamma ,\alpha ,c} \right)} \right) + {\varepsilon _t}
+\begin{gathered}
+  {y_t} = {{\phi '}_1}y_t^{\left( p \right)}\left( {F\left( {{z_{t - d}};\gamma ,\alpha ,c} \right)} \right) + {{\phi '}_2}y_t^{\left( p \right)}\left( {1 - F\left( {{z_{t - d}};\gamma ,\alpha ,c} \right)} \right) + {\varepsilon _t} \hfill \\
+  y_t^{\left( p \right)} = {\left( {1,\tilde y_t^{\left( p \right)}} \right)^\prime },\tilde y_t^{\left( p \right)} = {\left( {{y_{t - 1}}, \ldots ,{y_{t - p}}} \right)^\prime } \hfill \\
+  {\phi _i} = {\left( {{\phi _{i0}},{\phi _{i1}}, \ldots ,{\phi _{ip}}} \right)^\prime } \hfill \\
+  \alpha  = {\left( {{\alpha _1}, \ldots ,{\alpha _k}} \right)^\prime }\hfill \\
+  {\varepsilon _t} \sim ID\left( {0,\sigma } \right) \hfill \\
+  i = 1,2(states) \hfill \\
+\end{gathered}
 \end{equation}
-where $y_t^{\left( p \right)} = {\left( {1,\tilde y_t^{\left( p
-\right)}}\right)^\prime }$, $\tilde y_t^{\left( p \right)} = {\left(
-{{y_{t-1}},\dots,{y_{t - p}}} \right)^\prime }$,${\phi _i} = {\left( {{\phi
-_{i0}},{\phi _{i1}},\dots,{\phi _{ip}}} \right)^\prime }$, $i = 1,2$ (states)
-and $\varepsilon_t$ is a white noise zero mean error process with standard deviation
-$\sigma$. The state transition function $F\left( {{z_t};\gamma ,\alpha ,c} \right)$ 
-is a continuous function bounded on the unit interval and usually taken to be
-the logistic CDF\footnote{At present only the Logistic STAR model is
-entertained and it is not likely that the exponential STAR model will be
-considered at all.} such that:
+where $\varepsilon_t$ is a white noise zero mean error process with standard
+deviation $\sigma$. The state transition function $F\left( {{z_t-1};\gamma
+,\alpha ,c} \right)$ is a continuous function bounded on the unit interval and 
+usually taken to be the logistic CDF\footnote{At present only the Logistic STAR 
+model is entertained and it is not likely that the exponential STAR model will
+be  considered at all.} such that:
 \begin{equation}\label{eq:logistic_cdf}
-F\left( {{z_{t-d}};\gamma ,\alpha ,c} \right) = {\left( {1 + \exp \left\{ { -
-\gamma \left( {\alpha '{z_{t-d} - c} \right)} \right\}} \right)^{ - 1}},\gamma  > 0
+\begin{split}
+\text{(Logistic):} &F\left( {{z_{t-d}};\gamma ,\alpha ,c} \right) = {\left( {1 + \exp \left\{ { -
+\gamma \left( {\alpha '{z_{t-d}} - c} \right)} \right\}} \right)}^{ - 1},\gamma  > 0\\
+\text{(Exponential):}&F\left( {{z_{t-d}};\gamma ,\alpha ,c} \right) = {\left( {1 - \exp \left\{ { -
+\gamma \left( {\alpha '{z_{t-d}} - c} \right)}^2 \right\}} \right)},\gamma  > 0
+\end{split}
 \end{equation}
 where ${z_{t-d}} = {\left( {{z_{1{t-d}}},\dots,{z_{j{t-d}}}} \right)^\prime },j = 1,\dots,k$
 is a vector of $k$ observed variables which are assumed to explain the state
-transition. These can be a set of explanatory variables or the lagged values of $y_t$ in which case
-the model is called 'self-exciting'. It is also possible that the variable is
-time in which case the model can be used to identify breaks in the mean as in 
-\cite{Lin1994}, or a combination of time and other variables giving rise to the
-time varying STAR (TVSTAR) model discussed in \cite{Lundbergh2003}. As correctly 
-noted by \cite{Dijk1999}, the vector of parameters $\alpha$ needs to be
-nornalized in some way in order to achieve identification (i.e by setting
-$\alpha_1$=1). The parameter $\gamma$ is then a type of scaling factor which
-determines the smoothness (or speed) of the transition, with values at the limits, 
-$\left[ {0,\infty } \right]$, representing linear and TAR type
-transitions respectively. By far the most popular test of STAR nonlinearity is described 
-in \cite{Luukkonen1988} using a Taylor series expansion around
-equation \ref{eq:logistic_cdf}, effectively testing whether $\gamma=0$ (via
-a auxilliary regression), which would in turn imply that the $\alpha$ vector is
-also zero and hence a rejection of STAR type non-linearity.
+transition with delay parameter $d$. These can be a set of explanatory variables
+or the lagged values of $y_t$ in which case the model is called 'self-exciting'.
+It is also possible that the variable is time in which case the model can be
+used to identify breaks in the mean as in \cite{Lin1994}, or a combination of
+time and other variables giving rise to the time varying STAR (TVSTAR) model 
+discussed in \cite{Lundbergh2003}. As correctly noted by \cite{Dijk1999}, the
+vector of parameters $\alpha$ needs to be nornalized in some way in order to
+achieve identification (i.e by setting $\alpha_1$=1). The parameter $\gamma$ is
+then a type of scaling factor which determines the smoothness (or speed) of the
+transition, with values at the limits, $\left[ {0,\infty } \right]$,
+representing linear and TAR type transitions respectively. By far the most
+popular test of STAR nonlinearity is described in \cite{Luukkonen1988} using a
+Taylor series expansion around equation \ref{eq:logistic_cdf},
+effectively testing whether $\gamma=0$ (via a auxilliary regression), which
+would in turn imply that the $\alpha$ vector is also zero and hence a rejection
+of STAR type non-linearity.
 However, there is really little reason for estimating $\gamma$ seperately in the
 STAR model since we can allow it to be subsumed by the vector of state 
 parameters $\left(\alpha, c \right)$. In doing so we also gain the additional
@@ -137,23 +144,34 @@ advantage of extending the type of dynamics to include autoregression as
 follows:
 \begin{equation}\label{eq:star_new}
 \begin{gathered}
-  F\left( {{z_t};\alpha ,c,\beta} \right) = {\left( {1 + \exp \left\{ -{{\pi
+  F\left( {{z_{t-d}}; \alpha , c,\beta} \right) = {\left( {1 + \exp \left\{ -{{\pi
   _t}} \right\}} \right)^{ - 1}} \hfill \\
-  {\pi _t} = \hat c + \hat \alpha '{z_{t-d}} + \beta '\pi _t^{\left( q \right)} \hfill \\
+  {\pi _t} =  c +  \alpha '{z_{t-d}} + \beta '\pi _t^{\left( q \right)} \hfill \\
   \pi _t^{\left( q \right)} = {\left( {{\pi _{t - 1}},\dots,{\pi _{t - q}}}
   \right)^\prime } \hfill \\
 \end{gathered}
 \end{equation}
 where the unconstrained state dynamics $\pi_t$ can be initialized by setting
-${\pi _0} =\frac{{\hat c + \hat \alpha 'E\left[ z \right]}}{{1 - \beta
-'{\mathbf{1}}}}$ with a stationarity constraint of $\left| {\beta
-'{\mathbf{1}}} \right| < 1$.
-It should be  clear from this representation that  $\hat c = \gamma c,\hat
-\alpha ' = \gamma {\left( {1,{\alpha _2},\dots,{\alpha _j}} \right)^\prime },j =
-1,\dots,k$ recovers the  original representation in equation
-\ref{eq:star_original}. The use of  autoregressive dynamics in the state
-equation follows related work in the  area of dynamic binary response models of 
-\cite{Kauppi2008} and \cite{Nyberg2010}.
+\begin{equation}
+\begin{gathered}
+  {\pi _0} = \frac{{c + \alpha '\bar z}}
+{{1 - \beta '{\mathbf{1}}}} \hfill \\
+  \bar z = {\left( {E\left[ {{z_1}} \right],\ldots,E\left[ {{z_k}} \right]}
+  \right)^\prime } \hfill \\
+\end{gathered}
+\end{equation}
+with a stationarity constraint of $\left| {\sum\limits_{i = 1}^q {{\beta _i}} } \right| < 1$.
+It should be  clear from this that equivalence with the standard representation
+in Equation \ref{eq:star_original} is:
+\begin{equation}
+\begin{gathered}
+   c = \gamma c \hfill \\
+   \alpha ' = \gamma {\left( {1,{\alpha _2}, \ldots ,{\alpha _j}} \right)^\prime },j = 1, \ldots ,k \hfill \\
+  \beta = 0 \hfill
+\end{gathered}
+\end{equation}
+The use of autoregressive dynamics in the state equation follows related work in
+the area of dynamic binary response models of \cite{Kauppi2008} and \cite{Nyberg2010}.
 Generally, estimation becomes quite difficult for more than one autoregressive
 parameter in the state dynamics which is why at present only a lag-1
 autoregressive state dynamics model is allowed in the package.
@@ -164,59 +182,54 @@ rise to a full STARMAX model specification:
 \begin{equation}\label{eq:starmax}
 \begin{split}
 {y_t} &= \left( {{{\phi '}_1}y_t^{\left( p \right)} + {{\xi '}_1}{x_t} + {{\psi
-'}_1}e_t^{\left( q \right)}} \right)\left( {F\left( {{z_t};\alpha ,c,\beta }
+'}_1}e_t^{\left( q \right)}} \right)\left( {F\left( {{z_{t-d}}; \alpha , c,\beta }
 \right)} \right) \\
 & + \left( {{{\phi '}_2}y_t^{\left( p \right)} + {{\xi
-'}_2}{x_t} + {{\psi '}_2}e_t^{\left( q \right)}} \right)\left( {1 - F\left( {{z_t};\alpha ,c,\beta } \right)} \right) + {\varepsilon _t}
+'}_2}{x_t} + {{\psi '}_2}e_t^{\left( q \right)}} \right)\left( {1 - F\left( {{z_{t-d}}; \alpha , c,\beta } \right)} \right) + {\varepsilon _t} \\
+\varepsilon _t^{\left( q \right)} &= {\left( {{\varepsilon _{t -1}},\dots,{\varepsilon _{t - q}}} \right)^\prime }\\
+{{\psi '}_i} &= {\left( {{\psi_{i1}},\dots,{\psi _{iq}}} \right)^\prime }\\
+{x_t} &= {\left({{x_1},\dots,{x_l}} \right)^\prime }\\
+{{\xi '}_1} &= {\left( {{\xi_{i1}},\dots,{\xi _{il}}} \right)^\prime }
 \end{split}
 \end{equation}
-where $\varepsilon _t^{\left( q \right)} = {\left( {{\varepsilon _{t -
-1}},\dots,{\varepsilon _{t - q}}} \right)^\prime },{{\psi '}_i} = {\left( {{\psi
-_{i1}},\dots,{\psi _{iq}}} \right)^\prime }$ represent the $q$ moving average
-terms and parameters per state $i$ ($i=1,2$), and ${x_t} = {\left(
-{{x_1},\dots,{x_l}} \right)^\prime },{{\xi '}_1} = {\left( {{\xi
-_{i1}},\dots,{\xi _{il}}} \right)^\prime }$ the $l$ external regressors and
-their parameters per state $i$. It is also possible that the MA term enters
-outside of the states instead of inside giving rise to a STARX with Linear MA
-terms (STARXLMA):
+It is also possible that the MA term enters outside of the states instead of
+inside giving rise to a STARX with Linear MA terms (STARXLMA):
 \begin{equation}
 {y_t} = \left( {{{\phi '}_1}y_t^{\left( p \right)} + {{\xi '}_1}{x_t}}
-\right)\left( {F\left( {{z_t};\alpha ,c,\beta } \right)} \right) + \left(
+\right)\left( {F\left( {{z_{t-d}};\alpha ,c,\beta } \right)} \right) + \left(
 {{{\phi '}_2}y_t^{\left( p \right)} + {{\xi '}_2}{x_t}} \right)\left( {1 -
-F\left( {{z_t};\alpha ,c,\beta } \right)} \right) + \psi 'e_t^{\left( q \right)}
-+{\varepsilon _t}
+F\left( {{z_{t-d}};\alpha ,c,\beta } \right)} \right) + \psi 'e_t^{\left( q
+\right)} +{\varepsilon _t}
 \end{equation}
 The STARMAX model therefore encompasses a very wide range of sub-models based on
 the type of restrictions placed in the conditional mean and state dynamics, and
 choice of switching variables in the latter.\\
 A natural question which arises from the representation is whether it is
 reasonable to assume that the conditional variance is the same in both states.
-Re-write the 2-state STARX equation as follows:
+Consider the STARMAX 2-state model:
 \begin{equation}
-{\varepsilon _t} = {y_t} - {p_t}\left( {{\mu _{1t}}} \right) - \left( {1 -
-{p_t}} \right)\left( {{\mu _{2t}}} \right)
+\begin{split}
+{y_t} &= {\color{red} \left(\phi'_1 y_t^{\left( p \right)} + \xi'_1 x_t + \psi'_1 e_t^{\left( q \right)} \right)} \left( {\color{blue} F\left( z_{t-d}; \alpha , c,\beta \right)}\right) \\
+&+ {\color{red} \left( \phi'_2 y_t^{\left( p \right)} + \xi'_2 x_t + \psi'_2 e_t^{\left( q \right)} \right)}\left(1 - {\color{blue} F\left(z_{t-d}; \alpha , c,\beta\right)} \right) + {\varepsilon_t} \\
+{\varepsilon_t} &= {y_t} - {\color{red} \left( \mu _{1t} \right)}{\color{blue} p_t} - {\color{red} \left( \mu _{2t} \right)}\left( 1 -{\color{blue} {p_t}} \right), d>0
+\end{split}
 \end{equation}
-where $\mu_{i1}$ and $\mu_{2,t}$ represent the conditional mean dynamics per
-state at time $t$ and $p_t$ the conditional probability. Add and subtract
-${p_t}{y_t}$, and re-arrange:
+Add and subtract {\color{violet}$y_t p_t $}, and re-arrange:
 \begin{equation}\label{eq:starmix}
 \begin{gathered}
-  {\varepsilon _t} =  {\color{blue}+ {p_t}{y_t}} - {p_t}\left( {{\mu _{1t}}}
-  \right) + {y_t} {\color{blue} - {p_t}{y_t}} - \left( {1 - {p_t}} \right)\left(
-  {{\mu _{2t}}} \right) \hfill \\
-  {\varepsilon _t} = {p_t}{y_t} - {p_t}\left( {{\mu _{1t}}} \right) + {y_t}\left( {1 - {p_t}} \right) - \left( {1 - {p_t}} \right)\left( {{\mu _{2t}}} \right) \hfill \\
-  {\varepsilon _t} = {p_t}\left( {{y_t} - {\mu _{1t}}} \right) + \left( {1 - {p_t}} \right)\left( {{y_t} - {\mu _{2t}}} \right) \hfill \\
-  {\varepsilon _t} = {p_t}\left( {{\varepsilon _{1,t}}} \right) + \left( {1 - {p_t}} \right)\left( {{\varepsilon _{2,t}}} \right) \hfill \\
-  {\varepsilon _{1,t}} \sim N\left( {0,\sigma _1^2} \right) \hfill, {\varepsilon
-  _{2,t}} \sim N\left( {0,\sigma _2^2} \right) \hfill \\
-  {\varepsilon _t} \sim N\left( {0,{p_t}\sigma _1^2 + \left( {1 - {p_t}}
-  \right)\sigma _2^2} \right) \hfill \\
+  {\varepsilon _t} =  {\color{violet}+ {y_t}{p_t}} - {\color{red} \left( \mu _{1t}\right)}{\color{blue} {p_t}} + {y_t} {\color{violet} - {y_t}{p_t}} - {\color{red} \left(\mu _{2t} \right)} \left(1 - {\color{blue}{p_t}} \right)\hfill \\
+  {\varepsilon _t} = {\color{violet}+{y_t}{p_t}} - {\color{red}\left( \mu _{1t} \right)}{\color{blue}{p_t}} + {y_t}\left( 1 - {\color{violet}{p_t}} \right) - {\color{red} \left( \mu _{2t} \right)}\left( 1 -{\color{blue} {p_t}} \right) \hfill \\
+  {\varepsilon _t} = {\color{red} \left( {y_t} - \mu _{1t} \right)}{\color{blue}{p_t}} + {\color{red}\left( {y_t} - \mu _{2t} \right)}\left(1 - {\color{blue}{p_t}} \right) \hfill \\
+  {\varepsilon _t} = {\color{red}\left( \varepsilon _{1,t} \right)}{\color{blue}{p_t}} +{\color{red}\left(\varepsilon _{2,t} \right)}\left(1 - {\color{blue}{p_t}} \right) \hfill \\
+ {\color{red} {\varepsilon _{1,t}}} \sim N\left( {0,\sigma _1^2} \right) \hfill {\color{red}{\varepsilon
+  _{2,t}}} \sim N\left( {0,\sigma _2^2} \right) \hfill \\
+  {\varepsilon _t} \sim N\left( 0,\sigma _1^2{\color{blue}{p_t}} +\sigma _2^2\left(1 - {\color{blue}{p_t}} \right)\right) \hfill \\
 \end{gathered}
 \end{equation}
 Thus, the model can naturally be re-formulated as a mixture of
 Normals\footnote{Or any other location-scale invariant distribution} with
-mixing probabilities derived from the state dynamics.
-This provides for a more parsimonious and clear extension than using GARCH dynamics on the mixed state
+mixing probabilities derived from the state dynamics.This provides for a more
+parsimonious and clear extension than using GARCH dynamics on the mixed state
 residuals. Alternatively, it can be thought of as the time-invariant version of
 a STARX-STGARCH model with common transition dynamics. This also provides a
 partial bridge between finite mixture and time-series autoregressive models.
@@ -225,30 +238,32 @@ partial bridge between finite mixture and time-series autoregressive models.
 \cite{Dijk1999} considered an extension of the 2-state STAR model in equation
 \ref{eq:star_original} to a 4-state models as follows:
 \begin{equation}\label{eq:mrstar_original}
-\begin{aligned}
-{y_t} &=& \left[ {{{\phi '}_1}y_t^{\left( p \right)}\left( {1 - F\left(
-{{z_t};{\gamma _1},\alpha ,c} \right)} \right) + {{\phi '}_2}y_t^{\left( p
-\right)}\left( {1 - F\left( {{z_t};{\gamma _1},\alpha ,c} \right)} \right)}
-\right]\left( {1 - F\left( {{z_t};{\gamma _2},b,d} \right)} \right)\\
-&+& \left[ {{{\phi '}_3}y_t^{\left( p \right)}\left( {1 - F\left(
-{{z_t};{\gamma _1},\alpha ,c} \right)} \right) + {{\phi '}_4}y_t^{\left( p \right)}\left( {1 -
-F\left( {{z_t};{\gamma _1},\alpha ,c} \right)} \right)} \right]F\left(
-{{z_t};{\gamma _2},b,d} \right) + {\varepsilon _t}\\
-\end{aligned}
+\begin{split}
+{y_t} &= \left[ {{{\phi '}_1}y_t^{\left( p \right)}\left( {1 - F\left( {{z_{t - d}};{\gamma _1},\alpha ,c} \right)} \right) + {{\phi '}_2}y_t^{\left( p \right)}\left( {1 - F\left( {{z_{t - d}};{\gamma _1},\alpha ,c} \right)} \right)} \right]\left( {1 - F\left( {{z_{t - d}};{\gamma _2},b,d} \right)} \right)\\
+&+\left[ {{{\phi '}_3}y_t^{\left( p \right)}\left( {1 - F\left( {{z_{t - d}};{\gamma _1},\alpha ,c} \right)} \right) + {{\phi '}_4}y_t^{\left( p \right)}\left( {1 - F\left( {{z_{t - d}};{\gamma _1},\alpha ,c} \right)} \right)} \right]F\left( {{z_{t - d}};{\gamma _2},b,d} \right) + {\varepsilon _t}\\
+\end{split}
 \end{equation}
-Alternatively, the implementation followed in this package takes a
-page out of multinomial regression and models multiple states using the
-following representation:
-\begin{equation}\label{eq:mrstar_new}
-{y_t} = \sum\limits_{i = 1}^s {\left[ {\left( {{{\phi '}_i}y_t^{\left( p \right)} + {{\xi '}_i}{x_t} + {{\psi '}_i}e_t^{\left( q \right)}} \right){F_i}\left( {{z_t};{\alpha _i},{c_i}} \right)} \right]}  + {\varepsilon _t}
-\end{equation}
-with
+This effectively models 2 unique states and one interaction state:
 \begin{equation}
 \begin{gathered}
-  {F_i}\left( {{z_t};{\alpha _i},{c_i}} \right) = \frac{{{e^{{\pi _{i.t}}}}}}
+  {\mu _1} = {{\phi '}_1}y_t^{\left( p \right)}\left( {1 - F\left( {{z_{t - d}};{\gamma _1},\alpha ,c} \right) - F\left( {{z_{t - d}};{\gamma _2},b,d} \right) + F\left( {{z_{t - d}};{\gamma _1},\alpha ,c} \right)F\left( {{z_{t - d}};{\gamma _2},b,d} \right)} \right) \hfill \\
+  {\mu _2} = {{\phi '}_2}y_t^{\left( p \right)}\left( {1 - F\left( {{z_{t - d}};{\gamma _1},\alpha ,c} \right) - F\left( {{z_{t - d}};{\gamma _2},b,d} \right) + F\left( {{z_{t - d}};{\gamma _1},\alpha ,c} \right)F\left( {{z_{t - d}};{\gamma _2},b,d} \right)} \right) \hfill \\
+  {\mu _3} = {{\phi '}_3}y_t^{\left( p \right)}\left( {F\left( {{z_{t - d}};{\gamma _2},b,d} \right) - F\left( {{z_{t - d}};{\gamma _1},\alpha ,c} \right)F\left( {{z_{t - d}};{\gamma _2},b,d} \right)} \right) \hfill \\
+  {\mu _4} = {{\phi '}_4}y_t^{\left( p \right)}\left( {F\left( {{z_{t - d}};{\gamma _2},b,d} \right) - F\left( {{z_{t - d}};{\gamma _1},\alpha ,c} \right)F\left( {{z_{t - d}};{\gamma _2},b,d} \right)} \right) \hfill \\
+\end{gathered}
+\end{equation}
+Alternatively, the implementation followed in this package takes a page out of
+multinomial regression and models multiple states using the softmax function:
+\begin{equation}\label{eq:mrstar_new}
+{y_t} = \sum\limits_{i = 1}^s {\left[ {\left( {{{\phi '}_i}y_t^{\left( p \right)} + {{\xi '}_i}{x_t} + {{\psi '}_i}e_t^{\left( q \right)}} \right){F_i}\left( {{z_{t-d}};{ \alpha _i},{ c_i},{\beta_i}} \right)} \right]}  + {\varepsilon _t}
+\end{equation}
+with s-1 distinct states modelled:
+\begin{equation}
+\begin{gathered}
+  {F_i}\left( {{z_{t-d}};{ \alpha _i},{ c_i},{\beta_i}} \right) = \frac{{{e^{{\pi _{i,t}}}}}}
 {{1 + \sum\limits_{i = 1}^{s - 1} {{e^{{\pi _{i,t}}}}} }} \hfill \\
-  {F_s}\left( {{z_t};{\alpha _i},{c_i}} \right) = \frac{1}
-{{1 + \sum\limits_{i = 1}^{s - 1} {{e^{{\pi _{i,t}}}}} }} \hfill \\ 
+  {F_s}\left( {{z_{t-d}};{ \alpha _i},{ c_i},{\beta_i}} \right) = \frac{1}
+{{1 + \sum\limits_{i = 1}^{s - 1} {{e^{{\pi _{i,t}}}}} }} \hfill \\
 \end{gathered}
 \end{equation}
 where the $s$ states are weighted to sum to unity. This appears, at least to
@@ -340,18 +355,21 @@ One benefit of using a monte-carlo or bootstrap approach is that they
 immediately give rise to the density of each point forecast thus allowing for
 the creation of interval forecasts.
 
-\section{Simulation}\label{sec:3}
-The key issue considered in the implementation of a simula
+%\section{Simulation}\label{sec:3}
+%The key issue considered in the implementation of a simula
 
-\section{Generalized Impulse Response}\label{sec:4}
+%\section{Generalized Impulse Response}\label{sec:4}
 
 \pagebreak
 \section{Software Implementation}\label{sec:5}
 \subsection{Specification}
 The entry point to defining and estimating a STARMAX model in the twinkle
 package is the starspec function:
-\begin{lstlisting}
+\begin{Schunk}
+\begin{Sinput}
 >starspec
+\end{Sinput}
+\begin{Soutput}
 function(
 mean.model = list(states=2, include.intercept=c(1,1), arOrder=c(1,1), 
 	maOrder=c(0, 0), matype="linear", statevar=c("y","s"), s=NULL, 
@@ -360,8 +378,8 @@ variance.model=list(dynamic=FALSE, model="sGARCH", garchOrder=c(1,1),
 	submodel=NULL, vreg=NULL, variance.targeting=FALSE), 
 distribution.model="norm", start.pars=list(), fixed.pars=list(), 
 fixed.prob=NULL, ...)
-}
-\end{lstlisting}
+\end{Soutput}
+\end{Schunk}
 The \textbf{mean.model} defines the equation for the conditional mean dynamics
 including the state dynamics. Upto 4 \textbf{states} are allowed, with the
 1-state option having a special implementation in that the \textbf{fixed.probs}
@@ -427,12 +445,16 @@ routines.
 \subsection{Estimation}
 Once the model has been specified, it may be estimated by maximum likelihood
 using the \code{starfit} routine:
-\begin{lstlisting}
+\begin{Schunk}
+\begin{Sinput}
 >starfit
+\end{Sinput}
+\begin{Soutput}
 (spec, data, out.sample=0, solver="optim", solver.control=list(), 
 fit.control=list(stationarity=0, fixed.se=0, rec.init="all"), 
 cluster=NULL, n=25, ...)
-\end{lstlisting}
+\end{Soutput}
+\end{Schunk}
 The \textbf{data} must be an xts object with the same time indices as any data
 already passed to the \code{STARspec} object and contain only numeric data
 without any missing values. The \textbf{out.sample} is used to indicate how many
@@ -491,10 +513,14 @@ routine with a new or augmented dataset (to that which was used to estimate the
 original parameters). In this way, new data can be filtered using existing
 parameters which is equivalent to performing rolling 1-step ahead forecasts
 (without re-estimation).
-\begin{lstlisting}
+\begin{Schunk}
+\begin{Sinput}
 >starfilter
+\end{Sinput}
+\begin{Soutput}
 (spec, data, out.sample=0, n.old=NULL, rec.init="all", ...) 
-\end{lstlisting}
+\end{Soutput}
+\end{Schunk}
 It is probably best to provide an augmented dataset for filtering since the
 model may depend on the complete history (particularly as regards use of the
 autoregressive parameter in the state dynamics), in which case the
@@ -507,13 +533,17 @@ Forecasting can be carried out either from an estimated object of class
 \code{STARspec} (in which case the \textbf{data} argument must also be
 used\footnote{Effectively, the data is filtered with the fixed parameter
 specification prior to the forecast being carried out}).
-\begin{lstlisting}
+\begin{Schunk}
+\begin{Sinput}
 >starforecast
+\end{Sinput}
+\begin{Soutput}
 function(fitORspec, data=NULL, n.ahead=1, n.roll=0, out.sample=0, 
 external.forecasts=list(xregfor=NULL, vregfor=NULL, sfor=NULL, 
 probfor=NULL), method=c("an.parametric", "an.kernel", "mc.empirical", 
 "mc.parametric", "mc.kernel"), mc.sims=NULL, ...) 
-\end{lstlisting}
+\end{Soutput}
+\end{Schunk}
 As discussed in Section \ref{sec:2}, for n-step (n>1) ahead forecasts,
 there are a number of options available based on recursive quadrature
 integration ('an') of the integral in Equation \ref{eq:hstepforecast} 
@@ -544,12 +574,16 @@ Simulation can be carried out either directly on a \code{STARfit} object using
 the \code{starsim} routine, else on a \code{STARspec} object with fixed
 parameters using the \code{starpath} method.
 
-\begin{lstlisting}
+\begin{Schunk}
+\begin{Sinput}
 >starsim
+\end{Sinput}
+\begin{Soutput}
 function(fit, n.sim=1000, n.start=0, m.sim=1, presigma=NA, prereturns=NA, 
 preresiduals=NA, rseed=NA, custom.dist=list(name=NA, distfit=NA), 
 xregsim=NULL, vregsim=NULL, ssim=NULL, probsim=NULL, ...)
-\end{lstlisting}
+\end{Soutput}
+\end{Schunk}
 The arguments follow similar convention as in related packages. In particular,
 the \textbf{ssim} argument should be a list of matrices for the
 simulated values of the external regressors (\textbf{s}) in the state dynamics,
@@ -558,28 +592,31 @@ probabilities in the case that fixed probabilties were used in the original
 specification.
 
 Similarly, the \code{starpath} routine has the following arguments:
-\begin{lstlisting}
+\begin{Schunk}
+\begin{Sinput}
 >starpath
+\end{Sinput}
+\begin{Soutput}
 function(spec, n.sim=1000, n.start=0, m.sim=1, presigma=NA, prereturns=NA, 
 preresiduals=NA, rseed=NA, custom.dist=list(name=NA, distfit=NA), 
 xregsim=NULL, vregsim=NULL, ssim=NULL, probsim=NULL, ...)
-\end{lstlisting}
+\end{Soutput}
+\end{Schunk}
 Where the \textbf{prereturns} are now required as depending on the model, so is
 \textbf{presigma} and \textbf{preresiduals}. The length of these initialization
 matrices is determined by the maximum of the conditional state, mean and
 variance dynamic lags.
 
-\section{Examples}\label{sec:6}
-In this section, a number of examples are considered in order to illustrate the
-working of the package. A detailed testing suite is available in the src
-distribution under the \textbf{inst} folder.
+%\section{Examples}\label{sec:6}
+%In this section, a number of examples are considered in order to illustrate the
+%working of the package. A detailed testing suite is available in the src
+%distribution under the \textbf{inst} folder.
 
-\subsection{The Dutch Gilder Benchmark (\cite{Franses2000})}
-The package contains the \code{forex} dataset which is an xts matrix
-consisting of the daily value of 8 currency pairs spanning the period
-31-12-1979 to 31-12-1998 from the book of \cite{Franses2000}, and originally
-sourced from the Federal Reserve Bank of New York. In Chapter 3 of their book,
-they provide a model for the Dutch Gilder weekly (Wednesday) series using a STAR
-model with switching based on the 4-week moving average of the lagged absolute
-value of this return series.
-In this
+%\subsection{The Dutch Gilder Benchmark (\cite{Franses2000})}
+%The package contains the \code{forex} dataset which is an xts matrix
+%consisting of the daily value of 8 currency pairs spanning the period
+%31-12-1979 to 31-12-1998 from the book of \cite{Franses2000}, and originally
+%sourced from the Federal Reserve Bank of New York. In Chapter 3 of their book,
+%they provide a model for the Dutch Gilder weekly (Wednesday) series using a
+% STAR model with switching based on the 4-week moving average of the lagged
+% absolute value of this return series. In this
