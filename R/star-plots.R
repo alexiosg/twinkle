@@ -83,6 +83,15 @@ plot.starfit = function(x, ...)
 
 
 ####################################################################################
+# Transition Function for z
+.transfunall = function(object)
+{
+	s = as.numeric(states(object, "u"))
+	p = as.numeric(states(object, "prob")[,1])
+	plot(s, p, type="l")
+}
+
+
 # only for 2 states
 trans2fun2d = function(object, colidx = 1, fixed.values = NULL, doplot = TRUE, ...)
 {
@@ -108,7 +117,7 @@ trans2fun2d = function(object, colidx = 1, fixed.values = NULL, doplot = TRUE, .
 	}
 	if(ncol(XL)>1){
 		if(is.null(fixed.values)){
-			meanX = apply(XL, 2, "mean")
+			meanX = apply(XL, 2, "median")
 			newX  = matrix(meanX, ncol = ncol(XL), nrow = nrow(XL), byrow=TRUE)
 			newX[,colidx] = sort(XL[,colidx])
 		} else{
@@ -124,7 +133,7 @@ trans2fun2d = function(object, colidx = 1, fixed.values = NULL, doplot = TRUE, .
 	}
 	sol = dstar2trans(object, newX, initp)
 	if(doplot){
-		if(modelinc[41]==1){
+		if(modelinc[46]==1){
 			px = paste("y['",colidx,",t-",model$modeldata$ylags[colidx],"']",sep="")
 			expr2 =  parse(text=paste("G(",paste("y['",colidx,",t-",model$modeldata$ylags[colidx],"']",sep=""),", ...)",sep=""))
 		} else{
@@ -193,7 +202,7 @@ trans2fun3d = function(object, colidx = c(1,2), fixed.values = NULL, doplot = TR
 			v = as.double(d2X), PACKAGE="twinkle"), silent=TRUE)	
 	zmat = matrix(sol$zmat,100,100,byrow=TRUE)
 	if(doplot){
-		if(modelinc[41]==1){
+		if(modelinc[46]==1){
 			px1 = paste("y['",colidx[1],",t-",model$modeldata$ylags[colidx[1]],"']",sep="")
 			px2 = paste("y['",colidx[2],",t-",model$modeldata$ylags[colidx[2]],"']",sep="")
 			expr3 =  parse(text=paste("G(",paste("y[t]",sep=""),", ...)",sep=""))			
@@ -237,7 +246,7 @@ trans3fun2d = function(object, colidx = 1, fixed.values = NULL, doplot = TRUE, .
 	}
 	if(ncol(XL)>1){
 		if(is.null(fixed.values)){
-			meanX = apply(XL, 2, "mean")
+			meanX = apply(XL, 2, "median")
 			newX  = matrix(meanX, ncol = ncol(XL), nrow = nrow(XL), byrow=TRUE)
 			newX[,colidx] = sort(XL[,colidx])
 		} else{
@@ -254,7 +263,7 @@ trans3fun2d = function(object, colidx = 1, fixed.values = NULL, doplot = TRUE, .
 	sol = dstar3trans2d(object, newX, initp)
 	if(doplot){
 		par(mfrow=c(3,1))
-		if(modelinc[41]==1){
+		if(modelinc[46]==1){
 			px1 = paste("y['",1,",",colidx,",t-",model$modeldata$ylags[colidx],"']",sep="")
 			px2 = paste("y['",2,",",colidx,",t-",model$modeldata$ylags[colidx],"']",sep="")
 			px3 = paste("y['",3,",",colidx,",t-",model$modeldata$ylags[colidx],"']",sep="")
