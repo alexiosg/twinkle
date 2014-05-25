@@ -37,25 +37,27 @@ starspec = function(
 # modelinc[5:8] state 2 (mu, phi, xi, ma)
 # modelinc[9:12] state 3 (mu, phi, xi, ma)
 # modelinc[13:16] state 3 (mu, phi, xi, ma)
-# modelinc[17] = linear MA (1 = linear, 2 = state)
-# modelinc[18:20] star (c, alpha, beta) state 1:2
-# modelinc[21:23] star (c, alpha, beta) state 3
-# modelinc[24:26] star (c, alpha, beta) state 4
-# modelinc[27] sigma (if 1 then no GARCH else GARCH)
-# modelinc[27] = sigma1 if mixture
-# modelinc[28] = sigma2 if mixture 
-# modelinc[28:37] GARCH (omega, alpha, beta, gamma, eta1, eta2, delta, lambda, vxreg, xi)
-# modelinc[38:40] Distribution (skew, shape, ghlambda)
-# modelinc[41] distribution c("norm", "snorm", "std", "sstd","ged", "sged", "nig", "ghyp", "jsu", "ghst")
-# modelinc[42] variance targeting (FALSE/TRUE)
-# modelinc[43] states (max 4)
-# modelinc[44] fixed.prob (FALSE/TRUE)
-# modelinc[45] yfun (TRUE/FALSE)
-# modelinc[46] type (1=y, 2=s)
-# modelinc[47] garchmodel (1=sGARCH, 2=gjrGARCH, 3=eGARCH, 4=mixture)
-# if(modelinc[47]==0) then NOT dynamic
-# modelinc[48] AR type (1: \phi*(y_t-\mu-t), 0: \phi*(y_t) )
-# modelinc[49] = lag type (1 = logis, 2 = exp)
+# modelinc[17] = linear MA (>0 = linear, 0 = state)
+# modelinc[18:21] star (gamma, c, alpha, beta) state 1:2
+# modelinc[22:25] star (gamma, c, alpha, beta) state 3
+# modelinc[26:29] star (gamma, c, alpha, beta) state 4
+# modelinc[30] sigma (if 1 then no GARCH else GARCH)
+# modelinc[30] = sigma1 if mixture
+# modelinc[31] = sigma2 if mixture
+# modelinc[32] = sigma3 if mixture
+# modelinc[33] = sigma4 if mixture
+# modelinc[31:40] GARCH (omega, alpha, beta, gamma, eta1, eta2, delta, lambda, vxreg, xi)
+# modelinc[41:43] Distribution (skew, shape, ghlambda)
+# modelinc[44] distribution c("norm", "snorm", "std", "sstd","ged", "sged", "nig", "ghyp", "jsu", "ghst")
+# modelinc[45] variance targeting (FALSE/TRUE)
+# modelinc[46] states (max 4)
+# modelinc[47] fixed.prob (FALSE/TRUE)
+# modelinc[48] yfun (TRUE/FALSE)
+# modelinc[49] type (1=y, 2=s)
+# modelinc[50] garchmodel (1=sGARCH, 2=gjrGARCH, 3=eGARCH, 4=mixture)
+# if(modelinc[50]==0) then NOT dynamic
+# modelinc[51] AR type (1: \phi*(y_t-\mu-t), 0: \phi*(y_t) )
+# modelinc[52] = lag type (1 = logis, 2 = exp)
 .xstarspec = function( 
 		mean.model = list(states = 2, include.intercept = c(1,1), arOrder = c(1,1), 
 				maOrder = c(0,0), matype = "linear", statevar = c("y","s"), s = NULL, 
@@ -78,7 +80,7 @@ starspec = function(
 	if(is.null(variance.model$model)) variance.model$model = "sGARCH"
 	modelinc = rep(0, 60)
 	# set the custom variance target to 0
-	modelinc[42] = 0
+	modelinc[45] = 0
 	# we allow a maximum of 4 states (in future expansion...now only 2)
 	names(modelinc) = c(
 			"s1.phi0", "s1.phi", "s1.xi", "s1.psi",
@@ -86,31 +88,31 @@ starspec = function(
 			"s3.phi0", "s3.phi", "s3.xi", "s3.psi", 
 			"s4.phi0", "s4.phi", "s4.xi", "s4.psi",
 			"psi",
-			"s1.c", "s1.alpha", "s1.beta",
-			"s2.c", "s2.alpha", "s2.beta",
-			"s3.c", "s3.alpha", "s3.beta",
+			"s1.gamma","s1.c", "s1.alpha", "s1.beta",
+			"s2.gamma","s2.c", "s2.alpha", "s2.beta",
+			"s3.gamma","s3.c", "s3.alpha", "s3.beta",
 			"sigma", "omega", "alpha", "beta", "gamma", "eta1", "eta2", 
 			"delta", "lambda", "vxreg", "xi", 
-			"skew", "shape", "ghlambda", rep("aux", 20))
+			"skew", "shape", "ghlambda", rep("aux", 17))
 	if(variance.model$dynamic && variance.model$model=="mixture"){
-		if(mean.model$states!=2) stop("\nstarspec-->error: mixture model only valid for 2 state case.\n")
+		#if(mean.model$states!=2) stop("\nstarspec-->error: mixture model only valid for 2 state case.\n")
 		names(modelinc) = c(
 				"s1.phi0", "s1.phi", "s1.xi", "s1.psi",
 				"s2.phi0", "s2.phi", "s2.xi", "s2.psi", 
 				"s3.phi0", "s3.phi", "s3.xi", "s3.psi", 
 				"s4.phi0", "s4.phi", "s4.xi", "s4.psi",
 				"psi",
-				"s1.c", "s1.alpha", "s1.beta",
-				"s2.c", "s2.alpha", "s2.beta",
-				"s3.c", "s3.alpha", "s3.beta",
-				"s1.sigma", "s2.sigma", "alpha", "beta", "gamma", "eta1", "eta2", 
+				"s1.gamma","s1.c", "s1.alpha", "s1.beta",
+				"s2.gamma","s2.c", "s2.alpha", "s2.beta",
+				"s3.gamma","s3.c", "s3.alpha", "s3.beta",
+				"s1.sigma", "s2.sigma", "s3.sigma", "s4.sigma", "gamma", "eta1", "eta2", 
 				"delta", "lambda", "vxreg", "xi", 
-				"skew", "shape", "ghlambda", rep("aux", 20))
+				"skew", "shape", "ghlambda", rep("aux", 17))
 	}
-	if(intmodel==0) modelinc[48] = 0 else modelinc[48] = 1
+	if(intmodel==0) modelinc[51] = 0 else modelinc[51] = 1
 	modeldesc = list()
 	modeldata = list()
-	modelinc[43] = min(4, max(1, as.integer(mean.model$states[1])))
+	modelinc[46] = min(4, max(1, as.integer(mean.model$states[1])))
 	if(as.integer(mean.model$states[1])>4)  warning("\nstarspec-->warning: states must be an integer between 1 and 4 (setting to 4).\n")
 	if(as.integer(mean.model$states[1])==0) warning("\nstarspec-->warning: states must be an integer between 1 and 4 (setting to 1).\n")
 	# check the option parameters specified and warn on error
@@ -140,11 +142,11 @@ starspec = function(
 	if(!any(distribution == valid.distribution)) stop("\nstarspec-->error: the cond.distribution does not appear to be a valid choice.")
 	modeldesc$distribution = distribution
 	modeldesc$distno = which(distribution == valid.distribution)
-	di = rugarch:::.DistributionBounds(distribution)
-	modelinc[38] = di$include.skew
-	modelinc[39] = di$include.shape
-	modelinc[40] = di$include.ghlambda
-	modelinc[41] = modeldesc$distno
+	di = .DistributionBounds(distribution)
+	modelinc[41] = di$include.skew
+	modelinc[42] = di$include.shape
+	modelinc[43] = di$include.ghlambda
+	modelinc[44] = modeldesc$distno
 	# variance model:
 	#---------------------------------
 	
@@ -163,47 +165,51 @@ starspec = function(
 			if(!any(modeldesc$vmodel == valid.model)) 
 				stop("\nstarspec-->error: the garch model does not appear to be a valid choice.\n", call. = FALSE)
 		}
-		modelinc[47] = which(modeldesc$vmodel==valid.model)
+		modelinc[50] = which(modeldesc$vmodel==valid.model)
 		if(modeldesc$vmodel!="mixture"){
 			modeldesc$vsubmodel = NULL
 			# depending on model include the additional parameters
 			if(is.null(variance.model$garchOrder)){
-				modelinc[29] = 1
-				modelinc[30] = 1
+				modelinc[32] = 1
+				modelinc[33] = 1
 			} else{
-				modelinc[29] = variance.model$garchOrder[1]
-				modelinc[30] = variance.model$garchOrder[2]
+				modelinc[32] = variance.model$garchOrder[1]
+				modelinc[33] = variance.model$garchOrder[2]
 			}
 			
-			if( modeldesc$vmodel == "gjrGARCH" ) modelinc[31] = modelinc[29]
-			if( modeldesc$vmodel == "eGARCH" ) modelinc[31] = modelinc[29]
+			if( modeldesc$vmodel == "gjrGARCH" ) modelinc[34] = modelinc[32]
+			if( modeldesc$vmodel == "eGARCH" ) modelinc[34] = modelinc[32]
 			
 			if(!is.null(variance.model$vreg)){
 				if(!is.xts(variance.model$vreg)) stop("\nstarspec-->error: vreg must be an xts object.\n", call. = FALSE)
 				modeldata$vexdata = variance.model$vreg
-				modelinc[36] = dim( variance.model$vreg )[2]
+				modelinc[39] = dim( variance.model$vreg )[2]
 				exn = nrow(modeldata$vexdata)
 			} else{
 				exn = NULL
 			}
 			if(is.null(variance.model$variance.targeting)){
-				modelinc[28] = 1
+				modelinc[31] = 1
 				modeldesc$variance.targeting = FALSE
 			} else{
 				if(is.logical(variance.model$variance.targeting)){
-					modelinc[28] = as.integer( 1 - variance.model$variance.targeting )
+					modelinc[31] = as.integer( 1 - variance.model$variance.targeting )
 					modeldesc$variance.targeting = variance.model$variance.targeting
 				} else{
-					modelinc[28] = 0
-					modelinc[42] = as.numeric(variance.model$variance.targeting)
+					modelinc[31] = 0
+					modelinc[45] = as.numeric(variance.model$variance.targeting)
 					modeldesc$variance.targeting = TRUE
 				}
 			}
 		} else{
-			modelinc[27:28] = 1
+			# default 2-state mixture
+			if(modelinc[46]<2) stop("\nstarspec-->error: mixture model requires at least 2 states!")
+			modelinc[30:31] = 1
+			if(modelinc[46]==3) modelinc[32]=1
+			if(modelinc[46]==4) modelinc[33]=1
 		}
 	} else{
-		modelinc[27]=1
+		modelinc[30]=1
 	}
 
 	# mean model:
@@ -212,7 +218,7 @@ starspec = function(
 		if(!is.xts(mean.model$xreg)) stop("\nstarspec-->error: xreg must be an xts object.\n", call. = FALSE)
 		xreg = mean.model$xreg
 		# check for matching indices
-		if(modelinc[36]>0){
+		if(modelinc[39]>0){
 			if(!all.equal(index(xreg), index(modeldata$vexdata))){
 				stop("\nstarspec-->error: vreg and xreg indices do not match!")
 			}
@@ -222,35 +228,34 @@ starspec = function(
 		# if not vexdata then exn is NULL and overwritten here
 		# if vexdata, then exn is the same since indices match
 		exn = nrow(modeldata$mexdata)
-		
 		ncx = ncol(xreg)
 		modelinc[3] = ncx
-		if(modelinc[43]>1) modelinc[7] = ncx
-		if(modelinc[43]>2) modelinc[11] = ncx
-		if(modelinc[43]>3) modelinc[15] = ncx
+		if(modelinc[46]>1) modelinc[7] = ncx
+		if(modelinc[46]>2) modelinc[11] = ncx
+		if(modelinc[46]>3) modelinc[15] = ncx
 	} else{
 		modeldata$mexdata = NULL
 	}
 	
 	if(is.null(mean.model$arOrder)){
-		modeldata$arOrder = rep(1, modelinc[43]) 
+		modeldata$arOrder = rep(1, modelinc[46]) 
 	} else{
-		if(length(mean.model$arOrder)==1) mean.model$arOrder = rep(mean.model$arOrder, modelinc[43])
-		modeldata$arOrder = mean.model$arOrder[1:modelinc[43]]
+		if(length(mean.model$arOrder)==1) mean.model$arOrder = rep(mean.model$arOrder, modelinc[46])
+		modeldata$arOrder = mean.model$arOrder[1:modelinc[46]]
 		if(any(is.na(modeldata$arOrder))) stop("\nstarspec-->error: arOrder length must be either NULL, 1 or equal to states.\n")
 	}
 	modelinc[2] = modeldata$arOrder[1]
-	if(modelinc[43]>1) modelinc[6] =  modeldata$arOrder[2]
-	if(modelinc[43]>2) modelinc[10] = modeldata$arOrder[3]
-	if(modelinc[43]>3) modelinc[14] = modeldata$arOrder[4]
+	if(modelinc[46]>1) modelinc[6] =  modeldata$arOrder[2]
+	if(modelinc[46]>2) modelinc[10] = modeldata$arOrder[3]
+	if(modelinc[46]>3) modelinc[14] = modeldata$arOrder[4]
 	
 	
 	if(is.null(mean.model$maOrder)){
-		modeldata$maOrder = rep(0, modelinc[43])
+		modeldata$maOrder = rep(0, modelinc[46])
 	} else{
 		if(is.null(mean.model$matype)){
 			modelinc[17] = mean.model$maOrder[1]
-			modeldata$maOrder = mean.model$maOrder[1:modelinc[43]]
+			modeldata$maOrder = mean.model$maOrder[1:modelinc[46]]
 		} else{
 			matype = match(tolower(mean.model$matype), c("linear","state"))
 			if(is.na(matype)) stop("\nstarspec-->error: matype must be either 'linear' or 'state'.\n")
@@ -258,31 +263,31 @@ starspec = function(
 				modelinc[17] = mean.model$maOrder[1]
 			} else{
 				if(length(mean.model$maOrder)==1) mean.model$maOrder = rep(mean.model$maOrder, modelinc[43])
-				if(length(mean.model$maOrder)!=modelinc[43]) stop("\nstarspec-->error: maOrder length must be either NULL, 1 or equal to states.\n")
-				modeldata$maOrder = mean.model$maOrder[1:modelinc[43]]
+				if(length(mean.model$maOrder)!=modelinc[46]) stop("\nstarspec-->error: maOrder length must be either NULL, 1 or equal to states.\n")
+				modeldata$maOrder = mean.model$maOrder[1:modelinc[46]]
 				modelinc[4] = mean.model$maOrder[1]
-				if(modelinc[43]>1) modelinc[8] = mean.model$maOrder[2]
-				if(modelinc[43]>2) modelinc[12] = mean.model$maOrder[3]
-				if(modelinc[43]>3) modelinc[16] = mean.model$maOrder[4]
+				if(modelinc[46]>1) modelinc[8] = mean.model$maOrder[2]
+				if(modelinc[46]>2) modelinc[12] = mean.model$maOrder[3]
+				if(modelinc[46]>3) modelinc[16] = mean.model$maOrder[4]
 			}
 		}
 	}
-	if(is.null(mean.model$include.intercept)) mean.model$include.intercept = rep(1,modelinc[43]) else mean.model$include.intercept = as.integer(mean.model$include.intercept)
+	if(is.null(mean.model$include.intercept)) mean.model$include.intercept = rep(1,modelinc[46]) else mean.model$include.intercept = as.integer(mean.model$include.intercept)
 	modelinc[1] = as.integer(mean.model$include.intercept[1])
-	if(modelinc[43]>1) modelinc[5] = as.integer(mean.model$include.intercept[2])
-	if(modelinc[43]>2) modelinc[9] = as.integer(mean.model$include.intercept[3])
-	if(modelinc[43]>3) modelinc[13] = as.integer(mean.model$include.intercept[4])
+	if(modelinc[46]>1) modelinc[5] = as.integer(mean.model$include.intercept[2])
+	if(modelinc[46]>2) modelinc[9] = as.integer(mean.model$include.intercept[3])
+	if(modelinc[46]>3) modelinc[13] = as.integer(mean.model$include.intercept[4])
 	
-	if(modelinc[43]>1) if(is.na(match(mean.model$statevar[1], c("y","s")))) stop("\nstarspec-->error: unrecognized choice for statevar\n")
+	if(modelinc[46]>1) if(is.na(match(mean.model$statevar[1], c("y","s")))) stop("\nstarspec-->error: unrecognized choice for statevar\n")
 	if(is.null(mean.model$statevar)){
-		modelinc[46]=1
+		modelinc[49]=1
 	} else{
-		modelinc[46]=which(mean.model$statevar[1]==c("y","s"))
+		modelinc[49]=which(mean.model$statevar[1]==c("y","s"))
 	}
-	if(modelinc[46]==2){
+	if(modelinc[49]==2){
 		if(!is.xts(mean.model$s)) stop("\nstarspec-->error: s must be an xts object (aligned to index of data)\n")
 		modeldata$s = mean.model$s
-		if(modelinc[36]>0){
+		if(modelinc[39]>0){
 			if(!all.equal(index(modeldata$s), index(modeldata$vexdata))){
 				stop("\nstarspec-->error: vreg and s indices do not match!")
 			}
@@ -294,15 +299,15 @@ starspec = function(
 		}
 		xm = ncol(modeldata$s)
 		exn = nrow(modeldata$s)
-		modelinc[19] = xm
+		modelinc[20] = xm
 	} else{
 		xm = 1
 		modeldata$ylags = as.integer(mean.model$ylags)
-		modelinc[19] = length(modeldata$ylags)
+		modelinc[20] = length(modeldata$ylags)
 	}
 	# check fun
 	if(!is.null(mean.model$yfun)){
-		modelinc[45] = 1
+		modelinc[48] = 1
 		if(!is.function(mean.model$yfun)) stop("\nstarspec-->error: yfun must be a function\n")
 		chk = check_fun(mean.model$yfun, n=xm)
 		modeldata$fun = mean.model$yfun
@@ -314,31 +319,31 @@ starspec = function(
 	} else{
 		modeldesc$statear = as.logical(mean.model$statear)
 	}
-	modelinc[18] = 1
+	modelinc[18:19] = 1
 	if(modeldesc$statear){
-		modelinc[20] = 1
-	} else{
-		modelinc[20] = 0
-	}
-	if(modelinc[43]>2){
 		modelinc[21] = 1
-		modelinc[22] = modelinc[19]
-		if(modeldesc$statear) modelinc[23] = 1
+	} else{
+		modelinc[21] = 0
 	}
-	if(modelinc[43]>3){
-		modelinc[24] = 1
-		modelinc[25] = modelinc[19]
-		if(modeldesc$statear) modelinc[26] = 1
+	if(modelinc[46]>2){
+		modelinc[22:23] = 1
+		modelinc[24] = modelinc[20]
+		if(modeldesc$statear) modelinc[25] = 1
+	}
+	if(modelinc[46]>3){
+		modelinc[26:27] = 1
+		modelinc[28] = modelinc[20]
+		if(modeldesc$statear) modelinc[29] = 1
 	}
 	
 	if(!is.null(fixed.prob)){
-		modelinc[18:26] = 0
+		modelinc[18:29] = 0
 		modeldesc$statear=FALSE
 	}
 	# now check whether the supplied external data has enough rows to satisfy
 	# max(AR, MA, ylags)...this is important for methods which dispatch on the
 	# the STARspec class (filter and path simulation).
-	mar = max(c(modelinc[c(2,6,10,14,4,8,12,16,17)], ifelse(modelinc[46]==1, max(modeldata$ylags), 0)))
+	mar = max(c(modelinc[c(2,6,10,14,4,8,12,16,17)], ifelse(modelinc[49]==1, max(modeldata$ylags), 0)))
 	if(!is.null(exn)){
 		if(exn<mar) stop(paste("\nstarspec-->error: model has ", mar, " lags but externally provided dataset has only ", exn, " rows", sep=""))
 	}
@@ -351,30 +356,30 @@ starspec = function(
 			"s3.phi0", "s3.phi", "s3.xi", "s3.psi", 
 			"s4.phi0", "s4.phi", "s4.xi", "s4.psi",
 			"psi",
-			"s1.c", "s1.alpha", "s1.beta",
-			"s2.c", "s2.alpha", "s2.beta",
-			"s3.c", "s3.alpha", "s3.beta",
+			"s1.gamma","s1.c", "s1.alpha", "s1.beta",
+			"s2.gamma","s2.c", "s2.alpha", "s2.beta",
+			"s3.gamma","s3.c", "s3.alpha", "s3.beta",
 			"sigma", "omega", "alpha", "beta", "gamma", "eta1", "eta2", 
 			"delta", "lambda", "vxreg", "xi", 
-			"skew", "shape", "ghlambda", rep("aux", 20))
-	if(modelinc[47]==4){
+			"skew", "shape", "ghlambda", rep("aux", 17))
+	if(modelinc[50]==4){
 		rownames(pos.matrix) = c(
 				"s1.phi0", "s1.phi", "s1.xi", "s1.psi",
 				"s2.phi0", "s2.phi", "s2.xi", "s2.psi", 
 				"s3.phi0", "s3.phi", "s3.xi", "s3.psi", 
 				"s4.phi0", "s4.phi", "s4.xi", "s4.psi",
 				"psi",
-				"s1.c", "s1.alpha", "s1.beta",
-				"s2.c", "s2.alpha", "s2.beta",
-				"s3.c", "s3.alpha", "s3.beta",
-				"s1.sigma", "s2.sigma", "alpha", "beta", "gamma", "eta1", "eta2", 
+				"s1.gamma","s1.c", "s1.alpha", "s1.beta",
+				"s2.gamma","s2.c", "s2.alpha", "s2.beta",
+				"s3.gamma","s3.c", "s3.alpha", "s3.beta",
+				"s1.sigma", "s2.sigma", "s3.sigma", "s4.sigma", "gamma", "eta1", "eta2", 
 				"delta", "lambda", "vxreg", "xi", 
-				"skew", "shape", "ghlambda", rep("aux", 20))
+				"skew", "shape", "ghlambda", rep("aux", 17))
 	}
 	# check if there are starting or fixed
 	# check that it is included in the optimization
 	# check that it is needed in the model
-	for(i in 1:40){
+	for(i in 1:43){
 		if( modelinc[i] > 0 ){
 			pos.matrix[i,1:3] = c(pos, pos+modelinc[i]-1, 1)
 			pos = max(pos.matrix[1:i,2]+1)
@@ -413,11 +418,18 @@ starspec = function(
 	}
 	##################################################################
 	# Parameter Matrix
-	mm = sum(modelinc[c(2,3,4,6,7,8,10,11,12,14,15,16,17,19,20,22,23,25,26,27,29:33,36)])
-	mm = mm - length( which(modelinc[c(2,3,4,6,7,8,10,11,12,14,15,16,17,19,20,22,23,25,26,27,29:33,36)]>0) )
-	pars = matrix(0, ncol = 7, nrow = 40 + mm)
-	colnames(pars) = c("Level", "Fixed", "Include", "Estimate", "LB", "UB", "Transformed")
-	pidx = matrix(NA, nrow = 40, ncol = 2)
+	if(modelinc[50]==4){
+		mm = sum(modelinc[c(2:4,6:8,10:12,14:16,17,20,24,28,34:36,39)])
+		mm = mm - length( which(modelinc[c(2:4,6:8,10:12,14:16,17,20,24,28,34:36,39)]>0) )
+		pars = matrix(0, ncol = 8, nrow = 43 + mm)
+	} else{
+		mm = sum(modelinc[c(2:4,6:8,10:12,14:16,17,20,24,28,32:36,39)])
+		mm = mm - length( which(modelinc[c(2:4,6:8,10:12,14:16,17,20,24,28,32:36,39)]>0) )
+		pars = matrix(0, ncol = 8, nrow = 43 + mm)
+	}
+	colnames(pars) = c("Level", "Fixed", "Include", "Estimate", "LB", "UB", "Transformed", "Type")
+	# Type: [1=Linear, 2=State, 3 = Other]
+	pidx = matrix(NA, nrow = 43, ncol = 2)
 	colnames(pidx) = c("begin", "end")
 	rownames(pidx) =   c(
 			"s1.phi0", "s1.phi", "s1.xi", "s1.psi",
@@ -425,23 +437,23 @@ starspec = function(
 			"s3.phi0", "s3.phi", "s3.xi", "s3.psi", 
 			"s4.phi0", "s4.phi", "s4.xi", "s4.psi",
 			"psi",
-			"s1.c", "s1.alpha", "s1.beta",
-			"s2.c", "s2.alpha", "s2.beta",
-			"s3.c", "s3.alpha", "s3.beta",
+			"s1.gamma","s1.c", "s1.alpha", "s1.beta",
+			"s2.gamma","s2.c", "s2.alpha", "s2.beta",
+			"s3.gamma","s3.c", "s3.alpha", "s3.beta",
 			"sigma", "omega", "alpha", "beta", "gamma", "eta1", "eta2", 
 			"delta", "lambda", "vxreg", "xi", 
 			"skew", "shape", "ghlambda")
-	if(modelinc[47]==4){
+	if(modelinc[50]==4){
 		rownames(pidx) = c(
 				"s1.phi0", "s1.phi", "s1.xi", "s1.psi",
 				"s2.phi0", "s2.phi", "s2.xi", "s2.psi", 
 				"s3.phi0", "s3.phi", "s3.xi", "s3.psi", 
 				"s4.phi0", "s4.phi", "s4.xi", "s4.psi",
 				"psi",
-				"s1.c", "s1.alpha", "s1.beta",
-				"s2.c", "s2.alpha", "s2.beta",
-				"s3.c", "s3.alpha", "s3.beta",
-				"s1.sigma", "s2.sigma", "alpha", "beta", "gamma", "eta1", "eta2", 
+				"s1.gamma","s1.c", "s1.alpha", "s1.beta",
+				"s2.gamma","s2.c", "s2.alpha", "s2.beta",
+				"s3.gamma","s3.c", "s3.alpha", "s3.beta",
+				"s1.sigma", "s2.sigma", "s3.sigma", "s4.sigma", "gamma", "eta1", "eta2", 
 				"delta", "lambda", "vxreg", "xi", 
 				"skew", "shape", "ghlambda")
 	}
@@ -455,6 +467,7 @@ starspec = function(
 		pars[1, 1] = 0
 		if(any(substr(fixed.names, 1, 7)=="s1.phi0")) pars[1,2] = 1 else pars[1,4] = 1
 		pars[1,7] = 1
+		pars[1,8] = 1
 	}
 	pidx[1,1] = 1
 	pidx[1,2] = 1
@@ -468,6 +481,7 @@ starspec = function(
 		for(i in 1:pn){
 			pars[(nx+i), 1] = 0
 			pars[(nx+i), 3] = 1
+			pars[(nx+i), 8] = 1
 			nnx = paste("s1.phi", i, sep="")
 			sp = na.omit(match(fixed.names, nnx))
 			if(length(sp)>0) pars[(nx+i), 2] = 1 else pars[(nx+i), 4] = 1
@@ -488,6 +502,7 @@ starspec = function(
 		for(i in 1:pn){
 			pars[(nx+i), 1] = 0
 			pars[(nx+i), 3] = 1
+			pars[(nx+i), 8] = 1
 			nnx = paste("s1.xi", i, sep="")
 			sp = na.omit(match(fixed.names, nnx))
 			if(length(sp)>0) pars[(nx+i), 2] = 1 else pars[(nx+i), 4] = 1
@@ -506,6 +521,7 @@ starspec = function(
 		for(i in 1:pn){
 			pars[(nx+i), 1] = 0
 			pars[(nx+i), 3] = 1
+			pars[(nx+i), 8] = 1
 			nnx = paste("s1.psi", i, sep="")
 			sp = na.omit(match(fixed.names, nnx))
 			if(length(sp)>0) pars[(nx+i), 2] = 1 else pars[(nx+i), 4] = 1
@@ -523,6 +539,7 @@ starspec = function(
 	if(pos.matrix[5,3] == 1){
 		pars[nx+pn, 1] = 0
 		pars[nx+pn, 3] = 1
+		pars[nx+pn, 8] = 1
 		if(any(substr(fixed.names, 1, 7)=="s2.phi0")) pars[nx+pn,2] = 1 else pars[nx+pn,4] = 1
 		pars[nx+pn,7] = 1
 	}
@@ -537,6 +554,7 @@ starspec = function(
 		for(i in 1:pn){
 			pars[(nx+i), 1] = 0
 			pars[(nx+i), 3] = 1
+			pars[(nx+i), 8] = 1
 			nnx = paste("s2.phi", i, sep="")
 			sp = na.omit(match(fixed.names, nnx))
 			if(length(sp)>0) pars[(nx+i), 2] = 1 else pars[(nx+i), 4] = 1
@@ -556,6 +574,7 @@ starspec = function(
 		for(i in 1:pn){
 			pars[(nx+i), 1] = 0
 			pars[(nx+i), 3] = 1
+			pars[(nx+i), 8] = 1
 			nnx = paste("s2.xi", i, sep="")
 			sp = na.omit(match(fixed.names, nnx))
 			if(length(sp)>0) pars[(nx+i), 2] = 1 else pars[(nx+i), 4] = 1
@@ -574,6 +593,7 @@ starspec = function(
 		for(i in 1:pn){
 			pars[(nx+i), 1] = 0
 			pars[(nx+i), 3] = 1
+			pars[(nx+i), 8] = 1
 			nnx = paste("s2.psi", i, sep="")
 			sp = na.omit(match(fixed.names, nnx))
 			if(length(sp)>0) pars[(nx+i), 2] = 1 else pars[(nx+i), 4] = 1
@@ -591,6 +611,7 @@ starspec = function(
 	if(pos.matrix[9,3] == 1){
 		pars[nx+pn, 1] = 0
 		pars[nx+pn, 3] = 1
+		pars[nx+pn, 8] = 1
 		if(any(substr(fixed.names, 1, 7)=="s3.phi0")) pars[nx+pn,2] = 1 else pars[nx+pn,4] = 1
 		pars[nx+pn,7] = 1
 	}
@@ -605,6 +626,7 @@ starspec = function(
 		for(i in 1:pn){
 			pars[(nx+i), 1] = 0
 			pars[(nx+i), 3] = 1
+			pars[(nx+i), 8] = 1
 			nnx = paste("s3.phi", i, sep="")
 			sp = na.omit(match(fixed.names, nnx))
 			if(length(sp)>0) pars[(nx+i), 2] = 1 else pars[(nx+i), 4] = 1
@@ -624,6 +646,7 @@ starspec = function(
 		for(i in 1:pn){
 			pars[(nx+i), 1] = 0
 			pars[(nx+i), 3] = 1
+			pars[(nx+i), 8] = 1
 			nnx = paste("s3.xi", i, sep="")
 			sp = na.omit(match(fixed.names, nnx))
 			if(length(sp)>0) pars[(nx+i), 2] = 1 else pars[(nx+i), 4] = 1
@@ -642,6 +665,7 @@ starspec = function(
 		for(i in 1:pn){
 			pars[(nx+i), 1] = 0
 			pars[(nx+i), 3] = 1
+			pars[(nx+i), 8] = 1
 			nnx = paste("s3.psi", i, sep="")
 			sp = na.omit(match(fixed.names, nnx))
 			if(length(sp)>0) pars[(nx+i), 2] = 1 else pars[(nx+i), 4] = 1
@@ -659,6 +683,7 @@ starspec = function(
 	if(pos.matrix[13,3] == 1){
 		pars[nx+pn, 3] = 1
 		pars[nx+pn, 1] = 0
+		pars[nx+pn, 8] = 1
 		if(any(substr(fixed.names, 1, 7)=="s4.phi0")) pars[nx+pn,2] = 1 else pars[nx+pn,4] = 1
 		pars[nx+pn,7] = 1
 	}
@@ -673,6 +698,7 @@ starspec = function(
 		for(i in 1:pn){
 			pars[(nx+i), 1] = 0
 			pars[(nx+i), 3] = 1
+			pars[(nx+i), 8] = 1
 			nnx = paste("s4.phi", i, sep="")
 			sp = na.omit(match(fixed.names, nnx))
 			if(length(sp)>0) pars[(nx+i), 2] = 1 else pars[(nx+i), 4] = 1
@@ -692,6 +718,7 @@ starspec = function(
 		for(i in 1:pn){
 			pars[(nx+i), 1] = 0
 			pars[(nx+i), 3] = 1
+			pars[(nx+i), 8] = 1
 			nnx = paste("s4.xi", i, sep="")
 			sp = na.omit(match(fixed.names, nnx))
 			if(length(sp)>0) pars[(nx+i), 2] = 1 else pars[(nx+i), 4] = 1
@@ -710,6 +737,7 @@ starspec = function(
 		for(i in 1:pn){
 			pars[(nx+i), 1] = 0
 			pars[(nx+i), 3] = 1
+			pars[(nx+i), 8] = 1
 			nnx = paste("s4.psi", i, sep="")
 			sp = na.omit(match(fixed.names, nnx))
 			if(length(sp)>0) pars[(nx+i), 2] = 1 else pars[(nx+i), 4] = 1
@@ -729,6 +757,7 @@ starspec = function(
 		for(i in 1:pn){
 			pars[(nx+i), 1] = 0
 			pars[(nx+i), 3] = 1
+			pars[(nx+i), 8] = 1
 			nnx = paste("psi", i, sep="")
 			sp = na.omit(match(fixed.names, nnx))
 			if(length(sp)>0) pars[(nx+i), 2] = 1 else pars[(nx+i), 4] = 1
@@ -745,69 +774,77 @@ starspec = function(
 	if(pos.matrix[18,3]==1){
 		pars[nx+pn, 3] = 1
 		pars[nx+pn, 1] = 0
-		if(any(substr(fixed.names, 1, 4)=="s1.c")) pars[nx+pn,2] = 1 else pars[nx+pn,4] = 1
+		pars[nx+pn, 8] = 2
+		if(any(substr(fixed.names, 1, 8)=="s1.gamma")) pars[nx+pn,2] = 1 else pars[nx+pn,4] = 1
 	}
-	pnames = c(pnames, "s1.c")
+	pnames = c(pnames, "s1.gamma")
 	pidx[18,2] = nx+pn
 	nx = nx + pn
 	pn = 1
 	#----------------------------------------
 	pidx[19,1] = nx+1
-	if(pos.matrix[19,3] == 1){
-		pn = length( seq(pos.matrix[19,1], pos.matrix[19,2], by = 1) )
-		for(i in 1:pn){
-			pars[(nx+i), 1] = 0
-			pars[(nx+i), 3] = 1
-			nnx = paste("s1.alpha", i, sep="")
-			sp = na.omit(match(fixed.names, nnx))
-			if(length(sp)>0) pars[(nx+i), 2] = 1 else pars[(nx+i), 4] = 1
-			pnames = c(pnames, nnx)
-		}
-	} else{
-		pnames = c(pnames, "s1.alpha")
+	if(pos.matrix[19,3]==1){
+		pars[nx+pn, 3] = 1
+		pars[nx+pn, 1] = 0
+		pars[nx+pn, 8] = 2
+		if(any(substr(fixed.names, 1, 4)=="s1.c")) pars[nx+pn,2] = 1 else pars[nx+pn,4] = 1
 	}
+	pnames = c(pnames, "s1.c")
 	pidx[19,2] = nx+pn
 	nx = nx + pn
 	pn = 1
 	#----------------------------------------
 	pidx[20,1] = nx+1
-	if(pos.matrix[20,3]==1){
-		pars[nx+pn, 3] = 1
-		pars[nx+pn, 1] = 0
-		if(any(substr(fixed.names, 1, 7)=="s1.beta")) pars[nx+pn,2] = 1 else pars[nx+pn,4] = 1
-		pars[nx+pn,7] = 1
+	if(pos.matrix[20,3] == 1){
+		pn = length( seq(pos.matrix[20,1], pos.matrix[20,2], by = 1) )
+		for(i in 1:pn){
+			if(i==1){
+				pars[(nx+i), 1] = 1
+				pars[(nx+i), 3] = 1
+				pars[(nx+i), 2] = 1
+				pars[(nx+i), 4] = 0
+				pars[(nx+i), 8] = 2
+				nnx = paste("s1.alpha", i, sep="")
+				pnames = c(pnames, nnx)
+			} else{
+				pars[(nx+i), 1] = 0
+				pars[(nx+i), 3] = 1
+				pars[(nx+i), 8] = 2
+				nnx = paste("s1.alpha", i, sep="")
+				sp = na.omit(match(fixed.names, nnx))
+				if(length(sp)>0) pars[(nx+i), 2] = 1 else pars[(nx+i), 4] = 1
+				pnames = c(pnames, nnx)
+			}
+		}
+	} else{
+		pnames = c(pnames, "s1.alpha")
 	}
-	pnames = c(pnames, "s1.beta")
 	pidx[20,2] = nx+pn
 	nx = nx + pn
 	pn = 1
-	
 	#----------------------------------------
 	pidx[21,1] = nx+1
 	if(pos.matrix[21,3]==1){
 		pars[nx+pn, 3] = 1
 		pars[nx+pn, 1] = 0
-		if(any(substr(fixed.names, 1, 4)=="s2.c")) pars[nx+pn,2] = 1 else pars[nx+pn,4] = 1
+		pars[nx+pn, 8] = 2
+		if(any(substr(fixed.names, 1, 7)=="s1.beta")) pars[nx+pn,2] = 1 else pars[nx+pn,4] = 1
+		pars[nx+pn,7] = 1
 	}
-	pnames = c(pnames, "s2.c")
+	pnames = c(pnames, "s1.beta")
 	pidx[21,2] = nx+pn
 	nx = nx + pn
 	pn = 1
+	
 	#----------------------------------------
 	pidx[22,1] = nx+1
-	if(pos.matrix[22,3] == 1){
-		pn = length( seq(pos.matrix[22,1], pos.matrix[22,2], by = 1) )
-		for(i in 1:pn){
-			pars[(nx+i), 1] = 0
-			pars[(nx+i), 3] = 1
-			nnx = paste("s2.alpha", i, sep="")
-			sp = na.omit(match(fixed.names, nnx))
-			if(length(sp)>0) pars[(nx+i), 2] = 1 else pars[(nx+i), 4] = 1
-			pnames = c(pnames, nnx)
-		}
-	} else{
-		pnames = c(pnames, "s2.alpha")
+	if(pos.matrix[22,3]==1){
+		pars[nx+pn, 3] = 1
+		pars[nx+pn, 1] = 0
+		pars[nx+pn, 8] = 2
+		if(any(substr(fixed.names, 1, 8)=="s2.gamma")) pars[nx+pn,2] = 1 else pars[nx+pn,4] = 1
 	}
+	pnames = c(pnames, "s2.gamma")
 	pidx[22,2] = nx+pn
 	nx = nx + pn
 	pn = 1
@@ -816,63 +853,131 @@ starspec = function(
 	if(pos.matrix[23,3]==1){
 		pars[nx+pn, 3] = 1
 		pars[nx+pn, 1] = 0
-		if(any(substr(fixed.names, 1, 7)=="s2.beta")) pars[nx+pn,2] = 1 else pars[nx+pn,4] = 1
-		pars[nx+pn,7] = 1
+		pars[nx+pn, 8] = 2
+		if(any(substr(fixed.names, 1, 4)=="s2.c")) pars[nx+pn,2] = 1 else pars[nx+pn,4] = 1
 	}
-	pnames = c(pnames, "s2.beta")
+	pnames = c(pnames, "s2.c")
 	pidx[23,2] = nx+pn
 	nx = nx + pn
 	pn = 1
-	
-	
 	#----------------------------------------
 	pidx[24,1] = nx+1
-	if(pos.matrix[24,3]==1){
-		pars[nx+pn, 3] = 1
-		pars[nx+pn, 1] = 0
-		if(any(substr(fixed.names, 1, 4)=="s3.c")) pars[nx+pn,2] = 1 else pars[nx+pn,4] = 1
+	if(pos.matrix[24,3] == 1){
+		pn = length( seq(pos.matrix[24,1], pos.matrix[24,2], by = 1) )
+		for(i in 1:pn){
+			if(i==1){
+				pars[(nx+i), 1] = 1
+				pars[(nx+i), 3] = 1
+				pars[(nx+i), 2] = 1
+				pars[(nx+i), 4] = 0
+				pars[(nx+i), 8] = 2
+				nnx = paste("s2.alpha", i, sep="")
+				pnames = c(pnames, nnx)
+			} else{
+				pars[(nx+i), 1] = 0
+				pars[(nx+i), 3] = 1
+				pars[(nx+i), 8] = 2
+				nnx = paste("s2.alpha", i, sep="")
+				sp = na.omit(match(fixed.names, nnx))
+				if(length(sp)>0) pars[(nx+i), 2] = 1 else pars[(nx+i), 4] = 1
+				pnames = c(pnames, nnx)
+			}
+		}
+	} else{
+		pnames = c(pnames, "s2.alpha")
 	}
-	pnames = c(pnames, "s3.c")
 	pidx[24,2] = nx+pn
 	nx = nx + pn
 	pn = 1
 	#----------------------------------------
 	pidx[25,1] = nx+1
-	if(pos.matrix[25,3] == 1){
-		pn = length( seq(pos.matrix[25,1], pos.matrix[25,2], by = 1) )
-		for(i in 1:pn){
-			pars[(nx+i), 1] = 0
-			pars[(nx+i), 3] = 1
-			nnx = paste("s3.alpha", i, sep="")
-			sp = na.omit(match(fixed.names, nnx))
-			if(length(sp)>0) pars[(nx+i), 2] = 1 else pars[(nx+i), 4] = 1
-			pnames = c(pnames, nnx)
-		}
-	} else{
-		pnames = c(pnames, "s3.alpha")
+	if(pos.matrix[25,3]==1){
+		pars[nx+pn, 3] = 1
+		pars[nx+pn, 1] = 0
+		pars[nx+pn, 8] = 2
+		if(any(substr(fixed.names, 1, 7)=="s2.beta")) pars[nx+pn,2] = 1 else pars[nx+pn,4] = 1
+		pars[nx+pn,7] = 1
 	}
+	pnames = c(pnames, "s2.beta")
 	pidx[25,2] = nx+pn
 	nx = nx + pn
 	pn = 1
+	
+	
 	#----------------------------------------
 	pidx[26,1] = nx+1
 	if(pos.matrix[26,3]==1){
 		pars[nx+pn, 3] = 1
 		pars[nx+pn, 1] = 0
-		if(any(substr(fixed.names, 1, 7)=="s3.beta")) pars[nx+pn,2] = 1 else pars[nx+pn,4] = 1
-		pars[nx+pn,7] = 1
+		pars[nx+pn, 8] = 2
+		if(any(substr(fixed.names, 1, 8)=="s3.gamma")) pars[nx+pn,2] = 1 else pars[nx+pn,4] = 1
 	}
-	pnames = c(pnames, "s3.beta")
+	pnames = c(pnames, "s3.gamma")
 	pidx[26,2] = nx+pn
 	nx = nx + pn
 	pn = 1
-	
 	#----------------------------------------
 	pidx[27,1] = nx+1
 	if(pos.matrix[27,3]==1){
 		pars[nx+pn, 3] = 1
 		pars[nx+pn, 1] = 0
-		if(modelinc[47]==4){
+		pars[nx+pn, 8] = 2
+		if(any(substr(fixed.names, 1, 4)=="s3.c")) pars[nx+pn,2] = 1 else pars[nx+pn,4] = 1
+	}
+	pnames = c(pnames, "s3.c")
+	pidx[27,2] = nx+pn
+	nx = nx + pn
+	pn = 1
+	#----------------------------------------
+	pidx[28,1] = nx+1
+	if(pos.matrix[28,3] == 1){
+		pn = length( seq(pos.matrix[28,1], pos.matrix[28,2], by = 1) )
+		for(i in 1:pn){
+			if(i==1){
+				pars[(nx+i), 1] = 1
+				pars[(nx+i), 3] = 1
+				pars[(nx+i), 2] = 1
+				pars[(nx+i), 4] = 0
+				pars[(nx+i), 8] = 2
+				nnx = paste("s3.alpha", i, sep="")
+				pnames = c(pnames, nnx)
+			} else{
+				pars[(nx+i), 1] = 0
+				pars[(nx+i), 3] = 1
+				pars[(nx+i), 8] = 2
+				nnx = paste("s3.alpha", i, sep="")
+				sp = na.omit(match(fixed.names, nnx))
+				if(length(sp)>0) pars[(nx+i), 2] = 1 else pars[(nx+i), 4] = 1
+				pnames = c(pnames, nnx)
+			}
+		}
+	} else{
+		pnames = c(pnames, "s3.alpha")
+	}
+	pidx[28,2] = nx+pn
+	nx = nx + pn
+	pn = 1
+	#----------------------------------------
+	pidx[29,1] = nx+1
+	if(pos.matrix[29,3]==1){
+		pars[nx+pn, 3] = 1
+		pars[nx+pn, 1] = 0
+		pars[nx+pn, 8] = 2
+		if(any(substr(fixed.names, 1, 7)=="s3.beta")) pars[nx+pn,2] = 1 else pars[nx+pn,4] = 1
+		pars[nx+pn,7] = 1
+	}
+	pnames = c(pnames, "s3.beta")
+	pidx[29,2] = nx+pn
+	nx = nx + pn
+	pn = 1
+	
+	#----------------------------------------
+	pidx[30,1] = nx+1
+	if(pos.matrix[30,3]==1){
+		pars[nx+pn, 3] = 1
+		pars[nx+pn, 1] = 0
+		pars[nx+pn, 8] = 3
+		if(modelinc[50]==4){
 			if(any(substr(fixed.names, 1, 8)=="s1.sigma")) pars[nx+pn,2] = 1 else pars[nx+pn,4] = 1
 			pars[nx+pn,7] = 1
 		} else{
@@ -880,17 +985,18 @@ starspec = function(
 			pars[nx+pn,7] = 1
 		}
 	}
-	if(modelinc[47]==4) pnames = c(pnames, "s1.sigma") else pnames = c(pnames, "sigma")
-	pidx[27,2] = nx+pn
+	if(modelinc[50]==4) pnames = c(pnames, "s1.sigma") else pnames = c(pnames, "sigma")
+	pidx[30,2] = nx+pn
 	nx = nx + pn
 	pn = 1
 	#----------------------------------------
 	
-	pidx[28,1] = nx+1
-	if(pos.matrix[28,3]==1){
+	pidx[31,1] = nx+1
+	if(pos.matrix[31,3]==1){
 		pars[nx+pn, 3] = 1
 		pars[nx+pn, 1] = 0
-		if(modelinc[47]==4){
+		pars[nx+pn, 8] = 3
+		if(modelinc[50]==4){
 			if(any(substr(fixed.names, 1, 8)=="s2.sigma")) pars[nx+pn,2] = 1 else pars[nx+pn,4] = 1
 			pars[nx+pn,7] = 1
 		} else{
@@ -898,65 +1004,86 @@ starspec = function(
 			pars[nx+pn,7] = 1
 		}		
 	}
-	if(modelinc[47]==4) pnames = c(pnames, "s2.sigma") else pnames = c(pnames, "omega")
-	pidx[28,2] = nx+pn
+	if(modelinc[50]==4) pnames = c(pnames, "s2.sigma") else pnames = c(pnames, "omega")
+	pidx[31,2] = nx+pn
 	nx = nx + pn
 	pn = 1
 	#----------------------------------------	
-	pidx[29,1] = nx+1
-	if(pos.matrix[29,3]==1){
-		pn = length( seq(pos.matrix[29,1], pos.matrix[29,2], by = 1) )
-		for(i in 1:pn){
-			pars[(nx+i), 1] = 0
-			pars[(nx+i), 3] = 1
-			nnx = paste("alpha", i, sep="")
-			sp = na.omit(match(fixed.names, nnx))
-			if(length(sp)>0) pars[(nx+i), 2] = 1 else pars[(nx+i), 4] = 1
-			pnames = c(pnames, nnx)
+	pidx[32,1] = nx+1
+	if(pos.matrix[32,3]==1){
+		pn = length( seq(pos.matrix[32,1], pos.matrix[32,2], by = 1) )
+		if(modelinc[50]==4){
+			pars[nx+pn, 3] = 1
+			pars[nx+pn, 1] = 0
+			pars[nx+pn, 8] = 3
+			if(any(substr(fixed.names, 1, 8)=="s3.sigma")) pars[nx+pn,2] = 1 else pars[nx+pn,4] = 1
+			pars[nx+pn,7] = 1
+			pnames = c(pnames, "s3.sigma")			
+		} else{
+			for(i in 1:pn){
+				pars[(nx+i), 1] = 0
+				pars[(nx+i), 3] = 1
+				pars[(nx+i), 8] = 3
+				nnx = paste("alpha", i, sep="")
+				sp = na.omit(match(fixed.names, nnx))
+				if(length(sp)>0) pars[(nx+i), 2] = 1 else pars[(nx+i), 4] = 1
+				pnames = c(pnames, nnx)
+			}
+			pars[nx+1,7] = 1
 		}
-		pars[nx+1,7] = 1
 	} else{
-		pnames = c(pnames, "alpha")
+		if(modelinc[50]==4) pnames = c(pnames, "s3.sigma") else pnames = c(pnames, "alpha")
 	}
-	pidx[29,2] = nx+pn
+	pidx[32,2] = nx+pn
 	nx = nx + pn
 	pn = 1
 	#----------------------------------------
-	pidx[30,1] = nx+1
-	if(pos.matrix[30,3]==1){
-		pn = length( seq(pos.matrix[30,1], pos.matrix[30,2], by = 1) )
-		for(i in 1:pn){
-			pars[(nx+i), 1] = 0
-			pars[(nx+i), 3] = 1
-			nnx = paste("beta", i, sep="")
-			sp = na.omit(match(fixed.names, nnx))
-			if(length(sp)>0) pars[(nx+i), 2] = 1 else pars[(nx+i), 4] = 1
-			pnames = c(pnames, nnx)
-		}
-		pars[nx+1,7] = 1
-		#-------------------------------------------
-		# special consideration for the iGARCH model
-		#-------------------------------------------
-		if(modeldesc$vmodel == "iGARCH"){
-			# last beta not estimated
-			pars[nx+pn, 4] = 0
-			nnx = paste("beta", pn, sep="")
-			# do not allow the last beta to be fixed
-			if(any(substr(fixed.names, 1, nchar(nnx))==nnx)) pars[(nx+pn), 2] = 0
+	pidx[33,1] = nx+1
+	if(pos.matrix[33,3]==1){
+		pn = length( seq(pos.matrix[33,1], pos.matrix[33,2], by = 1) )
+		if(modelinc[50]==4){
+			pars[nx+pn, 3] = 1
+			pars[nx+pn, 1] = 0
+			pars[nx+pn, 8] = 3
+			if(any(substr(fixed.names, 1, 8)=="s4.sigma")) pars[nx+pn,2] = 1 else pars[nx+pn,4] = 1
+			pars[nx+pn,7] = 1
+			pnames = c(pnames, "s4.sigma")
+		} else{
+			for(i in 1:pn){
+				pars[(nx+i), 1] = 0
+				pars[(nx+i), 3] = 1
+				pars[(nx+i), 8] = 3
+				nnx = paste("beta", i, sep="")
+				sp = na.omit(match(fixed.names, nnx))
+				if(length(sp)>0) pars[(nx+i), 2] = 1 else pars[(nx+i), 4] = 1
+				pnames = c(pnames, nnx)
+			}
+			pars[nx+1,7] = 1
+			#-------------------------------------------
+			# special consideration for the iGARCH model
+			#-------------------------------------------
+			if(modeldesc$vmodel == "iGARCH"){
+				# last beta not estimated
+				pars[nx+pn, 4] = 0
+				nnx = paste("beta", pn, sep="")
+				# do not allow the last beta to be fixed
+				if(any(substr(fixed.names, 1, nchar(nnx))==nnx)) pars[(nx+pn), 2] = 0
+			}
 		}
 	} else{
-		pnames = c(pnames, "beta")
+		if(modelinc[50]==4) pnames = c(pnames, "s4.sigma") else pnames = c(pnames, "beta")
 	}
-	pidx[30,2] = nx+pn
+	pidx[33,2] = nx+pn
 	nx = nx + pn
 	pn = 1
 	#----------------------------------------
-	pidx[31,1] = nx+1
-	if(pos.matrix[31,3]==1){
-		pn = length( seq(pos.matrix[31,1], pos.matrix[31,2], by = 1) )
+	pidx[34,1] = nx+1
+	if(pos.matrix[34,3]==1){
+		pn = length( seq(pos.matrix[34,1], pos.matrix[34,2], by = 1) )
 		for(i in 1:pn){
 			pars[(nx+i), 1] = 0
 			pars[(nx+i), 3] = 1
+			pars[(nx+i), 8] = 3
 			nnx = paste("gamma", i, sep="")
 			sp = na.omit(match(fixed.names, nnx))
 			if(length(sp)>0) pars[(nx+i), 2] = 1 else pars[(nx+i), 4] = 1
@@ -966,16 +1093,17 @@ starspec = function(
 	} else{
 		pnames = c(pnames, "gamma")
 	}
-	pidx[31,2] = nx+pn
+	pidx[34,2] = nx+pn
 	nx = nx + pn
 	pn = 1
 	#----------------------------------------
-	pidx[32,1] = nx+1
-	if(pos.matrix[32,3]==1){
-		pn = length( seq(pos.matrix[32,1], pos.matrix[32,2], by = 1) )
+	pidx[35,1] = nx+1
+	if(pos.matrix[35,3]==1){
+		pn = length( seq(pos.matrix[35,1], pos.matrix[35,2], by = 1) )
 		for(i in 1:pn){
 			pars[(nx+i), 1] = 0
 			pars[(nx+i), 3] = 1
+			pars[(nx+i), 8] = 3
 			nnx = paste("eta1", i, sep="")
 			sp = na.omit(match(fixed.names, nnx))
 			if(length(sp)>0) pars[(nx+i), 2] = 1 else pars[(nx+i), 4] = 1
@@ -985,55 +1113,7 @@ starspec = function(
 	} else{
 		pnames = c(pnames, "eta1")
 	}
-	pidx[32,2] = nx+pn
-	nx = nx + pn
-	pn = 1
-	#----------------------------------------
-	pidx[33,1] = nx+1
-	if(pos.matrix[33,3]==1){
-		pn = length( seq(pos.matrix[33,1], pos.matrix[33,2], by = 1) )
-		for(i in 1:pn){
-			pars[(nx+i), 1] = 0
-			pars[(nx+i), 3] = 1
-			nnx = paste("eta2", i, sep="")
-			sp = na.omit(match(fixed.names, nnx))
-			if(length(sp)>0) pars[(nx+i), 2] = 1 else pars[(nx+i), 4] = 1
-			pnames = c(pnames, nnx)
-		}
-		pars[nx+1,7] = 1
-	} else{
-		pnames = c(pnames, "eta2")
-	}
-	pidx[33,2] = nx+pn
-	nx = nx + pn
-	pn = 1
-	#----------------------------------------
-	pidx[34,1] = nx+1
-	
-	if(pos.matrix[34,3]==1){
-		pars[nx+pn, 3] = 1
-		pars[nx+pn, 1] = 0
-		if(any(substr(fixed.names, 1, 5)=="delta")) pars[nx+pn,2] = 1 else pars[nx+pn,4] = 1
-		pars[nx+pn,7] = 1
-	} else{
-		
-	}
-	pidx[34,2] = nx+pn
-	pnames = c(pnames, "delta")
-	nx = nx + pn
-	pn = 1
-	#----------------------------------------
-	pidx[35,1] = nx+1
-	
-	if(pos.matrix[35,3]==1){
-		pars[nx+pn, 3] = 1
-		pars[nx+pn, 1] = 0
-		if(any(substr(fixed.names, 1, 6)=="lambda")) pars[nx+pn,2] = 1 else pars[nx+pn,4] = 1
-		pars[nx+pn,7] = 1
-	} else{
-	}
 	pidx[35,2] = nx+pn
-	pnames = c(pnames, "lambda")
 	nx = nx + pn
 	pn = 1
 	#----------------------------------------
@@ -1043,14 +1123,15 @@ starspec = function(
 		for(i in 1:pn){
 			pars[(nx+i), 1] = 0
 			pars[(nx+i), 3] = 1
-			nnx = paste("vxreg", i, sep="")
+			pars[(nx+i), 8] = 3
+			nnx = paste("eta2", i, sep="")
 			sp = na.omit(match(fixed.names, nnx))
 			if(length(sp)>0) pars[(nx+i), 2] = 1 else pars[(nx+i), 4] = 1
 			pnames = c(pnames, nnx)
 		}
+		pars[nx+1,7] = 1
 	} else{
-		pnames = c(pnames, "vxreg")
-		
+		pnames = c(pnames, "eta2")
 	}
 	pidx[36,2] = nx+pn
 	nx = nx + pn
@@ -1061,11 +1142,14 @@ starspec = function(
 	if(pos.matrix[37,3]==1){
 		pars[nx+pn, 3] = 1
 		pars[nx+pn, 1] = 0
-		if(any(substr(fixed.names, 1, 2)=="xi")) pars[nx+pn,2] = 1 else pars[nx+pn,4] = 1
+		pars[nx+pn, 8] = 3
+		if(any(substr(fixed.names, 1, 5)=="delta")) pars[nx+pn,2] = 1 else pars[nx+pn,4] = 1
 		pars[nx+pn,7] = 1
+	} else{
+		
 	}
 	pidx[37,2] = nx+pn
-	pnames = c(pnames, "xi")
+	pnames = c(pnames, "delta")
 	nx = nx + pn
 	pn = 1
 	#----------------------------------------
@@ -1074,22 +1158,32 @@ starspec = function(
 	if(pos.matrix[38,3]==1){
 		pars[nx+pn, 3] = 1
 		pars[nx+pn, 1] = 0
-		if(any(substr(fixed.names, 1, 4)=="skew")) pars[nx+pn,2] = 1 else pars[nx+pn,4] = 1
+		pars[nx+pn, 8] = 3		
+		if(any(substr(fixed.names, 1, 6)=="lambda")) pars[nx+pn,2] = 1 else pars[nx+pn,4] = 1
 		pars[nx+pn,7] = 1
+	} else{
 	}
 	pidx[38,2] = nx+pn
-	pnames = c(pnames, "skew")
+	pnames = c(pnames, "lambda")
 	nx = nx + pn
 	pn = 1
 	#----------------------------------------
 	pidx[39,1] = nx+1
 	if(pos.matrix[39,3]==1){
-		pars[nx+pn, 3] = 1
-		pars[nx+pn, 1] = 0
-		if(any(substr(fixed.names, 1, 5)=="shape")) pars[nx+pn,2] = 1 else pars[nx+pn,4] = 1
-		pars[nx+pn,7] = 1
+		pn = length( seq(pos.matrix[39,1], pos.matrix[39,2], by = 1) )
+		for(i in 1:pn){
+			pars[(nx+i), 1] = 0
+			pars[(nx+i), 3] = 1
+			pars[(nx+i), 8] = 3
+			nnx = paste("vxreg", i, sep="")
+			sp = na.omit(match(fixed.names, nnx))
+			if(length(sp)>0) pars[(nx+i), 2] = 1 else pars[(nx+i), 4] = 1
+			pnames = c(pnames, nnx)
+		}
+	} else{
+		pnames = c(pnames, "vxreg")
+		
 	}
-	pnames = c(pnames, "shape")
 	pidx[39,2] = nx+pn
 	nx = nx + pn
 	pn = 1
@@ -1099,10 +1193,52 @@ starspec = function(
 	if(pos.matrix[40,3]==1){
 		pars[nx+pn, 3] = 1
 		pars[nx+pn, 1] = 0
-		if(any(substr(fixed.names, 1, 8)=="ghlambda")) pars[nx+pn,2] = 1 else pars[nx+pn,4] = 1
+		pars[nx+pn, 8] = 3
+		if(any(substr(fixed.names, 1, 2)=="xi")) pars[nx+pn,2] = 1 else pars[nx+pn,4] = 1
 		pars[nx+pn,7] = 1
 	}
 	pidx[40,2] = nx+pn
+	pnames = c(pnames, "xi")
+	nx = nx + pn
+	pn = 1
+	#----------------------------------------
+	pidx[41,1] = nx+1
+	
+	if(pos.matrix[41,3]==1){
+		pars[nx+pn, 3] = 1
+		pars[nx+pn, 1] = 0
+		pars[nx+pn, 8] = 3
+		if(any(substr(fixed.names, 1, 4)=="skew")) pars[nx+pn,2] = 1 else pars[nx+pn,4] = 1
+		pars[nx+pn,7] = 1
+	}
+	pidx[41,2] = nx+pn
+	pnames = c(pnames, "skew")
+	nx = nx + pn
+	pn = 1
+	#----------------------------------------
+	pidx[42,1] = nx+1
+	if(pos.matrix[42,3]==1){
+		pars[nx+pn, 3] = 1
+		pars[nx+pn, 1] = 0
+		pars[nx+pn, 8] = 3
+		if(any(substr(fixed.names, 1, 5)=="shape")) pars[nx+pn,2] = 1 else pars[nx+pn,4] = 1
+		pars[nx+pn,7] = 1
+	}
+	pnames = c(pnames, "shape")
+	pidx[42,2] = nx+pn
+	nx = nx + pn
+	pn = 1
+	#----------------------------------------
+	pidx[43,1] = nx+1
+	
+	if(pos.matrix[43,3]==1){
+		pars[nx+pn, 3] = 1
+		pars[nx+pn, 1] = 0
+		pars[nx+pn, 8] = 3
+		if(any(substr(fixed.names, 1, 8)=="ghlambda")) pars[nx+pn,2] = 1 else pars[nx+pn,4] = 1
+		pars[nx+pn,7] = 1
+	}
+	pidx[43,2] = nx+pn
 	#----------------------------------------
 	
 	# Once more for fgarch model pars
@@ -1116,19 +1252,19 @@ starspec = function(
 	
 	if(!is.null(fixed.prob))
 	{
-		modelinc[44] = 1
+		modelinc[47] = 1
 		if(!is.xts(fixed.prob)) stop("\nstarspec-->error: fixed.prob must be an xts object")
-		if(modelinc[43]==1){
+		if(modelinc[46]==1){
 			# In the case that states=1 and the use passes a set of probabilities, these
 			# are in fact weights (weighted ARX model), else default is to set them to 1.
 			fixed.prob = fixed.prob[,1]
 			colnames(fixed.prob) = "Weights"
 		}
-		if(modelinc[43]==2){
+		if(modelinc[46]==2){
 			fixed.prob = cbind(fixed.prob[,1], 1-fixed.prob[,1])
 			colnames(fixed.prob) = c("Prob[S=1]","Prob[S=2]")
 		}
-		if(modelinc[43]==3){
+		if(modelinc[46]==3){
 			if(ncol(fixed.prob)==2){
 				fixed.prob = cbind(fixed.prob[,1], fixed.prob[,2], 1-fixed.prob[,1]-fixed.prob[,2])
 				colnames(fixed.prob) = c("Prob[S=1]","Prob[S=2]", "Prob[S=3]")
@@ -1142,7 +1278,7 @@ starspec = function(
 				stop("\nstarspec-->error: fixed.prob must have either 2 or 3 columns for the 3 state case.\n")
 			}
 		}
-		if(modelinc[43]==4){
+		if(modelinc[46]==4){
 			if(ncol(fixed.prob)==3){
 				fixed.prob = cbind(fixed.prob[,1], fixed.prob[,2], fixed.prob[,3], 1-fixed.prob[,1]-fixed.prob[,2]-fixed.prob[,3])
 				colnames(fixed.prob) = c("Prob[S=1]","Prob[S=2]", "Prob[S=3]", "Prob[S=4]")
@@ -1157,7 +1293,7 @@ starspec = function(
 			}
 		}
 	} else{
-		if(modelinc[43]==1){
+		if(modelinc[46]==1){
 			stop("\nstarspec-->error: fixed.prob must be provided for the 1-state case.\n")
 		}
 	}
@@ -1181,20 +1317,20 @@ setMethod(f = "starspec", definition = .xstarspec)
 {
 	model = object@model
 	modelinc = model$modelinc
-	if(modelinc[17]>0) maOrder=modelinc[17] else maOrder=c(modelinc[4],modelinc[8],modelinc[12], modelinc[16])[1:modelinc[43]]
+	if(modelinc[17]>0) maOrder=modelinc[17] else maOrder=c(modelinc[4],modelinc[8],modelinc[12], modelinc[16])[1:modelinc[46]]
 	vt = model$modeldesc$variance.targeting
 	
-	spec = starspec(mean.model = list(states = modelinc[43],
+	spec = starspec(mean.model = list(states = modelinc[46],
 					include.intercept = c(modelinc[1],modelinc[5], modelinc[9], modelinc[13]), 
-					arOrder = c(modelinc[2],modelinc[6],modelinc[10], modelinc[14])[1:modelinc[43]],
+					arOrder = c(modelinc[2],modelinc[6],modelinc[10], modelinc[14])[1:modelinc[46]],
 					maOrder = maOrder,
 					matype = ifelse(modelinc[17]>0, "linear","state"),
-					statevar = c("y","s")[modelinc[46]], 
+					statevar = c("y","s")[modelinc[49]], 
 					statear = as.logical(model$modeldesc$statear), 
     				ylags = model$modeldata$ylags, yfun = model$modeldata$fun,
     				s = model$modeldata$s, xreg = model$modeldata$mexdata), 
-			variance.model = list(dynamic = as.logical(modelinc[47]>0), 
-    				model = model$modeldesc$vmodel, garchOrder = modelinc[29:30], 
+			variance.model = list(dynamic = as.logical(modelinc[50]>0), 
+    				model = model$modeldesc$vmodel, garchOrder = modelinc[32:33], 
 					submodel = model$modeldesc$vsubmodel, 
 					vreg = model$modeldata$vexdata,
 					variance.targeting = vt), 
@@ -1233,20 +1369,20 @@ setMethod(f = "getspec", signature(object = "STARfit"), definition = .getstarspe
 	fixed.pars = pars[inc]
 	names(fixed.pars) = tolower(names(pars[inc]))
 	# set parameter values
-	if(modelinc[17]>0) maOrder=modelinc[17] else maOrder=c(modelinc[4],modelinc[8],modelinc[12], modelinc[16])[1:modelinc[43]]
+	if(modelinc[17]>0) maOrder=modelinc[17] else maOrder=c(modelinc[4],modelinc[8],modelinc[12], modelinc[16])[1:modelinc[46]]
 	vt = model$modeldesc$variance.targeting
 	
-	tmp = starspec(mean.model = list(states = modelinc[43],
+	tmp = starspec(mean.model = list(states = modelinc[46],
 					include.intercept = c(modelinc[1],modelinc[5], modelinc[9], modelinc[13]), 
-					arOrder = c(modelinc[2],modelinc[6],modelinc[10], modelinc[14])[1:modelinc[43]],
+					arOrder = c(modelinc[2],modelinc[6],modelinc[10], modelinc[14])[1:modelinc[46]],
 					maOrder = maOrder,
 					matype = ifelse(modelinc[17]>0, "linear","state"),
-					statevar = c("y","s")[modelinc[46]], 
+					statevar = c("y","s")[modelinc[49]], 
 					statear = as.logical(model$modeldesc$statear), 
 					ylags = model$modeldata$ylags, yfun = model$modeldata$fun,
 					s = model$modeldata$s, xreg = model$modeldata$mexdata), 
-			variance.model = list(dynamic = as.logical(modelinc[47]>0), 
-					model = model$modeldesc$vmodel, garchOrder = modelinc[29:30], 
+			variance.model = list(dynamic = as.logical(modelinc[50]>0), 
+					model = model$modeldesc$vmodel, garchOrder = modelinc[32:33], 
 					submodel = model$modeldesc$vsubmodel, 
 					vreg = model$modeldata$vexdata, variance.targeting =vt), 
 			distribution.model = model$modeldesc$distribution, 
@@ -1286,20 +1422,20 @@ setReplaceMethod(f="setfixed", signature= c(object = "STARspec", value = "vector
 	start.pars = pars[inc]
 	names(start.pars) = tolower(names(pars[inc]))
 	# set parameter values
-	if(modelinc[17]>0) maOrder=modelinc[17] else maOrder=c(modelinc[4],modelinc[8],modelinc[12], modelinc[16])[1:modelinc[43]]
+	if(modelinc[17]>0) maOrder=modelinc[17] else maOrder=c(modelinc[4],modelinc[8],modelinc[12], modelinc[16])[1:modelinc[46]]
 	vt = model$modeldesc$variance.targeting
 	
-	tmp = starspec(mean.model = list(states = modelinc[43],
+	tmp = starspec(mean.model = list(states = modelinc[46],
 					include.intercept = c(modelinc[1],modelinc[5], modelinc[9], modelinc[13]), 
-					arOrder = c(modelinc[2],modelinc[6],modelinc[10], modelinc[14])[1:modelinc[43]],
+					arOrder = c(modelinc[2],modelinc[6],modelinc[10], modelinc[14])[1:modelinc[46]],
 					maOrder = maOrder,
 					matype = ifelse(modelinc[17]>0, "linear","state"),
-					statevar = c("y","s")[modelinc[46]], 
+					statevar = c("y","s")[modelinc[49]], 
 					statear = as.logical(model$modeldesc$statear), 
 					ylags = model$modeldata$ylags, yfun = model$modeldata$fun,
 					s = model$modeldata$s, xreg = model$modeldata$mexdata), 
-			variance.model = list(dynamic = as.logical(modelinc[47]>0), 
-					model = model$modeldesc$vmodel, garchOrder = modelinc[29:30], 
+			variance.model = list(dynamic = as.logical(modelinc[50]>0), 
+					model = model$modeldesc$vmodel, garchOrder = modelinc[32:33], 
 					submodel = model$modeldesc$vsubmodel, 
 					vreg = model$modeldata$vexdata, variance.targeting =  vt), 
 			distribution.model = model$modeldesc$distribution, 
@@ -1399,8 +1535,8 @@ starsim = function(fit, n.sim = 1000, n.start = 0, m.sim = 1, presigma = NA, pre
 		custom.dist = list(name = NA, distfit = NA), xregsim = NULL, 
 		vregsim = NULL, ssim = NULL, probsim = NULL)
 {
-	if(fit@model$modelinc[47]>0){
-		if(fit@model$modelinc[47]==4){
+	if(fit@model$modelinc[50]>0){
+		if(fit@model$modelinc[50]==4){
 			ans = .starsim.mixture(fit = fit, n.sim = n.sim, n.start = n.start, m.sim = m.sim,
 					prereturns = prereturns, preresiduals = preresiduals, rseed = rseed, 
 					custom.dist = custom.dist, xregsim = xregsim, ssim = ssim, 
@@ -1440,8 +1576,8 @@ starpath = function(spec, n.sim = 1000, n.start = 0, m.sim = 1, presigma = NA,
 		custom.dist = list(name = NA, distfit = NA), xregsim = NULL, 
 		vregsim= NULL, ssim = NULL, probsim = NULL)
 {
-	if(spec@model$modelinc[47]>0){
-		if(spec@model$modelinc[47]==4){
+	if(spec@model$modelinc[50]>0){
+		if(spec@model$modelinc[50]==4){
 			ans = .starpath.mixture(spec = spec, n.sim = n.sim, n.start = n.start, m.sim = m.sim,
 					prereturns = prereturns, preresiduals = preresiduals, rseed = rseed,
 					custom.dist = custom.dist, xregsim = xregsim, ssim = ssim, 
@@ -1549,7 +1685,7 @@ states = function(object, ...)
 				STARfilter = xts(object@filter$condm[1:object@model$modeldata$T,], D))
 		colnames(ans)<-paste("state[",1:ncol(ans),"]",sep="")
 	} else{
-		if(object@model$modelinc[43]>1 & object@model$modelinc[44]==0){
+		if(object@model$modelinc[46]>1 & object@model$modelinc[47]==0){
 			ans = switch(class(object)[1],
 					STARfit = xts(object@fit$pmu[1:object@model$modeldata$T,], D),
 					STARfilter = xts(object@filter$pmu[1:object@model$modeldata$T,], D))			
@@ -1607,7 +1743,7 @@ setMethod("states", signature(object = "STARpath"), .starstatesim)
 .starfitcoef = function(object)
 {
 	ans = switch(class(object)[1],
-			STARfit = object@fit$coef,
+			STARfit = object@model$pars[object@model$pars[,4]==1, 1],
 			STARfilter = object@model$pars[object@model$pars[,2]==1, 1])
 	return(ans)
 }
@@ -1646,7 +1782,7 @@ setMethod("likelihood", signature(object = "STARfilter"), .starLikelihood)
 	} else{
 		np = sum(object@fit$ipars[,4])
 	}
-	itest = rugarch:::.information.test(likelihood(object), nObs = length(fitted(object)), 
+	itest = .information.test(likelihood(object), nObs = length(fitted(object)), 
 			nPars = np)
 	itestm = matrix(0, ncol = 1, nrow = 4)
 	itestm[1,1] = itest$AIC
@@ -1669,7 +1805,7 @@ setMethod("infocriteria", signature(object = "STARfilter"), .starinfocriteria)
 	lik = as.numeric(object@model$loglik)
 	n = length(lik)
 	N = as.numeric(sapply(object@model$rollind, "length") - object@model$out.sample)
-	itestm = sapply(1:n, function(i) unlist(rugarch:::.information.test(lik[i], 
+	itestm = sapply(1:n, function(i) unlist(.information.test(lik[i], 
 						nObs = N[i], nPars = np)))
 	colnames(itestm) = paste("window_",1:n, sep="")
 	rownames(itestm) = c("Akaike", "Bayes", "Shibata", "Hannan-Quinn")
@@ -1687,7 +1823,7 @@ setMethod("infocriteria", signature(object = "STARroll"), .rollstarinfocriteria)
 	} else{
 		vc = object@fit$cvar
 	}
-	colnames(vc) = rownames(vc) = names(coef(object))
+	colnames(vc) = rownames(vc) = names(object@model$pars[object@model$pars[,4]==1,1])
 	return(vc)
 }
 
@@ -1730,12 +1866,13 @@ setMethod("score", signature(object = "STARfit"),  definition = .starscore)
 # ToDo: provide option for returning the model.matrix of the state equation
 # together with a function to evaluate it.
 
-modelmatrix = function(object, data = NULL, ... ) { UseMethod("modelmatrix") }
+modelmatrix = function(object, data = NULL, linear = TRUE, ... ) { UseMethod("modelmatrix") }
 
-.modelmatrix = function(object, data = NULL, ...)
+.modelmatrix = function(object, data = NULL, linear = TRUE, ...)
 {
 	model = object@model
 	modelinc = model$modelinc
+	inc = 0
 	if(is(object, "STARspec")){
 		if(is.null(data)) stop("\nmodelmatrix error:--> you need to supply an xts data series when using modelmatrix with a STARspec object")
 		if(!is.xts(data)) stop("\nmodelmatrix error:--> you need to supply a xts data series when using modelmatrix with a STARspec object")
@@ -1749,52 +1886,84 @@ modelmatrix = function(object, data = NULL, ... ) { UseMethod("modelmatrix") }
 		yindex = model$modeldata$index[1:T]
 		res = as.numeric(residuals(object))
 	}
-	r = modelinc[43]
-	iconst = modelinc[c(1,5,9,13)]
-	ipars= model$pars
-	idx  = model$pidx
-	iar  = modelinc[c(2,6,10,14)]
-	ireg = modelinc[c(3,7,11,15)]
-	ima  = modelinc[c(4,8,12,16)]
-	lma = modelinc[17]
-	xreg = coredata(model$modeldata$mexdata[1:T,,drop=FALSE])
-	X = NULL
-	cnames = NULL
-	for(i in 1:r){
-		if(iconst[i]>0){
-			X = cbind(X, matrix(1, nrow=T, ncol=1))
-			cp = ipars[idx["s1.phi0",1],1]
-			cnames  = c(cnames, paste("s",i,".phi0",sep=""))
-		} else{
-			cp = 0
-		}
-		if(iar[i]>0){
-			for(j in 1:iar[i]){
-				X = cbind(X, lagf.numeric(y, j)-modelinc[43]*cp)
-				cnames  = c(cnames, paste("s",i,".phi",j,sep=""))
+	if(linear){
+		# Linear part
+		r = modelinc[46]
+		iconst = modelinc[c(1,5,9,13)]
+		ipars= model$pars
+		idx  = model$pidx
+		iar  = modelinc[c(2,6,10,14)]
+		ireg = modelinc[c(3,7,11,15)]
+		ima  = modelinc[c(4,8,12,16)]
+		lma = modelinc[17]
+		xreg = coredata(model$modeldata$mexdata[1:T,,drop=FALSE])
+		X = NULL
+		cnames = NULL
+		for(i in 1:r){
+			if(iconst[i]>0){
+				X = cbind(X, matrix(1, nrow=T, ncol=1))
+				cp = ipars[idx["s1.phi0",1],1]
+				cnames  = c(cnames, paste("s",i,".phi0",sep=""))						
+			} else{
+				cp = 0
 			}
-			X[is.na(X)] = 0
+			if(iar[i]>0){
+				for(j in 1:iar[i]){
+					X = cbind(X, lagf.numeric(y, j)-inc*modelinc[46]*cp)
+					cnames  = c(cnames, paste("s",i,".phi",j,sep=""))
+				}
+				X[is.na(X)] = 0
+			}
+			if(ireg[i]>0){
+				X = cbind(X, xreg)
+				cnames  = c(cnames, paste("s",i,".xi",1:ncol(xreg),sep=""))
+			}
+			if(ima[i]>0){
+				for(j in 1:ima[i]){
+					X = cbind(X, lagf.numeric(res, j))
+					cnames  = c(cnames, paste("s",i,".psi",j,sep=""))
+				}
+				X[is.na(X)] = 0
+			}
 		}
-		if(ireg[i]>0){
-			X = cbind(X, xreg)
-			cnames  = c(cnames, paste("s",i,".xi",1:ncol(xreg),sep=""))
-		}
-		if(ima[i]>0){
-			for(j in 1:ima[i]){
+		if(lma>0){
+			for(j in 1:lma){
 				X = cbind(X, lagf.numeric(res, j))
-				cnames  = c(cnames, paste("s",i,".psi",j,sep=""))
+				cnames  = c(cnames, paste(".psi",j,sep=""))
 			}
-			X[is.na(X)] = 0
+		}
+		colnames(X) = cnames
+		rownames(X) = as.character(yindex)
+	} else{
+		# State part
+		if(modelinc[47]==0){
+			if(modelinc[49]==2){
+				chk = all(yindex==index(model$modeldata$s))
+				if(!is.logical(chk) | chk == FALSE){
+					print(paste("\n",chk,sep=""))
+					stop("\ntwinkle-->error: data and s indices do not match\n")
+				}
+				X = model$modeldata$s
+			} else{
+				# we apply yfun here if it is needed for efficiency:
+				if(modelinc[48]==1){
+					ytmp = xts(model$modeldata$fun(y), yindex)
+				} else{
+					ytmp = xts(y, yindex)
+				}
+				X = NULL
+				for(i in 1:length(model$modeldata$ylags)){
+					if(i==1) X = lag(ytmp, model$modeldata$ylags[i]) else X = cbind(X, lag(ytmp, model$modeldata$ylags[i]))
+				}
+				X[is.na(X)]=0
+				colnames(X) = paste("s[t-",model$modeldata$ylags,"]",sep="")
+			}
+			# convert to matrix
+		} else{
+			warning("\nmodel based on fixed probabilities has not state modelmatrix!")
+			X = NULL
 		}
 	}
-	if(lma>0){
-		for(j in 1:lma){
-			X = cbind(X, lagf.numeric(res, j))
-			cnames  = c(cnames, paste(".psi",j,sep=""))
-		}
-	}
-	colnames(X) = cnames
-	rownames(X) = as.character(yindex)
 	return(X)
 }
 setMethod("modelmatrix", signature(object = "STARfit"),  definition = .modelmatrix)
@@ -1806,7 +1975,7 @@ setMethod("modelmatrix", signature(object = "STARspec"),  definition = .modelmat
 # for 2 state return the blended sigma
 .starsigma = function(object)
 {
-	if(object@model$modelinc[47]>0){
+	if(object@model$modelinc[50]>0){
 		if(class(object)[1] == "STARfit" | class(object)[1] == "STARfilter"){
 			D = object@model$modeldata$index[1:object@model$modeldata$T]
 		}
@@ -1874,21 +2043,21 @@ setMethod("resume", signature(object = "STARroll"),  definition = .resumerollsta
 	if(class(x)=="STARforecast"){
 		ans = matrix(NA, dim(m)[1], dim(m)[2])
 		if(length(probs)>1) stop("\nprobs must be a scalar for a STARforecast object")
-		for(i in 1:NCOL(ans)) ans[,i] = qdist(d, probs[1], mu = m[,i], if(x@model$modelinc[27]==0) sigma = s[,i] else sigma = s, 
+		for(i in 1:NCOL(ans)) ans[,i] = qdist(d, probs[1], mu = m[,i], if(x@model$modelinc[30]==0) sigma = s[,i] else sigma = s, 
 					skew = skew, shape = shape, lambda = ghlambda)
 		colnames(ans) = colnames(m)
 		rownames(ans) = rownames(m)
 	} else if(class(x)=="STARsim"){
 		if(length(probs)>1) stop("\nprobs must be a scalar for a STARsim object\n")
 		ans = matrix(NA, dim(m)[1], dim(m)[2])
-		for(i in 1:NCOL(ans)) ans[,i] = qdist(d, probs[1], mu = m[,i], if(x@model$modelinc[27]==0) sigma = s[,i] else sigma = s, 
+		for(i in 1:NCOL(ans)) ans[,i] = qdist(d, probs[1], mu = m[,i], if(x@model$modelinc[30]==0) sigma = s[,i] else sigma = s, 
 					skew = skew, shape = shape, lambda = ghlambda)
 		colnames(ans) = colnames(m)
 		rownames(ans) = rownames(m)
 	} else if(class(x)=="STARpath"){
 		if(length(probs)>1) stop("\nprobs must be a scalar for a STARpath object\n")
 		ans = matrix(NA, dim(m)[1], dim(m)[2])
-		for(i in 1:NCOL(ans)) ans[,i] = qdist(d, probs[1], mu = m[,i], if(x@model$modelinc[27]==0) sigma = s[,i] else sigma = s, 
+		for(i in 1:NCOL(ans)) ans[,i] = qdist(d, probs[1], mu = m[,i], if(x@model$modelinc[30]==0) sigma = s[,i] else sigma = s, 
 					skew = skew, shape = shape, lambda = ghlambda)
 		colnames(ans) = colnames(m)
 		rownames(ans) = rownames(m)
@@ -1937,7 +2106,7 @@ setMethod("quantile", signature(x = "STARroll"), .starquantile)
 		colnames(ans) = "pit"
 	} else{
 		d = object@model$modeldesc$distribution
-		di = rugarch:::.DistributionBounds(d)
+		di = .DistributionBounds(d)
 		if(di$include.skew)  skew  = object@model$pars["skew",1] else skew = 0
 		if(di$include.shape) shape = object@model$pars["shape",1] else shape = 0
 		if(di$include.ghlambda) ghlambda = object@model$pars["ghlambda",1] else ghlambda = 0
@@ -1963,25 +2132,26 @@ setMethod("show",
 			vmodel = object@model$modeldesc$vmodel
 			model = object@model
 			modelinc = object@model$modelinc
-			dist = c("norm", "snorm", "std", "sstd","ged", "sged", "nig", "ghyp", "jsu", "ghst")[modelinc[41]]
+			dist = c("norm", "snorm", "std", "sstd","ged", "sged", "nig", "ghyp", "jsu", "ghst")[modelinc[44]]
 			cat(paste("\n*---------------------------------*", sep = ""))
 			cat(paste("\n*          STAR Model Spec        *", sep = ""))
 			cat(paste("\n*---------------------------------*", sep = ""))
-			cat(paste("\nstates       : ", modelinc[38], sep = ""))
-			if(modelinc[43]>1) cat(paste("\nstatevar     : ", c("y","s")[modelinc[46]], sep = ""))
-			if(modelinc[43]>1) cat(paste("\nstatear      : ", as.logical(modelinc[20]), sep = ""))
+			cat(paste("\nstates       : ", modelinc[46], sep = ""))
+			if(modelinc[46]>1) cat(paste("\nstatevar     : ", c("y","s")[modelinc[49]], sep = ""))
+			if(modelinc[46]>1) cat(paste("\nstatear      : ", as.logical(modelinc[21]), sep = ""))
 			cnt = modelinc[c(1,5,9,13)]
-			cat(paste("\nconstant     :"), "[",as.logical(cnt[1:modelinc[43]]),"]")
+			cat(paste("\nconstant     :"), "[",as.logical(cnt[1:modelinc[46]]),"]")
 			ar = modelinc[c(1,5,9,13)+1]
-			cat(paste("\narOrder      :"), "[",as.integer(ar[1:modelinc[43]]),"]")
+			cat(paste("\narOrder      :"), "[",as.integer(ar[1:modelinc[46]]),"]")
 			ma = modelinc[c(1,5,9,13)+3]
 			if(modelinc[17]>0){
 			cat(paste("\nmaOrder (Linear) : ", modelinc[17], sep = ""))
 			} else{
-				if(sum(ma)>0) cat(paste("\nmaOrder (state) :"), "[",as.integer(ma[1:modelinc[43]]),"]")
+				if(sum(ma)>0) cat(paste("\nmaOrder (state) :"), "[",as.integer(ma[1:modelinc[46]]),"]")
 			}
 			cat(paste("\nregressors   : ", modelinc[3], sep=""))
-			cat(paste("\nvariance     : ", if(modelinc[47]>0) "dynamic" else "static", sep = ""))
+			vty = c("dynamic","mixture","static")[ifelse(modelinc[50]>0, ifelse(modelinc[50]==4,2,1),3)]
+			cat(paste("\nvariance     : ", vty, sep=""))
 			cat(paste("\ndistribution : ", dist, "\n",sep = ""))
 			invisible(object)
 		})
@@ -1991,14 +2161,15 @@ setMethod("show",
 			vmodel = object@model$modeldesc$vmodel
 			model = object@model
 			modelinc = object@model$modelinc
-			dist = c("norm", "snorm", "std", "sstd","ged", "sged", "nig", "ghyp", "jsu", "ghst")[modelinc[41]]
+			dist = c("norm", "snorm", "std", "sstd","ged", "sged", "nig", "ghyp", "jsu", "ghst")[modelinc[44]]
 			cat(paste("\n*---------------------------------*", sep = ""))
 			cat(paste("\n*          STAR Model Fit         *", sep = ""))
 			cat(paste("\n*---------------------------------*", sep = ""))
-			cat(paste("\nstates       : ", modelinc[43], sep = ""))
-			cat(paste("\nstatevar     : ", c("y","s")[modelinc[46]], sep = ""))
-			cat(paste("\nstatear      : ", as.logical(modelinc[20]), sep = ""))
-			cat(paste("\nvariance     : ", if(modelinc[47]>0) "dynamic" else "static", sep = ""))
+			cat(paste("\nstates       : ", modelinc[46], sep = ""))
+			cat(paste("\nstatevar     : ", c("y","s")[modelinc[49]], sep = ""))
+			cat(paste("\nstatear      : ", as.logical(modelinc[21]), sep = ""))
+			vty = c("dynamic","mixture","static")[ifelse(modelinc[50]>0, ifelse(modelinc[50]==4,2,1),3)]
+			cat(paste("\nvariance     : ", vty, sep=""))
 			cat(paste("\ndistribution : ", dist, sep = ""))
 			if(convergence(object)==0){
 				cat("\n\n")
@@ -2018,8 +2189,8 @@ setMethod("show",
 				cat("\nr.squared         : ", round(Rsq,4))
 				cat("\nr.squared (adj)   : ", round(Rsqadj,4))
 				cat("\nRSS               : ", round(rss, 5))
-				cat("\nskewness (res)    : ", round(rugarch:::.skewness(res), 5))
-				cat("\nex.kurtosis (res) : ", round(rugarch:::.kurtosis(res), 5))
+				cat("\nskewness (res)    : ", round(.skewness(res), 5))
+				cat("\nex.kurtosis (res) : ", round(.kurtosis(res), 5))
 				armat = ar_root(object)
 				if(armat$use){
 					cat("\n")
@@ -2044,14 +2215,15 @@ setMethod("show",
 			vmodel = object@model$modeldesc$vmodel
 			model = object@model
 			modelinc = object@model$modelinc
-			dist = c("norm", "snorm", "std", "sstd","ged", "sged", "nig", "ghyp", "jsu", "ghst")[modelinc[41]]
+			dist = c("norm", "snorm", "std", "sstd","ged", "sged", "nig", "ghyp", "jsu", "ghst")[modelinc[44]]
 			cat(paste("\n*---------------------------------*", sep = ""))
 			cat(paste("\n*          STAR Model Fit         *", sep = ""))
 			cat(paste("\n*---------------------------------*", sep = ""))
-			cat(paste("\nstates       : ", modelinc[43], sep = ""))
-			cat(paste("\nstatevar     : ", c("y","s")[modelinc[46]], sep = ""))
-			cat(paste("\nstatear      : ", as.logical(modelinc[20]), sep = ""))
-			cat(paste("\nvariance     : ", if(modelinc[47]>0) "dynamic" else "static", sep = ""))
+			cat(paste("\nstates       : ", modelinc[46], sep = ""))
+			cat(paste("\nstatevar     : ", c("y","s")[modelinc[49]], sep = ""))
+			cat(paste("\nstatear      : ", as.logical(modelinc[21]), sep = ""))
+			vty = c("dynamic","mixture","static")[ifelse(modelinc[50]>0, ifelse(modelinc[50]==4,2,1),3)]
+			cat(paste("\nvariance     : ", vty, sep=""))
 			cat(paste("\ndistribution : ", dist, sep = ""))
 			cat("\n\n")
 			cat("\nFilter Parameters")
@@ -2107,14 +2279,15 @@ setMethod("show",
 				model = object@model$spec@model
 				modelinc = model$modelinc
 				vmodel = model$modeldesc$vmodel
-				dist = c("norm", "snorm", "std", "sstd","ged", "sged", "nig", "ghyp", "jsu", "ghst")[modelinc[41]]
+				dist = c("norm", "snorm", "std", "sstd","ged", "sged", "nig", "ghyp", "jsu", "ghst")[modelinc[44]]
 				cat("\nNo.Refits\t\t:", N)
 				cat("\nRefit Horizon\t:", object@model$refit.every)
 				cat("\nNo.Forecasts\t:", NROW(object@forecast$density))
-				cat(paste("\nstates      : ", modelinc[43], sep = ""))
-				cat(paste("\nstatevar     : ", c("y","s")[modelinc[46]], sep = ""))
-				cat(paste("\nstatear      : ", as.logical(modelinc[20]), sep = ""))
-				cat(paste("\nvariance     : ", if(modelinc[47]>0) "dynamic" else "static", sep = ""))
+				cat(paste("\nstates      : ", modelinc[46], sep = ""))
+				cat(paste("\nstatevar     : ", c("y","s")[modelinc[49]], sep = ""))
+				cat(paste("\nstatear      : ", as.logical(modelinc[21]), sep = ""))
+				vty = c("dynamic","mixture","static")[ifelse(modelinc[50]>0, ifelse(modelinc[50]==4,2,1),3)]
+				cat(paste("\nvariance     : ", vty, sep=""))
 				cat(paste("\ndistribution : ", dist, sep = ""))
 				cat("\n")
 				cat("\nForecast Density\n")
@@ -2131,3 +2304,16 @@ setMethod("show",
 #----------------------------------------------------------------------------------
 setMethod(f = "plot", signature(x = "STARfit", y = "missing"), plot.starfit)
 setMethod(f = "plot", signature(x = "STARforecast", y = "missing"), plot.starforecast)
+
+
+#----------------------------------------------------------------------------------
+# Tests
+#----------------------------------------------------------------------------------
+setOldClass("xts")
+nonlinearTest = function(object, data, robust = FALSE, sig.level = 0.05, ...)
+{
+	UseMethod("linearTest")
+}
+
+setMethod(f = "nonlinearTest", signature(object = "STARfit",  data = "missing"), nonlinearTest.fit)
+setMethod(f = "nonlinearTest", signature(object = "STARspec", data = "xts"), nonlinearTest.spec)

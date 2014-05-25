@@ -24,8 +24,8 @@
 	treq = n.ahead + n.roll
 	modelinc = model$modelinc
 	mxn = modelinc[3]
-	vxn = modelinc[36]
-	sxn = modelinc[19]
+	vxn = modelinc[39]
+	sxn = modelinc[20]
 	if(mxn>0){
 		if(!is.null(xregfor)){
 			nmex = NROW(as.matrix(xregfor))
@@ -93,7 +93,7 @@
 	} else{
 		vxf = NULL
 	}
-	if(modelinc[46]==2 && sxn>0){
+	if(modelinc[49]==2 && sxn>0){
 		if(!is.null(sfor)){
 			nxex = dim(as.matrix(sfor))[1]
 			mxex = dim(as.matrix(sfor))[2]
@@ -126,16 +126,16 @@
 		sxf = NULL
 	}
 	
-	if(modelinc[44]>0){
+	if(modelinc[47]>0){
 		# flag as error since it means user probably needs to rethink what they are doing
 		if(is.null(probfor)) stop("\nstarforecast-->error: probfor cannot be NULL in a system estimated with fixed state probabilities!\n.")
 		npex = nrow(as.matrix(probfor))[1]
 		mpex = ncol(as.matrix(probfor))[2]
 		# columns==states
-		if(mpex != modelinc[43])
+		if(mpex != modelinc[46])
 		{
 			cat("\nstarforecast-->error: Column dimension of 'probfor' matrix is wrong.")
-			cat(paste("\nModel has ", modelinc[43]," states but probfor has", mpex, sep = ""))
+			cat(paste("\nModel has ", modelinc[46]," states but probfor has", mpex, sep = ""))
 			stop("\n...exiting\n")
 		}
 		# N is the original length
@@ -154,26 +154,25 @@
 	return(list(mxf = mxf, vxf = vxf, sxf = sxf, pxf = pxf))
 }
 
-
 .nsgarchforecast = function(arglist)
 {
 	modelinc = arglist$modelinc
 	n.ahead = arglist$n.ahead
 	N = arglist$np
 	idx = arglist$idx
-	if(arglist$modelinc[36]>0){
-		omega = arglist$omega + arglist$vxfi%*%t(matrix(arglist$ipars[idx["vxreg",1]:idx["vxreg",2],1], ncol = modelinc[36]))
+	if(arglist$modelinc[39]>0){
+		omega = arglist$omega + arglist$vxfi%*%t(matrix(arglist$ipars[idx["vxreg",1]:idx["vxreg",2],1], ncol = modelinc[39]))
 	} else{
 		omega = arglist$omega
 	}
 	for(i in 1:n.ahead){
-		if(modelinc[30]>0){
-			arglist$h[N+i] = omega[N+i] + sum(arglist$ipars[idx["beta",1]:idx["beta",2],1]*arglist$h[N+i-(1:modelinc[30])]^2)
+		if(modelinc[33]>0){
+			arglist$h[N+i] = omega[N+i] + sum(arglist$ipars[idx["beta",1]:idx["beta",2],1]*arglist$h[N+i-(1:modelinc[33])]^2)
 		} else{
 			arglist$h[N+i] = omega[N+i]
 		}
-		if(modelinc[29]>0){
-			for (j in 1:modelinc[29]){
+		if(modelinc[32]>0){
+			for (j in 1:modelinc[32]){
 				if (i-j > 0){
 					s = arglist$h[N + i - j]^2
 				} else{ 
@@ -193,19 +192,19 @@
 	N = arglist$N
 	n.ahead = arglist$n.ahead
 	idx = arglist$idx
-	if(modelinc[36]>0){
-		omega = arglist$omega + arglist$vxfi%*%t(matrix(arglist$ipars[idx["vxreg",1]:idx["vxreg",2],1], ncol = modelinc[36]))
+	if(modelinc[39]>0){
+		omega = arglist$omega + arglist$vxfi%*%t(matrix(arglist$ipars[idx["vxreg",1]:idx["vxreg",2],1], ncol = modelinc[39]))
 	} else{
 		omega = arglist$omega
 	}
 	for(i in 1:n.ahead){
-		if(modelinc[30]>0){
-			arglist$h[N+i] = omega[N+i] + sum(arglist$ipars[idx["beta",1]:idx["beta",2],1]*arglist$h[N+i-(1:modelinc[30])]^2)
+		if(modelinc[33]>0){
+			arglist$h[N+i] = omega[N+i] + sum(arglist$ipars[idx["beta",1]:idx["beta",2],1]*arglist$h[N+i-(1:modelinc[33])]^2)
 		} else{
 			arglist$h[N+i] = omega[N+i]
 		}
-		if(modelinc[29]>0){
-			for (j in 1:modelinc[29]){
+		if(modelinc[32]>0){
+			for (j in 1:modelinc[32]){
 				if (i-j > 0){				
 					s1 = (arglist$h[N + i - j]^2)
 					s2 = arglist$kappa*arglist$ipars[idx["gamma",1]+j-1, 1] * (arglist$h[N + i - j]^2)
@@ -228,19 +227,19 @@
 	N = arglist$N
 	n.ahead = arglist$n.ahead
 	idx = arglist$idx	
-	if(modelinc[36]>0){
-		omega = arglist$omega + arglist$vxfi%*%t(matrix(arglist$ipars[idx["vxreg",1]:idx["vxreg",2],1], ncol = modelinc[36]))
+	if(modelinc[39]>0){
+		omega = arglist$omega + arglist$vxfi%*%t(matrix(arglist$ipars[idx["vxreg",1]:idx["vxreg",2],1], ncol = modelinc[39]))
 	} else{
 		omega = arglist$omega
 	}
 	for(i in 1:n.ahead){
-		if(modelinc[30]>0){
-			arglist$h[N+i] = omega[N+i] + sum(arglist$ipars[idx["beta",1]:idx["beta",2],1]*log(arglist$h[N+i-(1:modelinc[30])]^2))
+		if(modelinc[33]>0){
+			arglist$h[N+i] = omega[N+i] + sum(arglist$ipars[idx["beta",1]:idx["beta",2],1]*log(arglist$h[N+i-(1:modelinc[33])]^2))
 		} else{
 			arglist$h[N+i] = omega[N+i]
 		}
-		if(modelinc[29]>0){
-			for(j in 1:modelinc[29]){
+		if(modelinc[32]>0){
+			for(j in 1:modelinc[32]){
 				if (i-j > 0){
 					s = 0 #unconditional
 				} else{
@@ -269,34 +268,34 @@ starf = function(arglist)
 	N = arglist$np
 	n.ahead = arglist$n.ahead
 	idx = arglist$idx
-	constm = rbind(arglist$constm, matrix(0, ncol = modelinc[43], nrow = n.ahead))
+	constm = rbind(arglist$constm, matrix(0, ncol = modelinc[46], nrow = n.ahead))
 	if(modelinc[3]>0){
-		for(i in 1:modelinc[43]){
+		for(i in 1:modelinc[46]){
 			constm[(N+1):(N+n.ahead),i] = arglist$mxfi[(N+1):(N+n.ahead),]%*%t(matrix(arglist$ipars[idx[paste("s",i,".xi",sep=""),1]:idx[paste("s",i,".xi",sep=""),2],1], ncol = modelinc[3]))
 		}
 	} else{
-		for(i in 1:modelinc[43]){
+		for(i in 1:modelinc[46]){
 			constm[(N+1):(N+n.ahead),i] = arglist$ipars[idx[paste("s",i,".phi0",sep=""),1],1]
 		}
 	}
-	dynamic = as.logical(modelinc[47]>0)
+	dynamic = as.logical(modelinc[50]>0)
 	arglist$constm = constm
 	# n.ahead-1 since we are already passing the n.ahead=1 values
-	arglist$pmu = rbind(arglist$pmu, matrix(0, ncol = max(1, modelinc[43]-1), n.ahead-1))
-	arglist$probs = rbind(arglist$probs, matrix(0, ncol = modelinc[43], n.ahead-1))
+	arglist$pmu = rbind(arglist$pmu, matrix(0, ncol = max(1, modelinc[46]-1), n.ahead-1))
+	arglist$probs = rbind(arglist$probs, matrix(0, ncol = modelinc[46], n.ahead-1))
 	if(is.null(arglist$mc.sims)) mc.sims = 12*N else mc.sims = arglist$mc.sims
 	ydist = matrix(NA, nrow = mc.sims, ncol = n.ahead)
 	esim = matrix(NA, nrow = mc.sims, ncol = n.ahead)
 	for(j in 2:n.ahead){
 		arglist$j = j
-		if(modelinc[44]==1){
+		if(modelinc[47]==1){
 			arglist$XL = NULL
 			# probs fixed: populate forecast probs with pxfi
 			arglist$probs[N+j,] = arglist$pxfi[N+j,]
 		} else{
-			if(modelinc[45]==1) ytmp = arglist$yfun(as.numeric(arglist$y[1:(N+j-1)])) else ytmp = as.numeric(arglist$y[1:(N+j-1)])
+			if(modelinc[48]==1) ytmp = arglist$yfun(as.numeric(arglist$y[1:(N+j-1)])) else ytmp = as.numeric(arglist$y[1:(N+j-1)])
 			arglist$XL = build.lagmatrix(modelinc, s = arglist$sxfi[1:(N+j),], y = c(ytmp, NA), arglist$ylags)
-			ptmp = switch(modelinc[43], dstar1f(arglist), dstar2f(arglist), dstar3f(arglist), dstar4f(arglist))
+			ptmp = switch(modelinc[46], dstar1f(arglist), dstar2f(arglist), dstar3f(arglist), dstar4f(arglist))
 			arglist$probs = ptmp$probs
 			arglist$pmu = ptmp$pmu
 		}
@@ -351,8 +350,6 @@ starf = function(arglist)
 	arglist$esim = esim
 	return(arglist)
 }
-
-
 # QUESTION: Should we be simulating from the residuals of each state (depending on prob[N+j]) or just the residuals?
 starfmix = function(arglist)
 {
@@ -362,38 +359,48 @@ starfmix = function(arglist)
 	N = arglist$np
 	n.ahead = arglist$n.ahead
 	idx = arglist$idx
-	constm = rbind(arglist$constm, matrix(0, ncol = modelinc[43], nrow = n.ahead))
+	constm = rbind(arglist$constm, matrix(0, ncol = modelinc[46], nrow = n.ahead))
 	if(modelinc[3]>0){
-		for(i in 1:modelinc[43]){
+		for(i in 1:modelinc[46]){
 			constm[(N+1):(N+n.ahead),i] = arglist$mxfi[(N+1):(N+n.ahead),]%*%t(matrix(arglist$ipars[idx[paste("s",i,".xi",sep=""),1]:idx[paste("s",i,".xi",sep=""),2],1], ncol = modelinc[3]))
 		}
 	} else{
-		for(i in 1:modelinc[43]){
+		for(i in 1:modelinc[46]){
 			constm[(N+1):(N+n.ahead),i] = arglist$ipars[idx[paste("s",i,".phi0",sep=""),1],1]
 		}
 	}
 	arglist$constm = constm
 	# n.ahead-1 since we are already passing the n.ahead=1 values
-	arglist$pmu = rbind(arglist$pmu, matrix(0, ncol = max(1, modelinc[43]-1), n.ahead-1))
-	arglist$probs = rbind(arglist$probs, matrix(0, ncol = modelinc[43], n.ahead-1))
+	arglist$pmu = rbind(arglist$pmu, matrix(0, ncol = max(1, modelinc[46]-1), n.ahead-1))
+	arglist$probs = rbind(arglist$probs, matrix(0, ncol = modelinc[46], n.ahead-1))
 	if(is.null(arglist$mc.sims)) mc.sims = 12*N else mc.sims = arglist$mc.sims
 	ydist = matrix(NA, nrow = mc.sims, ncol = n.ahead)
 	esim = matrix(NA, nrow = mc.sims, ncol = n.ahead)
 	arglist$dynamic = TRUE	
 	for(j in 2:n.ahead){
 		arglist$j = j
-		if(modelinc[44]==1){
+		if(modelinc[47]==1){
 			arglist$XL = NULL
 			# probs fixed: populate forecast probs with pxfi
 			arglist$probs[N+j,] = arglist$pxfi[N+j,]
 		} else{
-			if(modelinc[45]==1) ytmp = arglist$yfun(as.numeric(arglist$y[1:(N+j-1)])) else ytmp = as.numeric(arglist$y[1:(N+j-1)]) 
+			if(modelinc[48]==1) ytmp = arglist$yfun(as.numeric(arglist$y[1:(N+j-1)])) else ytmp = as.numeric(arglist$y[1:(N+j-1)]) 
 			arglist$XL = build.lagmatrix(modelinc, s = arglist$sxfi[1:(N+j),], y = c(ytmp, NA), arglist$ylags)
-			ptmp = dstar2f(arglist)
+			ptmp = switch(modelinc[46],
+					dstar2f(arglist),
+					dstar2f(arglist),
+					dstar3f(arglist),
+					dstar4f(arglist))
 			arglist$probs = ptmp$probs
 			arglist$pmu = ptmp$pmu
 		}
-		arglist$h[N+j] = arglist$sigma = arglist$probs[N+j,1]*arglist$ipars["s1.sigma",1]+arglist$probs[N+j,2]*arglist$ipars["s2.sigma",1]
+		msig = switch(modelinc[46],
+				arglist$probs[N+j,1]*arglist$ipars["s1.sigma",1]+arglist$probs[N+j,2]*arglist$ipars["s2.sigma",1],
+				arglist$probs[N+j,1]*arglist$ipars["s1.sigma",1]+arglist$probs[N+j,2]*arglist$ipars["s2.sigma",1],
+				arglist$probs[N+j,1]*arglist$ipars["s1.sigma",1]+arglist$probs[N+j,2]*arglist$ipars["s2.sigma",1]+arglist$probs[N+j,3]*arglist$ipars["s3.sigma",1],
+				arglist$probs[N+j,1]*arglist$ipars["s1.sigma",1]+arglist$probs[N+j,2]*arglist$ipars["s2.sigma",1]+arglist$probs[N+j,3]*arglist$ipars["s3.sigma",1]+arglist$probs[N+j,4]*arglist$ipars["s4.sigma",1]
+				)
+		arglist$h[N+j] = arglist$sigma = msig
 		if(arglist$method=="mc.empirical"){
 			arglist$m = N+j
 			esim[,j] = sample(as.numeric(arglist$zresiduals[1:N]), mc.sims, replace=TRUE)*arglist$h[N+j]
@@ -446,26 +453,26 @@ starforc.an1 = function(e, arglist)
 				# should supply c(arglist$epsx[1:(T-1)],e[i])
 				# resx = as.double(rep(e[i],T))
 				resx = c(arglist$epsx[1:(T-1)],e[i])
-				tmp = switch(arglist$modelinc[43],
+				tmp = switch(arglist$modelinc[46],
 						try(.C("starxsim1", model = as.integer(arglist$modelinc), pars = as.double(arglist$ipars[,1]), 
 										idx = as.integer(arglist$idx[,1]-1), x = as.double(arglist$y[1:T]), 
-										s = double(arglist$modelinc[43]*T), res = resx, 
+										s = double(arglist$modelinc[46]*T), res = resx, 
 										prob = as.double(arglist$probs[1:T,,drop=FALSE]), 
 										constm = as.double(arglist$constm[1:T,,drop=FALSE]), m = as.integer(T-1),
 										T = as.integer(T), PACKAGE="twinkle"), silent = TRUE),
 						try(.C("starxsim2", model = as.integer(arglist$modelinc), pars = as.double(arglist$ipars[,1]), 
 										idx = as.integer(arglist$idx[,1]-1), x = as.double(arglist$y[1:T]), 
-										s = double(arglist$modelinc[43]*T), res = resx, prob = as.double(arglist$probs[1:T,,drop=FALSE]), 
+										s = double(arglist$modelinc[46]*T), res = resx, prob = as.double(arglist$probs[1:T,,drop=FALSE]), 
 										constm = as.double(arglist$constm[1:T,,drop=FALSE]), m = as.integer(T-1),
 										T = as.integer(T), PACKAGE="twinkle"), silent = TRUE),
 						try(.C("starxsim3", model = as.integer(arglist$modelinc), pars = as.double(arglist$ipars[,1]), 
 										idx = as.integer(arglist$idx[,1]-1), x = as.double(arglist$y[1:T]), 
-										s = double(arglist$modelinc[43]*T), res = resx, prob = as.double(arglist$probs[1:T,,drop=FALSE]), 
+										s = double(arglist$modelinc[46]*T), res = resx, prob = as.double(arglist$probs[1:T,,drop=FALSE]), 
 										constm = as.double(arglist$constm[1:T,,drop=FALSE]), m = as.integer(T-1),
 										T = as.integer(T), PACKAGE="twinkle"), silent = TRUE),
 						try(.C("starxsim4", model = as.integer(arglist$modelinc), pars = as.double(arglist$ipars[,1]), 
 										idx = as.integer(arglist$idx[,1]-1), x = as.double(arglist$y[1:T]), 
-										s = double(arglist$modelinc[43]*T), res = resx, prob = as.double(arglist$probs[1:T,,drop=FALSE]), 
+										s = double(arglist$modelinc[46]*T), res = resx, prob = as.double(arglist$probs[1:T,,drop=FALSE]), 
 										constm = as.double(arglist$constm[1:T,,drop=FALSE]), m = as.integer(T-1),
 										T = as.integer(T), PACKAGE="twinkle"), silent = TRUE)
 				)
@@ -482,25 +489,25 @@ starforc.an2 = function(e, arglist)
 	# use the starxsim C code
 	ans = sapply(1:n, function(i){
 				resx = c(arglist$epsx[1:(T-1)],e[i])
-				tmp = switch(arglist$modelinc[43],
+				tmp = switch(arglist$modelinc[46],
 						try(.C("starxsim1", model = as.integer(arglist$modelinc), pars = as.double(arglist$ipars[,1]), 
 										idx = as.integer(arglist$idx[,1]-1), x = as.double(arglist$y[1:T]), 
-										s = double(arglist$modelinc[43]*T), res = resx, prob = as.double(arglist$probs[1:T,,drop=FALSE]), 
+										s = double(arglist$modelinc[46]*T), res = resx, prob = as.double(arglist$probs[1:T,,drop=FALSE]), 
 										constm = as.double(arglist$constm[1:T,,drop=FALSE]), m = as.integer(T-1),
 										T = as.integer(T), PACKAGE="twinkle"), silent = TRUE),
 						try(.C("starxsim2",model = as.integer(arglist$modelinc), pars = as.double(arglist$ipars[,1]), 
 										idx = as.integer(arglist$idx[,1]-1), x = as.double(arglist$y[1:T]), 
-										s = double(arglist$modelinc[43]*T), res = resx, prob = as.double(arglist$probs[1:T,,drop=FALSE]), 
+										s = double(arglist$modelinc[46]*T), res = resx, prob = as.double(arglist$probs[1:T,,drop=FALSE]), 
 										constm = as.double(arglist$constm[1:T,,drop=FALSE]), m = as.integer(T-1),
 										T = as.integer(T), PACKAGE="twinkle"), silent = TRUE),
 						try(.C("starxsim3", model = as.integer(arglist$modelinc), pars = as.double(arglist$ipars[,1]), 
 										idx = as.integer(arglist$idx[,1]-1), x = as.double(arglist$y[1:T]), 
-										s = double(arglist$modelinc[43]*T), res = resx, prob = as.double(arglist$probs[1:T,,drop=FALSE]), 
+										s = double(arglist$modelinc[46]*T), res = resx, prob = as.double(arglist$probs[1:T,,drop=FALSE]), 
 										constm = as.double(arglist$constm[1:T,,drop=FALSE]), m = as.integer(T-1),
 										T = as.integer(T), PACKAGE="twinkle"), silent = TRUE),
 						try(.C("starxsim4", model = as.integer(arglist$modelinc), pars = as.double(arglist$ipars[,1]), 
 										idx = as.integer(arglist$idx[,1]-1), x = as.double(arglist$y[1:T]), 
-										s = double(arglist$modelinc[43]*T), res = resx, prob = as.double(arglist$probs[1:T,,drop=FALSE]), 
+										s = double(arglist$modelinc[46]*T), res = resx, prob = as.double(arglist$probs[1:T,,drop=FALSE]), 
 										constm = as.double(arglist$constm[1:T,,drop=FALSE]), m = as.integer(T-1),
 										T = as.integer(T), PACKAGE="twinkle"), silent = TRUE)
 				)
@@ -518,25 +525,25 @@ starforc.an3 = function(e, arglist)
 	ans = sapply(1:n, function(i){
 				# starxsim expects a vector...
 				resx = c(arglist$epsx[1:(T-1)],e[i])
-				tmp = switch(arglist$modelinc[43],
+				tmp = switch(arglist$modelinc[46],
 						try(.C("starxsim1", model = as.integer(arglist$modelinc), pars = as.double(arglist$ipars[,1]), 
 										idx = as.integer(arglist$idx[,1]-1), x = as.double(arglist$y[1:T]), 
-										s = double(arglist$modelinc[43]*T), res = resx, prob = as.double(arglist$probs[1:T,,drop=FALSE]), 
+										s = double(arglist$modelinc[46]*T), res = resx, prob = as.double(arglist$probs[1:T,,drop=FALSE]), 
 										constm = as.double(arglist$constm[1:T,,drop=FALSE]), m = as.integer(T-1),
 										T = as.integer(T), PACKAGE="twinkle"), silent = TRUE),
 						try(.C("starxsim2",model = as.integer(arglist$modelinc), pars = as.double(arglist$ipars[,1]), 
 										idx = as.integer(arglist$idx[,1]-1), x = as.double(arglist$y[1:T]), 
-										s = double(arglist$modelinc[43]*T), res = resx, prob = as.double(arglist$probs[1:T,,drop=FALSE]), 
+										s = double(arglist$modelinc[46]*T), res = resx, prob = as.double(arglist$probs[1:T,,drop=FALSE]), 
 										constm = as.double(arglist$constm[1:T,,drop=FALSE]), m = as.integer(T-1),
 										T = as.integer(T), PACKAGE="twinkle"), silent = TRUE),
 						try(.C("starxsim3", model = as.integer(arglist$modelinc), pars = as.double(arglist$ipars[,1]), 
 										idx = as.integer(arglist$idx[,1]-1), x = as.double(arglist$y[1:T]), 
-										s = double(arglist$modelinc[43]*T), res = resx, prob = as.double(arglist$probs[1:T,,drop=FALSE]), 
+										s = double(arglist$modelinc[46]*T), res = resx, prob = as.double(arglist$probs[1:T,,drop=FALSE]), 
 										constm = as.double(arglist$constm[1:T,,drop=FALSE]), m = as.integer(T-1),
 										T = as.integer(T), PACKAGE="twinkle"), silent = TRUE),
 						try(.C("starxsim4", model = as.integer(arglist$modelinc), pars = as.double(arglist$ipars[,1]), 
 										idx = as.integer(arglist$idx[,1]-1), x = as.double(arglist$y[1:T]), 
-										s = double(arglist$modelinc[43]*T), res = resx, prob = as.double(arglist$probs[1:T,,drop=FALSE]), 
+										s = double(arglist$modelinc[46]*T), res = resx, prob = as.double(arglist$probs[1:T,,drop=FALSE]), 
 										constm = as.double(arglist$constm[1:T,,drop=FALSE]), m = as.integer(T-1),
 										T = as.integer(T), PACKAGE="twinkle"), silent = TRUE)
 				)
@@ -554,25 +561,25 @@ starforc.mc = function(e, arglist)
 	ans = sapply(1:n, function(i){
 				# starxsim expects a vector...
 				resx = c(arglist$epsx[1:(T-1)],e[i])
-				tmp = switch(arglist$modelinc[43],
+				tmp = switch(arglist$modelinc[46],
 						try(.C("starxsim1", model = as.integer(arglist$modelinc), pars = as.double(arglist$ipars[,1]), 
 										idx = as.integer(arglist$idx[,1]-1), x = as.double(arglist$y[1:T]), 
-										s = double(arglist$modelinc[43]*T), res = resx, prob = as.double(arglist$probs[1:T,,drop=FALSE]), 
+										s = double(arglist$modelinc[46]*T), res = resx, prob = as.double(arglist$probs[1:T,,drop=FALSE]), 
 										constm = as.double(arglist$constm[1:T,,drop=FALSE]), m = as.integer(T-1),
 										T = as.integer(T), PACKAGE="twinkle"), silent = TRUE),
 						try(.C("starxsim2",model = as.integer(arglist$modelinc), pars = as.double(arglist$ipars[,1]), 
 										idx = as.integer(arglist$idx[,1]-1), x = as.double(arglist$y[1:T]), 
-										s = double(arglist$modelinc[43]*T), res = resx, prob = as.double(arglist$probs[1:T,,drop=FALSE]), 
+										s = double(arglist$modelinc[46]*T), res = resx, prob = as.double(arglist$probs[1:T,,drop=FALSE]), 
 										constm = as.double(arglist$constm[1:T,,drop=FALSE]), m = as.integer(T-1),
 										T = as.integer(T), PACKAGE="twinkle"), silent = TRUE),
 						try(.C("starxsim3", model = as.integer(arglist$modelinc), pars = as.double(arglist$ipars[,1]), 
 										idx = as.integer(arglist$idx[,1]-1), x = as.double(arglist$y[1:T]), 
-										s = double(arglist$modelinc[43]*T), res = resx, prob = as.double(arglist$probs[1:T,,drop=FALSE]), 
+										s = double(arglist$modelinc[46]*T), res = resx, prob = as.double(arglist$probs[1:T,,drop=FALSE]), 
 										constm = as.double(arglist$constm[1:T,,drop=FALSE]), m = as.integer(T-1),
 										T = as.integer(T), PACKAGE="twinkle"), silent = TRUE),
 						try(.C("starxsim4", model = as.integer(arglist$modelinc), pars = as.double(arglist$ipars[,1]), 
 										idx = as.integer(arglist$idx[,1]-1), x = as.double(arglist$y[1:T]), 
-										s = double(arglist$modelinc[43]*T), res = resx, prob = as.double(arglist$probs[1:T,,drop=FALSE]), 
+										s = double(arglist$modelinc[46]*T), res = resx, prob = as.double(arglist$probs[1:T,,drop=FALSE]), 
 										constm = as.double(arglist$constm[1:T,,drop=FALSE]), m = as.integer(T-1),
 										T = as.integer(T), PACKAGE="twinkle"), silent = TRUE)
 				)
@@ -584,8 +591,8 @@ starforc.mc = function(e, arglist)
 
 build.lagmatrix = function(modelinc, s, y, ylags)
 {
-	if(modelinc[44]==0){
-		if(modelinc[46]==2){
+	if(modelinc[47]==0){
+		if(modelinc[49]==2){
 			s = as.matrix(s)
 			XL = s
 		} else{
@@ -618,6 +625,7 @@ dstar1f = function(arglist)
 	return(list(probs = arglist$probs, pmu = arglist$pmu))
 }
 
+# CONTINUE HERE
 dstar2f = function(arglist)
 {
 	j = arglist$j
@@ -629,15 +637,16 @@ dstar2f = function(arglist)
 	N = arglist$np
 	modelinc = arglist$modelinc
 	pmu = arglist$pmu
-	if(modelinc[20]>0){
+	if(modelinc[21]>0){
 		beta = ipars[idx["s1.beta",1],1]
 	} else{
 		beta = 0
 	}
 	alpha = ipars[idx["s1.alpha",1]:idx["s1.alpha",2],1]
 	cnst = ipars[idx["s1.c",1],1]
-	pmu[N+j,1] = cnst + as.numeric(XL[N+j,,drop=FALSE]%*%alpha)
-	if(modelinc[20]>0) pmu[N+j,1] = pmu[N+j,1] + beta*pmu[N+j-1,1]
+	gamma = ipars[idx["s1.gamma",1],1]
+	pmu[N+j,1] = gamma*(-cnst + as.numeric(XL[N+j,,drop=FALSE]%*%alpha))
+	if(modelinc[21]>0) pmu[N+j,1] = pmu[N+j,1] + beta*pmu[N+j-1,1]
 	probs[N+j,1] = 1/(1+exp(-pmu[N+j,1]))
 	probs[N+j,2] = 1 - probs[N+j,1]
 	return(list(probs = probs, pmu = pmu))
@@ -655,12 +664,12 @@ dstar3f = function(arglist)
 	N = arglist$np
 	modelinc = arglist$modelinc
 	pmu = arglist$pmu
-	if(modelinc[20]>0){
+	if(modelinc[21]>0){
 		beta1 = ipars[idx["s1.beta",1],1]
 	} else{
 		beta1 = 0
 	}
-	if(modelinc[23]>0){
+	if(modelinc[25]>0){
 		beta2 = ipars[idx["s2.beta",1],1]
 	} else{
 		beta2 = 0
@@ -669,10 +678,12 @@ dstar3f = function(arglist)
 	alpha2 = ipars[idx["s2.alpha",1]:idx["s2.alpha",2],1]
 	cnst1 = ipars[idx["s1.c",1],1]
 	cnst2 = ipars[idx["s2.c",1],1]
-	pmu[N+j,1] = cnst1 + as.numeric(XL[N+j,,drop=FALSE]%*%alpha1)
-	pmu[N+j,2] = cnst2 + as.numeric(XL[N+j,,drop=FALSE]%*%alpha2)
-	if(modelinc[20]>0) pmu[N+j,1] = pmu[N+j,1] + beta1*pmu[N+j-1,1]
-	if(modelinc[23]>0) pmu[N+j,2] = pmu[N+j,2] + beta2*pmu[N+j-1,2]
+	gamma1 = ipars[idx["s1.gamma",1],1]
+	gamma2 = ipars[idx["s2.gamma",1],1]
+	pmu[N+j,1] = gamma1*(-cnst1 + as.numeric(XL[N+j,,drop=FALSE]%*%alpha1))
+	pmu[N+j,2] = gamma2*(-cnst2 + as.numeric(XL[N+j,,drop=FALSE]%*%alpha2))
+	if(modelinc[21]>0) pmu[N+j,1] = pmu[N+j,1] + beta1*pmu[N+j-1,1]
+	if(modelinc[25]>0) pmu[N+j,2] = pmu[N+j,2] + beta2*pmu[N+j-1,2]
 	probs[N+j,1] = 1/(1+exp(-pmu[N+j,1]))
 	probs[N+j,2] = 1 - probs[N+j,1]
 	
@@ -699,17 +710,17 @@ dstar4f = function(arglist)
 	N = arglist$np
 	modelinc = arglist$modelinc
 	pmu = arglist$pmu
-	if(modelinc[20]>0){
+	if(modelinc[21]>0){
 		beta1 = ipars[idx["s1.beta",1],1]
 	} else{
 		beta1 = 0
 	}
-	if(modelinc[23]>0){
+	if(modelinc[25]>0){
 		beta2 = ipars[idx["s2.beta",1],1]
 	} else{
 		beta2 = 0
 	}
-	if(modelinc[26]>0){
+	if(modelinc[29]>0){
 		beta3 = ipars[idx["s3.beta",1],1]
 	} else{
 		beta3 = 0
@@ -720,12 +731,17 @@ dstar4f = function(arglist)
 	cnst1 = ipars[idx["s1.c",1],1]
 	cnst2 = ipars[idx["s2.c",1],1]
 	cnst3 = ipars[idx["s3.c",1],1]
-	pmu[N+j,1] = cnst1 + as.numeric(XL[N+j,,drop=FALSE]%*%alpha1)
-	pmu[N+j,2] = cnst2 + as.numeric(XL[N+j,,drop=FALSE]%*%alpha2)
-	pmu[N+j,3] = cnst3 + as.numeric(XL[N+j,,drop=FALSE]%*%alpha3)
-	if(modelinc[20]>0) pmu[N+j,1] = pmu[N+j,1] + beta1*pmu[N+j-1,1]
-	if(modelinc[23]>0) pmu[N+j,2] = pmu[N+j,2] + beta2*pmu[N+j-1,2]
-	if(modelinc[26]>0) pmu[N+j,3] = pmu[N+j,3] + beta3*pmu[N+j-1,3]	
+	
+	gamma1 = ipars[idx["s1.gamma",1],1]
+	gamma2 = ipars[idx["s2.gamma",1],1]
+	gamma3 = ipars[idx["s3.gamma",1],1]
+	
+	pmu[N+j,1] = gamma1*(-cnst1 + as.numeric(XL[N+j,,drop=FALSE]%*%alpha1))
+	pmu[N+j,2] = gamma2*(-cnst2 + as.numeric(XL[N+j,,drop=FALSE]%*%alpha2))
+	pmu[N+j,3] = gamma3*(-cnst3 + as.numeric(XL[N+j,,drop=FALSE]%*%alpha3))
+	if(modelinc[21]>0) pmu[N+j,1] = pmu[N+j,1] + beta1*pmu[N+j-1,1]
+	if(modelinc[25]>0) pmu[N+j,2] = pmu[N+j,2] + beta2*pmu[N+j-1,2]
+	if(modelinc[29]>0) pmu[N+j,3] = pmu[N+j,3] + beta3*pmu[N+j-1,3]	
 	p1 = 1/(1+exp(pmu[N+j,1]))
 	p2 = 1/(1+exp(pmu[N+j,2]))
 	p3 = 1/(1+exp(pmu[N+j,3]))

@@ -31,7 +31,7 @@ void starxfilter1(int* model, double *pars, int *idx, double *x, double *res,
  * */
 	/*0 constm, 1 condm, 2 res*/
 	int j, k, ind;
-	double im = (double) model[47];
+	double im = (double) model[50];
 	if(model[0]>0) constm[i] = pars[idx[0]];
 	// Exogenous Regressor Initialization
 	if(model[2]>0)
@@ -86,7 +86,7 @@ void starxfilter2(int* model, double *pars, int *idx, double *x, double *res,
  * */
 	/*0 constm, 1 condm, 2 res*/
 	int j, k, ind;
-	double im = (double) model[47];
+	double im = (double) model[50];
 	if(model[0]>0) constm[i] = pars[idx[0]];
 	if(model[4]>0) constm[i+T] = pars[idx[4]];
 	// Exogenous Regressor Initialization
@@ -172,7 +172,7 @@ void starxfilter3(int* model, double *pars, int *idx, double *x, double *res,
 	/*0 constm, 1 condm, 2 res*/
 	int TT = 2*T;
 	int j, k, ind;
-	double im = (double) model[47];
+	double im = (double) model[50];
 	if(model[0]>0) constm[i] = pars[idx[0]];
 	if(model[4]>0) constm[i+T] = pars[idx[4]];
 	if(model[8]>0) constm[i+TT] = pars[idx[8]];
@@ -288,7 +288,7 @@ void starxfilter4(int* model, double *pars, int *idx, double *x, double *res,
 	int TT = 2*T;
 	int TTT = 3*T;
 	int j, k, ind;
-	double im = (double) model[47];
+	double im = (double) model[50];
 	if(model[0]>0) constm[i] = pars[idx[0]];
 	if(model[4]>0) constm[i+T] = pars[idx[4]];
 	if(model[8]>0) constm[i+TT] = pars[idx[8]];
@@ -423,78 +423,78 @@ void starxfilter4(int* model, double *pars, int *idx, double *x, double *res,
 void sgarchfilter(int *model, double *pars, int *idx, double *vexdata, double *e, int T, int i, double *h)
 {
 	int j, ind;
-	h[i] = h[i] + pars[idx[27]];
-	if( model[35]>0 )
+	h[i] = h[i] + pars[idx[30]];
+	if( model[38]>0 )
 	{
-		for( j=0; j<model[35]; j++ )
+		for( j=0; j<model[38]; j++ )
 		{
 			ind = i + ( T * j );
-			h[i] = h[i] + pars[idx[35]+j]*vexdata[ind];
+			h[i] = h[i] + pars[idx[38]+j]*vexdata[ind];
 		}
 	}
-	for( j=0; j<model[28]; j++ )
+	for( j=0; j<model[31]; j++ )
 	{
-		h[i] = h[i] + pars[idx[28]+j]*e[i-(j+1)];
+		h[i] = h[i] + pars[idx[31]+j]*e[i-(j+1)];
 	}
-	for( j=0; j<model[29]; j++ )
+	for( j=0; j<model[32]; j++ )
 	{
-		h[i] = h[i] + pars[idx[29]+j]*h[i-(j+1)];
+		h[i] = h[i] + pars[idx[32]+j]*h[i-(j+1)];
 	}
 }
 
 void gjrgarchfilter(int *model, double *pars, int *idx, double *vexdata, double *nres, double *e, int T, int i, double *h)
 {
 	int j, ind;
-	h[i] = h[i] + pars[idx[27]];
-	if( model[35]>0 )
+	h[i] = h[i] + pars[idx[30]];
+	if( model[38]>0 )
 	{
-		for( j=0; j<model[35]; j++ )
+		for( j=0; j<model[38]; j++ )
 		{
 			ind = i + ( T * j );
-			h[i] = h[i] + pars[idx[35]+j]*vexdata[ind];
+			h[i] = h[i] + pars[idx[38]+j]*vexdata[ind];
 		}
 	}
-	for( j=0; j<model[28]; j++ )
+	for( j=0; j<model[31]; j++ )
 	{
-		h[i] = h[i] + pars[idx[28]+j]*e[i-(j+1)]+pars[idx[30]+j]*nres[i-(j+1)];
+		h[i] = h[i] + pars[idx[31]+j]*e[i-(j+1)]+pars[idx[33]+j]*nres[i-(j+1)];
 	}
-	for( j=0; j<model[29]; j++ )
+	for( j=0; j<model[32]; j++ )
 	{
-		h[i] = h[i] + pars[idx[29]+j]*h[i-(j+1)];
+		h[i] = h[i] + pars[idx[32]+j]*h[i-(j+1)];
 	}
 }
 
 void egarchfilter(int *model, double *pars, int *idx, double meanz, double *z, double *vexdata, int T, int i, double *h)
 {
 	int j, ind;
-	h[i] = h[i] +  pars[idx[27]];
-	if( model[35]>0 )
+	h[i] = h[i] +  pars[idx[30]];
+	if( model[38]>0 )
 	{
-		for( j=0; j<model[35]; j++ )
+		for( j=0; j<model[38]; j++ )
 		{
 			ind = i + ( T * j );
-			h[i] = h[i] + pars[idx[35]+j]*vexdata[ind];
+			h[i] = h[i] + pars[idx[38]+j]*vexdata[ind];
 		}
 	}
-	for( j=0; j<model[28]; j++ )
+	for( j=0; j<model[31]; j++ )
 	{
-		h[i] = h[i] + pars[idx[28]+j]*z[i-(j+1)] + pars[idx[30]+j]*( fabs(z[i-(j+1)]) - meanz );
+		h[i] = h[i] + pars[idx[31]+j]*z[i-(j+1)] + pars[idx[33]+j]*( fabs(z[i-(j+1)]) - meanz );
 	}
-	for( j=0; j<model[29]; j++ )
+	for( j=0; j<model[32]; j++ )
 	{
-		h[i] = h[i] +  pars[idx[29]+j]*log( h[i-(j+1)] );
+		h[i] = h[i] +  pars[idx[32]+j]*log( h[i-(j+1)] );
 	}
 	h[i] = exp( h[i] );
 }
 
 void star3dfun(int *n, double *pars, double *zmat, double *v)
 {
-	// pars = {const, initp,alpha1,alpha2,beta}
+	// pars = {const,initp,alpha1,alpha2,beta,gamma}
 	int i, j, k;
 	for(i=0;i<*n;i++){
 		k = i* (*n);
 		for(j=0;j<*n;j++){
-			zmat[k+j]+=pars[0]+v[i]*pars[2]+v[*n+j]*pars[3];
+			zmat[k+j]+=pars[5]*(v[i]*pars[2]+v[*n+j]*pars[3]-pars[0]);
 			zmat[k+j]+=pars[4]*pars[1];
 			zmat[k+j]=1.0/(1.0+exp(-zmat[j+k]));
 		}

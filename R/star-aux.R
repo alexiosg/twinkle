@@ -45,37 +45,42 @@ TinY = 1.0e-8
 	
 	if(modelinc[17]>0) parnames = c(parnames, strsplit(paste('psi',1:modelinc[17],sep="",collapse="'"),"'")[[1]])
 	
-	if(modelinc[18]>0) parnames = c(parnames, "s1.c")
-	if(modelinc[19]>0) parnames = c(parnames, paste("s1.alpha",1:modelinc[19],sep=""))
-	if(modelinc[20]>0) parnames = c(parnames, "s1.beta")
+	if(modelinc[18]>0) parnames = c(parnames, "s1.gamma")
+	if(modelinc[19]>0) parnames = c(parnames, "s1.c")
+	if(modelinc[20]>0) parnames = c(parnames, paste("s1.alpha",1:modelinc[20],sep=""))
+	if(modelinc[21]>0) parnames = c(parnames, "s1.beta")
 	
-	if(modelinc[21]>0) parnames = c(parnames, "s2.c")
-	if(modelinc[22]>0) parnames = c(parnames, paste("s2.alpha",1:modelinc[22],sep=""))
-	if(modelinc[23]>0) parnames = c(parnames, "s2.beta")
+	if(modelinc[22]>0) parnames = c(parnames, "s2.gamma")
+	if(modelinc[23]>0) parnames = c(parnames, "s2.c")
+	if(modelinc[24]>0) parnames = c(parnames, paste("s2.alpha",1:modelinc[24],sep=""))
+	if(modelinc[25]>0) parnames = c(parnames, "s2.beta")
 	
-	if(modelinc[24]>0) parnames = c(parnames, "s3.c")
-	if(modelinc[25]>0) parnames = c(parnames, paste("s3.alpha",1:modelinc[25],sep=""))
-	if(modelinc[26]>0) parnames = c(parnames, "s3.beta")
+	if(modelinc[26]>0) parnames = c(parnames, "s3.gamma")
+	if(modelinc[27]>0) parnames = c(parnames, "s3.c")
+	if(modelinc[28]>0) parnames = c(parnames, paste("s3.alpha",1:modelinc[28],sep=""))
+	if(modelinc[29]>0) parnames = c(parnames, "s3.beta")
 	
-	if(modelinc[47]==4){
-		if(modelinc[27]>0) parnames = c(parnames, "s1.sigma")
-		if(modelinc[28]>0) parnames = c(parnames, "s2.sigma")
+	if(modelinc[50]==4){
+		if(modelinc[30]>0) parnames = c(parnames, "s1.sigma")
+		if(modelinc[31]>0) parnames = c(parnames, "s2.sigma")
+		if(modelinc[32]>0) parnames = c(parnames, "s3.sigma")
+		if(modelinc[33]>0) parnames = c(parnames, "s4.sigma")
 	} else{
-		if(modelinc[27]>0) parnames = c(parnames, "sigma")
-		if(modelinc[28]>0) parnames = c(parnames, "omega")
+		if(modelinc[30]>0) parnames = c(parnames, "sigma")
+		if(modelinc[31]>0) parnames = c(parnames, "omega")
+		if(modelinc[32]>0) parnames = c(parnames, paste("alpha",1:modelinc[32],sep=""))
+		if(modelinc[33]>0) parnames = c(parnames, paste("beta",1:modelinc[33],sep=""))
 	}
-	if(modelinc[29]>0) parnames = c(parnames, paste("alpha",1:modelinc[29],sep=""))
-	if(modelinc[30]>0) parnames = c(parnames, paste("beta",1:modelinc[30],sep=""))
-	if(modelinc[31]>0) parnames = c(parnames, paste("gamma",1:modelinc[31],sep=""))
-	if(modelinc[32]>0) parnames = c(parnames, paste("eta1",1:modelinc[32],sep=""))
-	if(modelinc[33]>0) parnames = c(parnames, paste("eta2",1:modelinc[33],sep=""))
-	if(modelinc[34]>0) parnames = c(parnames, paste("delta",sep=""))
-	if(modelinc[35]>0) parnames = c(parnames, paste("lambda",sep=""))
-	if(modelinc[36]>0) parnames = c(parnames, paste("vxreg",1:modelinc[36],sep=""))
-	if(modelinc[37]>0) parnames = c(parnames, paste("xi",sep=""))
-	if(modelinc[38]>0) parnames = c(parnames, paste("skew",sep=""))
-	if(modelinc[39]>0) parnames = c(parnames, paste("shape",sep=""))
-	if(modelinc[40]>0) parnames = c(parnames, paste("ghlambda",sep=""))
+	if(modelinc[34]>0) parnames = c(parnames, paste("gamma",1:modelinc[34],sep=""))
+	if(modelinc[35]>0) parnames = c(parnames, paste("eta1",1:modelinc[35],sep=""))
+	if(modelinc[36]>0) parnames = c(parnames, paste("eta2",1:modelinc[36],sep=""))
+	if(modelinc[37]>0) parnames = c(parnames, paste("delta",sep=""))
+	if(modelinc[38]>0) parnames = c(parnames, paste("lambda",sep=""))
+	if(modelinc[39]>0) parnames = c(parnames, paste("vxreg",1:modelinc[39],sep=""))
+	if(modelinc[40]>0) parnames = c(parnames, paste("xi",sep=""))
+	if(modelinc[41]>0) parnames = c(parnames, paste("skew",sep=""))
+	if(modelinc[42]>0) parnames = c(parnames, paste("shape",sep=""))
+	if(modelinc[43]>0) parnames = c(parnames, paste("ghlambda",sep=""))
 	return(parnames)
 }
 
@@ -465,6 +470,16 @@ check_fun = function(fun, n=1)
 	# star probability dynamics
 	#----------------------------------
 	if(modelinc[18]>0){
+		if(is.na(pars[idx["s1.gamma", 1]:idx["s1.gamma", 2], 5])) pars[idx["s1.gamma", 1]:idx["s1.gamma", 2], 5] = 1e-12
+		if(is.na(pars[idx["s1.gamma", 1]:idx["s1.gamma", 2], 6])) pars[idx["s1.gamma", 1]:idx["s1.gamma", 2], 6] = 1300
+		if(!is.null(start.pars$s1.gamma)) pars[idx["s1.gamma", 1]:idx["s1.gamma", 2], 1] = start.pars$s1.gamma[1] else pars[idx["s1.gamma", 1]:idx["s1.gamma", 2], 1] = 0
+		if(any(substr(fixed.names, 1, 8)=="s1.gamma")){
+			pars[idx["s1.gamma", 1]:idx["s1.gamma", 2], 1] = as.numeric(fixed.pars$s1.gamma)
+			pars[idx["s1.gamma", 1]:idx["s1.gamma", 2], 5] = fixed.pars$s1.gamma
+			pars[idx["s1.gamma", 1]:idx["s1.gamma", 2], 6] = fixed.pars$s1.gamma
+		}
+	}
+	if(modelinc[19]>0){
 		if(is.na(pars[idx["s1.c", 1]:idx["s1.c", 2], 5])) pars[idx["s1.c", 1]:idx["s1.c", 2], 5] = -1300
 		if(is.na(pars[idx["s1.c", 1]:idx["s1.c", 2], 6])) pars[idx["s1.c", 1]:idx["s1.c", 2], 6] =  1300
 		if(!is.null(start.pars$s1.c)) pars[idx["s1.c", 1]:idx["s1.c", 2], 1] = start.pars$s1.c[1] else pars[idx["s1.c", 1]:idx["s1.c", 2], 1] = 0
@@ -474,7 +489,19 @@ check_fun = function(fun, n=1)
 			pars[idx["s1.c", 1]:idx["s1.c", 2], 6] = fixed.pars$s1.c
 		}
 	}
-	if(modelinc[21]>0){
+	
+	if(modelinc[22]>0){
+		if(is.na(pars[idx["s2.gamma", 1]:idx["s2.gamma", 2], 5])) pars[idx["s2.gamma", 1]:idx["s2.gamma", 2], 5] = -1300
+		if(is.na(pars[idx["s2.gamma", 1]:idx["s2.gamma", 2], 6])) pars[idx["s2.gamma", 1]:idx["s2.gamma", 2], 6] =  1300
+		if(!is.null(start.pars$s2.gamma)) pars[idx["s2.gamma", 1]:idx["s2.gamma", 2], 1] = start.pars$s2.gamma[1] else pars[idx["s2.gamma", 1]:idx["s2.gamma", 2], 1] = 0
+		if(any(substr(fixed.names, 1, 8)=="s2.gamma")){
+			pars[idx["s2.gamma", 1]:idx["s2.gamma", 2], 1] = as.numeric(fixed.pars$s2.gamma)
+			pars[idx["s2.gamma", 1]:idx["s2.gamma", 2], 5] = fixed.pars$s2.gamma
+			pars[idx["s2.gamma", 1]:idx["s2.gamma", 2], 6] = fixed.pars$s2.gamma
+		}
+	}
+	
+	if(modelinc[23]>0){
 		if(is.na(pars[idx["s2.c", 1]:idx["s2.c", 2], 5])) pars[idx["s2.c", 1]:idx["s2.c", 2], 5] = -1300
 		if(is.na(pars[idx["s2.c", 1]:idx["s2.c", 2], 6])) pars[idx["s2.c", 1]:idx["s2.c", 2], 6] =  1300
 		if(!is.null(start.pars$s2.c)) pars[idx["s2.c", 1]:idx["s2.c", 2], 1] = start.pars$s2.c[1] else pars[idx["s2.c", 1]:idx["s2.c", 2], 1] = 0
@@ -484,7 +511,19 @@ check_fun = function(fun, n=1)
 			pars[idx["s2.c", 1]:idx["s2.c", 2], 6] = fixed.pars$s2.c
 		}
 	}
-	if(modelinc[24]>0){
+	
+	if(modelinc[26]>0){
+		if(is.na(pars[idx["s3.gamma", 1]:idx["s3.gamma", 2], 5])) pars[idx["s3.gamma", 1]:idx["s3.gamma", 2], 5] = -1300
+		if(is.na(pars[idx["s3.gamma", 1]:idx["s3.gamma", 2], 6])) pars[idx["s3.gamma", 1]:idx["s3.gamma", 2], 6] =  1300
+		if(!is.null(start.pars$s3.gamma)) pars[idx["s3.gamma", 1]:idx["s3.gamma", 2], 1] = start.pars$s3.gamma[1] else pars[idx["s3.gamma", 1]:idx["s3.gamma", 2], 1] = 0
+		if(any(substr(fixed.names, 1, 8)=="s3.gamma")){
+			pars[idx["s3.gamma", 1]:idx["s3.gamma", 2], 1] = as.numeric(fixed.pars$s3.gamma)
+			pars[idx["s3.gamma", 1]:idx["s3.gamma", 2], 5] = fixed.pars$s3.gamma
+			pars[idx["s3.gamma", 1]:idx["s3.gamma", 2], 6] = fixed.pars$s3.gamma
+		}
+	}
+	
+	if(modelinc[27]>0){
 		if(is.na(pars[idx["s3.c", 1]:idx["s3.c", 2], 5])) pars[idx["s3.c", 1]:idx["s3.c", 2], 5] = -1300
 		if(is.na(pars[idx["s3.c", 1]:idx["s3.c", 2], 6])) pars[idx["s3.c", 1]:idx["s3.c", 2], 6] =  1300
 		if(!is.null(start.pars$s3.c)) pars[idx["s3.c", 1]:idx["s3.c", 2], 1] = start.pars$s3.c[1] else pars[idx["s3.c", 1]:idx["s3.c", 2], 1] = 0
@@ -496,8 +535,8 @@ check_fun = function(fun, n=1)
 	}
 	
 	
-	if(modelinc[19]>0){
-		gpnames = paste("s1.alpha",1:modelinc[19],sep="")
+	if(modelinc[20]>0){
+		gpnames = paste("s1.alpha",1:modelinc[20],sep="")
 		pxd = which(is.na(pars[idx["s1.alpha", 1]:idx["s1.alpha", 2], 5]))
 		if(length(pxd)>0) pars[(idx["s1.alpha", 1]:idx["s1.alpha", 2])[pxd], 5] = -1300
 		pxd = which(is.na(pars[idx["s1.alpha", 1]:idx["s1.alpha", 2], 6]))
@@ -515,10 +554,15 @@ check_fun = function(fun, n=1)
 				pars[gpnames[sp[i]], 6] = as.numeric(fixed.pars[gpnames[sp[i]]])
 			}
 		}
+		# identification restriction imposition
+		pars[idx["s1.alpha", 1], 1:2] = 1
+		pars[idx["s1.alpha", 1], 4] = 0
+		pars[idx["s1.alpha", 1], 5] = 1
+		pars[idx["s1.alpha", 1], 6] = 1
 	}
 	
-	if(modelinc[22]>0){
-		gpnames = paste("s2.alpha",1:modelinc[22],sep="")
+	if(modelinc[24]>0){
+		gpnames = paste("s2.alpha",1:modelinc[24],sep="")
 		pxd = which(is.na(pars[idx["s2.alpha", 1]:idx["s2.alpha", 2], 5]))
 		if(length(pxd)>0) pars[(idx["s2.alpha", 1]:idx["s2.alpha", 2])[pxd], 5] = -1300
 		pxd = which(is.na(pars[idx["s2.alpha", 1]:idx["s2.alpha", 2], 6]))
@@ -536,10 +580,16 @@ check_fun = function(fun, n=1)
 				pars[gpnames[sp[i]], 6] = as.numeric(fixed.pars[gpnames[sp[i]]])
 			}
 		}
+		# identification restriction
+		pars[idx["s2.alpha", 1], 1:2] = 1
+		pars[idx["s2.alpha", 1], 5] = 1
+		pars[idx["s2.alpha", 1], 6] = 1
+		pars[idx["s2.alpha", 1], 4] = 0
+		
 	}
 	
-	if(modelinc[25]>0){
-		gpnames = paste("s3.alpha",1:modelinc[25],sep="")
+	if(modelinc[28]>0){
+		gpnames = paste("s3.alpha",1:modelinc[28],sep="")
 		pxd = which(is.na(pars[idx["s3.alpha", 1]:idx["s3.alpha", 2], 5]))
 		if(length(pxd)>0) pars[(idx["s3.alpha", 1]:idx["s3.alpha", 2])[pxd], 5] = -1300
 		pxd = which(is.na(pars[idx["s3.alpha", 1]:idx["s3.alpha", 2], 6]))
@@ -557,8 +607,15 @@ check_fun = function(fun, n=1)
 				pars[gpnames[sp[i]], 6] = as.numeric(fixed.pars[gpnames[sp[i]]])
 			}
 		}
+		# identification restriction
+		pars[idx["s3.alpha", 1], 1:2] = 1
+		pars[idx["s3.alpha", 1], 5] = 1
+		pars[idx["s3.alpha", 1], 6] = 1
+		pars[idx["s3.alpha", 1], 4] = 0
+		
 	}
-	if(modelinc[20]>0){
+	
+	if(modelinc[21]>0){
 		if(is.na(pars[idx["s1.beta", 1]:idx["s1.beta", 2], 5])) pars[idx["s1.beta", 1]:idx["s1.beta", 2], 5] = -0.999
 		if(is.na(pars[idx["s1.beta", 1]:idx["s1.beta", 2], 6])) pars[idx["s1.beta", 1]:idx["s1.beta", 2], 6] =  0.999
 		if(!is.null(start.pars$s1.beta)) pars[idx["s1.beta", 1]:idx["s1.beta", 2], 1] = start.pars$s1.beta[1] else pars[idx["s1.beta", 1]:idx["s1.beta", 2], 1] = 0.5
@@ -569,7 +626,7 @@ check_fun = function(fun, n=1)
 		}
 	}
 	
-	if(modelinc[23]>0){
+	if(modelinc[25]>0){
 		if(is.na(pars[idx["s2.beta", 1]:idx["s2.beta", 2], 5])) pars[idx["s2.beta", 1]:idx["s2.beta", 2], 5] = -0.999
 		if(is.na(pars[idx["s2.beta", 1]:idx["s2.beta", 2], 6])) pars[idx["s2.beta", 1]:idx["s2.beta", 2], 6] =  0.999
 		if(!is.null(start.pars$s2.beta)) pars[idx["s2.beta", 1]:idx["s2.beta", 2], 1] = start.pars$s2.beta[1] else pars[idx["s2.beta", 1]:idx["s2.beta", 2], 1] = 0.5
@@ -580,7 +637,7 @@ check_fun = function(fun, n=1)
 		}
 	}
 	
-	if(modelinc[26]>0){
+	if(modelinc[29]>0){
 		if(is.na(pars[idx["s3.beta", 1]:idx["s3.beta", 2], 5])) pars[idx["s3.beta", 1]:idx["s3.beta", 2], 5] = -0.999
 		if(is.na(pars[idx["s3.beta", 1]:idx["s3.beta", 2], 6])) pars[idx["s3.beta", 1]:idx["s3.beta", 2], 6] =  0.999
 		if(!is.null(start.pars$s3.beta)) pars[idx["s3.beta", 1]:idx["s3.beta", 2], 1] = start.pars$s3.beta[1] else pars[idx["s3.beta", 1]:idx["s3.beta", 2], 1] = 0.5
@@ -596,7 +653,7 @@ check_fun = function(fun, n=1)
 	# sigma dynamics
 	#----------------------------------
 	
-	if(modelinc[47]==0){
+	if(modelinc[50]==0){
 		.sd = sd(data)
 		pars[idx["sigma", 1]:idx["sigma", 2], 5] = 1e-12
 		pars[idx["sigma", 1]:idx["sigma", 2], 6] = 100*.sd
@@ -619,7 +676,7 @@ check_fun = function(fun, n=1)
 	# distribution
 	#----------------------------------
 	dbounds = .DistributionBounds(distribution = model$modeldesc$distribution)
-	if(modelinc[38]>0){
+	if(modelinc[41]>0){
 		pars[idx["skew", 1]:idx["skew", 2], 5] = dbounds$skew.LB
 		pars[idx["skew", 1]:idx["skew", 2], 6] = dbounds$skew.UB
 		if(is.null(start.pars$skew)) pars[idx["skew", 1]:idx["skew", 2], 1] = dbounds$skew else pars[idx["skew", 1]:idx["skew", 2], 1] = start.pars$skew[1]
@@ -629,7 +686,7 @@ check_fun = function(fun, n=1)
 			pars[idx["skew", 1]:idx["skew", 2], 6] = as.numeric(fixed.pars$skew)
 		}
 	}
-	if(modelinc[39]>0){
+	if(modelinc[42]>0){
 		pars[idx["shape", 1]:idx["shape", 2], 5] = dbounds$shape.LB
 		pars[idx["shape", 1]:idx["shape", 2], 6] = dbounds$shape.UB
 		if(is.null(start.pars$shape)) pars[idx["shape", 1]:idx["shape", 2], 1] = dbounds$shape else pars[idx["shape", 1]:idx["shape", 2], 1] = start.pars$shape[1]
@@ -639,7 +696,7 @@ check_fun = function(fun, n=1)
 			pars[idx["shape", 1]:idx["shape", 2], 6] = as.numeric(fixed.pars$shape)
 		}
 	}
-	if(modelinc[40]>0){
+	if(modelinc[43]>0){
 		pars[idx["ghlambda", 1]:idx["ghlambda", 2], 5] = dbounds$ghlambda.LB
 		pars[idx["ghlambda", 1]:idx["ghlambda", 2], 6] = dbounds$ghlambda.UB
 		if(is.null(start.pars$ghlambda)) pars[idx["ghlambda", 1]:idx["ghlambda", 2], 1] = dbounds$ghlambda else pars[idx["ghlambda", 1]:idx["ghlambda", 2], 1] = start.pars$ghlambda[1]
@@ -663,7 +720,7 @@ check_fun = function(fun, n=1)
 	fixed.names = names(fixed.pars)
 	start.names = names(start.pars)
 	
-	if(modelinc[27]>0){
+	if(modelinc[30]>0){
 		.sd = sd(data)
 		pars[idx["s1.sigma", 1]:idx["s1.sigma", 2], 5] = 1e-12
 		pars[idx["s1.sigma", 1]:idx["s1.sigma", 2], 6] = 10*.sd
@@ -674,7 +731,7 @@ check_fun = function(fun, n=1)
 			pars[idx["s1.sigma", 1]:idx["s1.sigma", 2], 6] = abs(fixed.pars$s1.sigma)
 		}
 	}
-	if(modelinc[28]>0){
+	if(modelinc[31]>0){
 		.sd = sd(data)
 		pars[idx["s2.sigma", 1]:idx["s2.sigma", 2], 5] = 1e-12
 		pars[idx["s2.sigma", 1]:idx["s2.sigma", 2], 6] = 10*.sd
@@ -685,6 +742,31 @@ check_fun = function(fun, n=1)
 			pars[idx["s2.sigma", 1]:idx["s2.sigma", 2], 6] = abs(fixed.pars$s2.sigma)
 		}
 	}
+	if(modelinc[32]>0){
+		.sd = sd(data)
+		pars[idx["s3.sigma", 1]:idx["s3.sigma", 2], 5] = 1e-12
+		pars[idx["s3.sigma", 1]:idx["s3.sigma", 2], 6] = 10*.sd
+		if(is.null(start.pars$s3.sigma)) pars[idx["s3.sigma", 1]:idx["s3.sigma", 2], 1] = .sd else pars[idx["s3.sigma", 1]:idx["s3.sigma", 2], 1] = abs(start.pars$s3.sigma[1])
+		if(any(substr(fixed.names, 1, 8) == "s3.sigma")){
+			pars[idx["s3.sigma", 1]:idx["s3.sigma", 2], 1] = abs(as.numeric(fixed.pars$s3.sigma))
+			pars[idx["s3.sigma", 1]:idx["s3.sigma", 2], 5] = abs(fixed.pars$s3.sigma)
+			pars[idx["s3.sigma", 1]:idx["s3.sigma", 2], 6] = abs(fixed.pars$s3.sigma)
+		}
+	}
+	
+	if(modelinc[31]>0){
+		.sd = sd(data)
+		pars[idx["s4.sigma", 1]:idx["s4.sigma", 2], 5] = 1e-12
+		pars[idx["s4.sigma", 1]:idx["s4.sigma", 2], 6] = 10*.sd
+		if(is.null(start.pars$s4.sigma)) pars[idx["s4.sigma", 1]:idx["s4.sigma", 2], 1] = .sd else pars[idx["s4.sigma", 1]:idx["s4.sigma", 2], 1] = abs(start.pars$s4.sigma[1])
+		if(any(substr(fixed.names, 1, 8) == "s4.sigma")){
+			pars[idx["s4.sigma", 1]:idx["s4.sigma", 2], 1] = abs(as.numeric(fixed.pars$s4.sigma))
+			pars[idx["s4.sigma", 1]:idx["s4.sigma", 2], 5] = abs(fixed.pars$s4.sigma)
+			pars[idx["s4.sigma", 1]:idx["s4.sigma", 2], 6] = abs(fixed.pars$s4.sigma)
+		}
+	}
+	
+	
 	return( pars )
 }
 # apARCH model start parameters
@@ -694,7 +776,8 @@ check_fun = function(fun, n=1)
 {
 	data = arglist$data
 	model = arglist$model
-	modelinc = model$modelinc[-c(1:21)]
+	# little trick to copy and paste the indices which are used in rugarch
+	modelinc = model$modelinc[-c(1:24)]
 	start.pars = model$start.pars
 	fixed.pars = model$fixed.pars
 	idx = model$pidx
@@ -812,7 +895,7 @@ check_fun = function(fun, n=1)
 {
 	data = arglist$data
 	model = arglist$model
-	modelinc = model$modelinc[-c(1:21)]
+	modelinc = model$modelinc[-c(1:24)]
 	start.pars = model$start.pars
 	fixed.pars = model$fixed.pars
 	idx = model$pidx
@@ -950,9 +1033,9 @@ check_fun = function(fun, n=1)
 	fit$condm = temp$condm
 	fit$constm = temp$constm
 	fit$probability = temp$probs
-	if(modelinc[44]==0) fit$pmu = temp$pmu
-	if(sum(modelinc[28:37])>0){
-		if(modelinc[47]==4) fit$sigma = temp$h else fit$sigma = sqrt(temp$h)
+	if(modelinc[47]==0) fit$pmu = temp$pmu
+	if(sum(modelinc[31:40])>0){
+		if(modelinc[50]==4) fit$sigma = temp$h else fit$sigma = sqrt(temp$h)
 	}
 	arglist$returnType = "LHT"
 	if(sum(ipars[,2])>0){
@@ -977,7 +1060,7 @@ check_fun = function(fun, n=1)
 			fit$hessian.message = "failed to invert hessian"
 		} else{
 			arglist$returnType="LHT"
-			tmp = rugarch:::robustvcv(fun = f, pars = ipars[estidx, 1], nlag = 0, hess = fit$hessian, n = T, arglist = arglist)
+			tmp = robustvcv(fun = f, pars = ipars[estidx, 1], nlag = 0, hess = fit$hessian, n = T, arglist = arglist)
 			fit$robust.cvar = tmp$vcv
 			fit$scores = jacobian(func = f, x = ipars[estidx, 1], method="Richardson", method.args=list(zero.tol=.Machine$double.eps), arglist = arglist)
 			colnames(fit$scores) = names(ipars[estidx, 1])
@@ -1010,7 +1093,7 @@ check_fun = function(fun, n=1)
 		} else{
 			nlag=min(floor(1.2*(T)^(1/3)),(T))
 			arglist$returnType = "LHT"
-			tmp = rugarch:::robustvcv(fun = f, pars = ipars[estidx,1], nlag = nlag, hess = fit$hessian, n = T, arglist = arglist)
+			tmp = robustvcv(fun = f, pars = ipars[estidx,1], nlag = nlag, hess = fit$hessian, n = T, arglist = arglist)
 			fit$robust.cvar = tmp$vcv
 			fit$scores = jacobian(func = f, x = ipars[estidx, 1], method="Richardson", method.args=list(zero.tol=.Machine$double.eps), arglist = arglist) 
 			colnames(fit$scores) = names(ipars[estidx, 1])
@@ -1174,6 +1257,44 @@ lagf.matrix = function(x, L)
 	return(y)
 }
 
+repmat = function(a, n, m)
+{
+	kronecker(matrix(1, n, m), a)
+}
+size = function(x, n = NULL)
+{
+	x = as.matrix(x)
+	if(missing(n)) sol = c(n = dim(x)[1], m = dim(x)[2]) else sol = dim(x)[n]
+	return(sol)
+}
+
+zeros = function(n = 1, m = 1)
+{
+	if(missing(m)) m = n
+	sol = matrix(0, nrow = n, ncol = m)
+	return(sol)
+}
+
+ones = function(n = 1, m = 1)
+{
+	if(missing(m)) m = n
+	sol = matrix(1, nrow = n, ncol = m)
+	return(sol)
+}
+
+newlagmatrix = function(x,nlags,xc)
+{
+	nlags = nlags+1
+	xt = size(x, 1);
+	newX = rbind(x, zeros(nlags, 1))
+	lagmatrix = repmat(newX, nlags, 1)
+	lagmatrix = matrix(lagmatrix[1:(size(lagmatrix,1)-nlags)], nrow = (xt+nlags-1), ncol = nlags)
+	lagmatrix = lagmatrix[nlags:xt,]
+	y = lagmatrix[,1]
+	x = lagmatrix[,2:nlags]
+	if(xc == 1) x = cbind(ones(size(x,1), 1), x)
+	return(data.frame(y = y, x = x))
+}
 getFFdaily = function(enddate = Sys.Date()){
 	# match:
 	# include=c("FF","MOM","STR","LTR","IND10"), 
@@ -1252,9 +1373,9 @@ getFFdaily = function(enddate = Sys.Date()){
 ar_root = function(x)
 {
 	model = x@model
-	n = model$modelinc[43]
+	n = model$modelinc[46]
 	maxar = max(idx<-model$modelinc[c("s1.phi", "s2.phi", "s3.phi", "s4.phi")])
-	cf = coef(x)
+	cf = x@model$pars[which(x@model$pars[,"Include"]==1),1]
 	if(maxar==0) return(list(use=FALSE, rmat=NA))
 	rmat  = matrix(NA, ncol = maxar, nrow=n)
 	for(i in 1:n){
@@ -1272,9 +1393,9 @@ ar_root = function(x)
 ma_root = function(x)
 {
 	model = x@model
-	n = model$modelinc[43]
+	n = model$modelinc[46]
 	maxma = max(idx<-model$modelinc[c("s1.psi", "s2.psi", "s3.psi", "s4.psi")])
-	cf = coef(x)
+	cf = x@model$pars[which(x@model$pars[,"Include"]==1),1]
 	if(maxma==0) return(list(use=FALSE, rmat=NA))
 	rmat  = matrix(NA, ncol = maxma, nrow=n)
 	for(i in 1:n){
@@ -1287,4 +1408,374 @@ ma_root = function(x)
 	colnames(rmat) = paste("Moduli",1:maxma,sep="")
 	
 	return(list(use=TRUE, rmat = rmat))
+}
+
+.checkrec = function(init, T){
+	if(is.null(init)){
+		type = 1
+		n = T
+	} else{
+		if(is.character(init)){
+			if(init == "all"){
+				type = 1
+				n = T
+			} else{
+				warning("\nstarfit-->warning: unrecognized option in rec.init...using 'all' option instead.\n")
+				type = 1
+				n = T
+			}
+		} else{
+			if(init>=1){
+				type = 1
+				if(init<=T){
+					n = round(init, 0)
+				} else{
+					n = T
+					warning("\nstarfit-->warning: rec.init value > n.obs (less out.sample)...setting value to n.obs instead.\n")
+				}
+			} else{
+				if(init>0){
+					type = 2
+					n = init
+				} else{
+					warning("\nstarfit-->warning: unrecognized option in rec.init...using 'all' option instead \n")
+					type = 1
+					n = T
+				}
+			}
+		}
+	}
+	return(list(type = type, n = n))
+}
+
+.extractdata = function(data, warn = FALSE)
+{
+	xdata = try(as.xts(data), silent = TRUE)
+	if(inherits(xdata, "try-error")){
+		if(warn) warning("\nrugarch-->warning: data indexing not recognized by xts...coercing to Date with origin 1970-01-01.")
+		if(is.data.frame(data) | is.matrix(data)) data = as.numeric(data[,1]) else data = as.numeric(data)
+		data = unname(data)
+		xdata = xts(data, as.POSIXct(as.Date(seq_along(data), origin="1970-01-01")))
+	}
+	obj = list()
+	obj$data = as.numeric(coredata(xdata))
+	obj$index = index(xdata)
+	obj$period = median(diff(index(xdata)))
+	return(obj)
+}
+
+.numeric2xts = function(data){
+	data = as.numeric(data)
+	return(xts(data, as.Date(1:NROW(data), origin="1950-01-01")))
+}
+
+.genxts = function(index0, length.out = 10, period = "days"){
+	Z = seq(index0, by = period, length.out=length.out)
+	return(Z)
+}
+
+.makedate = function(x)
+{
+	# find the divisor: 4 cases "-", "/", ".", and no divisor
+	allc = strsplit(x[1], "")
+	
+	if(any(allc[[1]] == "-")){
+		dt = "-"
+		dte = t(apply(as.data.frame(x), 1, FUN=function(z) as.numeric(strsplit(z, dt)[[1]]) ))
+		ld = max(apply(dte, 1, FUN = function(x) max(nchar(as.character(x)))))+3		
+	} else if(any(allc[[1]] == "/")){
+		dt = "/"
+		dte = t(apply(as.data.frame(x), 1, FUN=function(z) as.numeric(strsplit(z, dt)[[1]]) ))
+		ld = max(apply(dte, 1, FUN = function(x) max(nchar(as.character(x)))))+3
+	} else if(any(allc[[1]] == ".")){
+		dt = "."
+		dte = t(apply(as.data.frame(x), 1, FUN=function(z) as.numeric(strsplit(z, dt)[[1]]) ))
+	} else{
+		# this is a little more complicated
+		ld = length(allc[[1]])
+		if(ld==6){
+			dte = t(apply(as.data.frame(x), 1, FUN=function(z) 
+								as.numeric(c(substr(z, 1,2), substr(z, 3,4), substr(z, 5,6)))))
+		} else if(ld==8){
+			# 2 cases either the 4 digit year is at the beginning or else at the end
+			dte.1 = as.vector(t(apply(as.data.frame(x), 1, FUN=function(z) 
+										as.numeric(c(substr(z, 1,2))))))
+			dte.2 = as.vector(t(apply(as.data.frame(x), 1, FUN=function(z) 
+										as.numeric(c(substr(z, 5,6))))))
+			if(all(dte.1>18)){
+				dte = t(apply(as.data.frame(x), 1, FUN=function(z) 
+									as.numeric(c(substr(z, 1,4), substr(z, 5,6), substr(z, 7,8)))))
+			} else if(all(dte.2>18)){
+				dte = t(apply(as.data.frame(x), 1, FUN=function(z) 
+									as.numeric(c(substr(z, 1,2), substr(z, 3,4), substr(z, 5,8)))))
+			} else{
+				return(list(status=0))
+			}
+		} else{
+			return(list(status=0))	
+		}
+	}
+	m = 0
+	for(i in 1:3){
+		if(all(dte[,i]<=12)) m = i
+	}
+	if(m==0) return(list(status=0))
+	sq = 1:3
+	sq = sq[-m]
+	y = 0 
+	for(i in sq){
+		if(any(dte[,i]>31)) y = i
+	}
+	if(y==0) return(list(status=0))
+	d = sq[-which(sq==y)]
+	dmatrix = cbind(dte[,d], dte[,m], dte[,y])
+	colnames(dmatrix) = c("d","m","y")
+	if(ld==6){
+		ddates = as.Date(paste(dmatrix[,3], dmatrix[,2], dmatrix[,1], sep = "-"), format="%y-%m-%d")
+		dformat = "%y-%m-%d"
+	} else{
+		ddates = as.Date(paste(dmatrix[,3], dmatrix[,2], dmatrix[,1], sep = "-"), format="%Y-%m-%d")
+		dformat = "%Y-%m-%d"
+	}
+	
+	
+	return(list(datesmat = dmatrix, dates = ddates, dformat = dformat, status=1))
+}
+
+.checkallfixed = function( spec ){
+	# check that a given spec with fixed parameters
+	model = spec@model
+	pars = model$pars
+	pnames = rownames(pars)
+	estpars = pnames[as.logical(pars[,2] * pars[,3] + pars[,3] * pars[,4])]
+	return( estpars )
+	
+}
+
+# Exponential smoothing backcast
+backcastv = function(res, T, lambda, delta=2){
+	s = mean(res^delta)
+	v = (lambda^T)*s + (1-lambda)*sum(lambda^(0:(T-1))*(res^delta))
+	return(v)
+}
+
+# The following functions are based on on Kevin Sheppard's MFE toolbox
+#---------------------------------------------------------------------
+neweywestcv = function(data, nlag = NULL, center = TRUE)
+{
+	# Long-run covariance estimation using Newey-West (Bartlett) weights
+	#  if nlag empty=NULL NLAG=min(floor(1.2*T^(1/3)),T)
+	N = dim(as.matrix(data))[1]
+	if(is.null(nlag)) nlag=min(floor(1.2*N^(1/3)),N)
+	if(center) data = apply(data, 2, FUN = function(x) scale(x, center = TRUE, scale = FALSE))
+	# weights
+	bw = (nlag+1-(seq(0,nlag,by=1)))/(nlag+1)
+	cv = 1/N * t(data)%*%data
+	for(i in 1:nlag){
+		gmi = 1/N * (t(data[(i+1):N,])%*%data[1:(N-i),])
+		gpp = gmi + t(gmi)
+		cv = cv + bw[i+1]*gpp
+	}
+	return(cv)
+}
+
+robustvcv = function(fun, pars, nlag = 0, hess, n, ...)
+{
+	k = length(pars)
+	#h = apply(as.data.frame(pars), 1, FUN = function(x) max(abs(x*eps^(1/3)), 1e-7))
+	h = apply(as.data.frame(pars), 1,FUN = function(z) max(abs(z)*1e-4, 1e-9))
+	hplus =  pars+h
+	hminus = pars-h
+	hparsminus = hparsplus = matrix(pars, ncol = k, nrow = k, byrow = T)
+	diag(hparsplus) = hplus
+	diag(hparsminus) = hminus
+	
+	likelihoodsminus = likelihoodsplus = zeros(n, k)
+	likelihoodsplus =  apply(hparsplus, 1,  FUN = function(x) fun(x, ...))
+	likelihoodsminus = apply(hparsminus, 1, FUN = function(x) fun(x, ...))
+	
+	scores = zeros(n,k)
+	likpm = likelihoodsplus-likelihoodsminus
+	scores = likpm/(2*repmat(t(h), n, 1))
+	A = hess/n
+	hess = A
+	Ainv = try( solve(A), silent = TRUE )
+	if( inherits(Ainv, "try-error")){
+		info = 1
+		vcv = NA
+	} else{
+		if(nlag>0){
+			B = neweywestcv(scores, nlag)
+			vcv = (Ainv%*%B%*%Ainv)/n
+		} else{
+			B = cov(scores)
+			vcv = (Ainv%*%B%*%Ainv)/n
+		}
+		info = 0
+	}
+	return(list(vcv = vcv, scores = scores, info = info))
+}
+
+
+#----------------------------------------------------------------------------------
+# From HyperbolicDist of D.Scott
+#----------------------------------------------------------------------------------
+### Test for whole number, with tolerance for representation
+### From post by Tony Plate <tplate_at_acm.org>
+is.wholenumber <- function(x, tolerance = .Machine$double.eps^0.5){
+	if (!is.numeric(x)){
+		return(FALSE)
+	} else {
+		return(isTRUE(all(abs(x - round(x)) < tolerance)))
+	}
+}
+
+### Calculate recursion for any generalized hyperbolic distribution
+### Christine Yang Dong and David Scott from code by Diethelm Wuertz
+ghypMean = function(lambda, alpha, beta, delta, mu) 
+{	
+	gamma <- sqrt(alpha^2 - beta^2)
+	mu + delta * beta * besselRatio(delta * gamma, lambda, 1)/gamma
+}
+
+momRecursion = function(order = 12, printMatrix = FALSE) {
+	## Description:
+	##   Computes the moment coefficients recursively
+	## Setting Start Values:
+	a <- matrix(rep(0, times = order*order), ncol = order)
+	a[1, 1] <- 1
+	if (order > 1) {
+		a[2, 1] <- 1
+	}
+	## Compute all Cofficients by Recursion:
+	if (order > 1) {
+		for (d in 2:order) {
+			for (l in 2:d) {
+				a[d,l] <- a[d - 1,l - 1] + a[d - 1, l]*(2*l + 1 - d)
+			}
+		}
+	}
+	rownames(a) <- paste("order=", 1:order, sep = "")
+	colnames(a) <- paste("l=", 1:order, sep = "")
+	## Print the matrix:
+	if (printMatrix) {
+		cat("\n")
+		print(a)
+		cat("\n")
+	}
+	for (k in 1:order) {
+		L <- trunc((k + 1)/2):k
+		M <- 2*L - k
+	}
+	return(list(a = a[order, L], L = L, M = M,
+					lmin = trunc((order + 1)/2)))
+}
+
+besselRatio <- function(x, nu, orderDiff, useExpScaled = 700){
+	if (x > useExpScaled){
+		besselK(x, nu + orderDiff, expon.scaled = TRUE)/
+				besselK(x, nu, expon.scaled = TRUE)
+	}else{
+		besselK(x, nu + orderDiff)/besselK(x, nu)
+	}
+}
+
+## transfer moments about different locations for any distributions
+momChangeAbout = function(order = "all", oldMom, oldAbout, newAbout) {
+	if (!is.vector(oldMom)){
+		stop("A vector of moments must be supplied")
+	}
+	if (order == "all") {
+		## Compute moment of up to length(oldMom) about location new
+		mom <- rep(NA,length(oldMom))
+		oldMoment <- c(1,oldMom)
+		for (i in 1:length(oldMom)) {
+			oldMom <- oldMoment[1:(i+1)]
+			binomCoeff <- choose(i, 0:i)
+			diffPower <- (oldAbout - newAbout)^(i:0)
+			mom[i] <- sum(binomCoeff*diffPower*oldMom)
+		}
+	} else {
+		## Check order is within in the right range
+		if (length(oldMom) < order) {
+			stop("The length of of the vector oldMom must not be less than the
+							value of order")
+		}
+		if (!is.wholenumber(order)){
+			stop("Order must be a whole number")
+		}
+		if ((order < 0)) {
+			stop("Order must be positive")
+		}
+		## Compute moment of a specific order about location new
+		oldMom <- c(1,oldMom)
+		oldMom <- oldMom[1:(order+1)]
+		binomCoeff <- choose(order, 0:order)
+		diffPower <- (oldAbout - newAbout)^(order:0)
+		mom <- sum(binomCoeff*diffPower*oldMom)
+	}
+	
+	## Return moment
+	return(mom)
+}
+
+
+ghypMom = function(order, lambda, alpha, beta, delta, mu, momType = "raw", about = 0) {
+	
+	## check order is whole number 
+	if (!is.wholenumber(order)){
+		stop("Order must be a whole number")
+	}
+	if ((order < 0)) {
+		stop("Order must be positive")
+	} 
+	
+	## check momType
+	momType <- as.character(momType)
+	momType <- tolower(momType)
+	if (momType != "raw" & momType != "central" & momType != "mu") {
+		stop ("Unrecognised moment type")
+	} 
+	
+	## unpack parameters	
+	gm <- sqrt(alpha^2 - beta^2)
+	zeta <- delta*gm
+	
+	if (order == 0) {
+		mom <- 1
+	} else {         
+		## calculate mu moments     
+		muMom <- rep (NA,order)
+		for (i in 1:order) {
+			a <- momRecursion(order = i) 
+			coeff <- a$a              
+			betaPow <- a$M        
+			deltaPow <- 2*a$L
+			zetaPow <- a$L
+			lengthZetaPow <- length(zetaPow)
+			
+			## calculate terms and sum
+			muM <- coeff*(delta^deltaPow)*(beta^betaPow)*
+					sapply(zetaPow, besselRatio, x = zeta, nu = lambda)/(zeta^zetaPow)
+			muMom[i] <- sum(muM)   
+		}
+	}  
+	
+	if (about != 0) {                    
+		mom <- momChangeAbout(order = order, oldMom = muMom, 
+				oldAbout = mu, newAbout = about)
+	} else {
+		if (momType == "mu") {
+			mom = muMom[order]
+		} else if (momType == "raw") {
+			about <- 0
+			mom <- momChangeAbout(order = order, oldMom = muMom, 
+					oldAbout = mu, newAbout = about)
+		} else if (momType == "central") {
+			about <- ghypMean(lambda, alpha, beta, delta, mu)
+			mom <- momChangeAbout(order = order, oldMom = muMom, 
+					oldAbout = mu, newAbout = about)
+		}
+	}  
+	return(mom)
 }

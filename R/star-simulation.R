@@ -22,8 +22,8 @@
 	mxn = modelinc[3]
 	vxn = modelinc[36]
 	sxn = modelinc[19]
-	mar = max(c(modelinc[c(2,6,10,14,4,8,12,16,17)], ifelse(modelinc[46]==1, max(model$modeldata$ylags), 0)))
-	m = max(c(modelinc[29:30], mar))
+	mar = max(c(modelinc[c(2,6,10,14,4,8,12,16,17)], ifelse(modelinc[49]==1, max(model$modeldata$ylags), 0)))
+	m = max(c(modelinc[32:33], mar))
 	# use coredata to extract pre-values since we do not work with xts in simulation
 	if(mxn>0){
 		if(is.null(xregsim)){
@@ -95,7 +95,7 @@
 		for(i in 1:m.sim) vexsimlist[[i]]=0
 	}
 	
-	if(modelinc[46]==2 && sxn>0){
+	if(modelinc[49]==2 && sxn>0){
 		if(is.null(ssim)){
 			stop("\nstarsim-->error: ssim cannot be NULL in a STAR model which uses 's' in the probability dynamics!\n")
 		}
@@ -137,22 +137,22 @@
 {
 	modelinc = model$modelinc
 	mxn = modelinc[3]
-	vxn = modelinc[36]
-	sxn = modelinc[19]
+	vxn = modelinc[39]
+	sxn = modelinc[20]
 	# do we have external data (their indices match so we can loop and check)?
 	N = NA
-	if(modelinc[46]==2){
+	if(modelinc[49]==2){
 		N = nrow(model$modeldata$s)
 	}
 	if(modelinc[3]>0){
 		N = nrow(model$modeldata$mexdata)
 	}
-	if(modelinc[36]>0){
+	if(modelinc[39]>0){
 		N = nrow(model$modeldata$vexdata)
 	}
 	# AR, MA (state), MA (linear) terms + ylags
-	mar = max(c(modelinc[c(2,6,10,14,4,8,12,16,17)], ifelse(modelinc[46]==1, max(model$modeldata$ylags), 0)))
-	m = max(c(modelinc[29:30], mar))
+	mar = max(c(modelinc[c(2,6,10,14,4,8,12,16,17)], ifelse(modelinc[49]==1, max(model$modeldata$ylags), 0)))
+	m = max(c(modelinc[32:33], mar))
 	# use coredata to extract pre-values since we do not work with xts in simulation
 	if(mxn>0){
 		if(is.null(xregsim)){
@@ -226,7 +226,7 @@
 		for(i in 1:m.sim) vexsimlist[[i]]=0
 	}
 	
-	if(modelinc[46]==2 && sxn>0){
+	if(modelinc[49]==2 && sxn>0){
 		if(is.null(ssim)){
 			stop("\nstarpath-->error: ssim cannot be NULL in a STAR model which uses 's' in the probability dynamics!\n")
 		}
@@ -307,15 +307,16 @@ dstar2sim = function(arglist)
 	idx = model$pidx
 	XL = arglist$XL
 	modelinc = model$modelinc
-	if(modelinc[20]>0){
+	if(modelinc[21]>0){
 		beta = ipars[idx["s1.beta",1],1]
 	} else{
 		beta = 0
 	}
+	gamma = ipars[idx["s1.gamma",1],1]
 	alpha = ipars[idx["s1.alpha",1]:idx["s1.alpha",2],1]
 	cnst = ipars[idx["s1.c",1],1]
-	pmu = cnst + as.numeric(XL%*%alpha)
-	if(modelinc[20]>0) pmu = .recfilter(as.double(pmu), as.double(beta), init = as.double(tail(arglist$pmu, 1)))
+	pmu = gamma*(-cnst + as.numeric(XL%*%alpha))
+	if(modelinc[21]>0) pmu = .recfilter(as.double(pmu), as.double(beta), init = as.double(tail(arglist$pmu, 1)))
 	probs = matrix(NA, ncol = 2, nrow = NROW(pmu))
 	probs[,1] = 1/(1+exp(-pmu))
 	probs[,2] = 1 - probs[,1]
@@ -331,12 +332,12 @@ dstar3sim = function(arglist)
 	idx = model$pidx
 	XL = arglist$XL
 	modelinc = model$modelinc
-	if(modelinc[20]>0){
+	if(modelinc[21]>0){
 		beta1 = ipars[idx["s1.beta",1],1]
 	} else{
 		beta1 = 0
 	}
-	if(modelinc[23]>0){
+	if(modelinc[25]>0){
 		beta2 = ipars[idx["s2.beta",1],1]
 	} else{
 		beta2 = 0
@@ -345,10 +346,14 @@ dstar3sim = function(arglist)
 	alpha2 = ipars[idx["s2.alpha",1]:idx["s2.alpha",2],1]
 	cnst1 = ipars[idx["s1.c",1],1]
 	cnst2 = ipars[idx["s2.c",1],1]
-	pmu1 = cnst1 + as.numeric(XL%*%alpha1)
-	pmu2 = cnst2 + as.numeric(XL%*%alpha2)
-	if(modelinc[20]>0) pmu1 = .recfilter(as.double(pmu1), as.double(beta1), init = as.double(tail(arglist$pmu[,1],1)))
-	if(modelinc[23]>0) pmu2 = .recfilter(as.double(pmu2), as.double(beta2), init = as.double(tail(arglist$pmu[,2],1)))
+	
+	gamma1 = ipars[idx["s1.gamma",1],1]
+	gamma2 = ipars[idx["s2.gamma",1],1]
+	
+	pmu1 = gamma1*(-cnst1 + as.numeric(XL%*%alpha1))
+	pmu2 = gamma2*(-cnst2 + as.numeric(XL%*%alpha2))
+	if(modelinc[21]>0) pmu1 = .recfilter(as.double(pmu1), as.double(beta1), init = as.double(tail(arglist$pmu[,1],1)))
+	if(modelinc[25]>0) pmu2 = .recfilter(as.double(pmu2), as.double(beta2), init = as.double(tail(arglist$pmu[,2],1)))
 	p1 = 1/(1+exp(pmu1))
 	p2 = 1/(1+exp(pmu2))
 	p12 = p1+p2
@@ -370,17 +375,17 @@ dstar4sim = function(arglist)
 	idx = model$pidx
 	XL = arglist$XL
 	modelinc = model$modelinc
-	if(modelinc[20]>0){
+	if(modelinc[21]>0){
 		beta1 = ipars[idx["s1.beta",1],1]
 	} else{
 		beta1 = 0
 	}
-	if(modelinc[23]>0){
+	if(modelinc[25]>0){
 		beta2 = ipars[idx["s2.beta",1],1]
 	} else{
 		beta2 = 0
 	}
-	if(modelinc[26]>0){
+	if(modelinc[29]>0){
 		beta3 = ipars[idx["s3.beta",1],1]
 	} else{
 		beta3 = 0
@@ -390,14 +395,19 @@ dstar4sim = function(arglist)
 	alpha3 = ipars[idx["s3.alpha",1]:idx["s3.alpha",2],1]
 	cnst1 = ipars[idx["s1.c",1],1]
 	cnst2 = ipars[idx["s2.c",1],1]
-	cnst3 = ipars[idx["s3.c",1],1]	
-	pmu1 = cnst1 + as.numeric(XL%*%alpha1)
-	pmu2 = cnst2 + as.numeric(XL%*%alpha2)
-	pmu3 = cnst3 + as.numeric(XL%*%alpha3)
+	cnst3 = ipars[idx["s3.c",1],1]
 	
-	if(modelinc[20]>0) pmu1 = .recfilter(as.double(pmu1), as.double(beta1), init = as.double(tail(arglist$pmu[,1],1)))
-	if(modelinc[23]>0) pmu2 = .recfilter(as.double(pmu2), as.double(beta2), init = as.double(tail(arglist$pmu[,2],1)))
-	if(modelinc[26]>0) pmu3 = .recfilter(as.double(pmu3), as.double(beta3), init = as.double(tail(arglist$pmu[,3],1)))
+	gamma1 = ipars[idx["s1.gamma",1],1]
+	gamma2 = ipars[idx["s2.gamma",1],1]
+	gamma3 = ipars[idx["s3.gamma",1],1]
+	
+	pmu1 = gamma1*(-cnst1 + as.numeric(XL%*%alpha1))
+	pmu2 = gamma2*(-cnst2 + as.numeric(XL%*%alpha2))
+	pmu3 = gamma3*(-cnst3 + as.numeric(XL%*%alpha3))
+	
+	if(modelinc[21]>0) pmu1 = .recfilter(as.double(pmu1), as.double(beta1), init = as.double(tail(arglist$pmu[,1],1)))
+	if(modelinc[25]>0) pmu2 = .recfilter(as.double(pmu2), as.double(beta2), init = as.double(tail(arglist$pmu[,2],1)))
+	if(modelinc[29]>0) pmu3 = .recfilter(as.double(pmu3), as.double(beta3), init = as.double(tail(arglist$pmu[,3],1)))
 	p1 = 1/(1+exp(pmu1))
 	p2 = 1/(1+exp(pmu2))
 	p3 = 1/(1+exp(pmu3))
@@ -437,9 +447,11 @@ dstar2path = function(arglist)
 	}
 	alpha = ipars[idx["s1.alpha",1]:idx["s1.alpha",2],1]
 	cnst = ipars[idx["s1.c",1],1]
-	pmu = cnst + as.numeric(XL%*%alpha)
-	if(modelinc[20]>0){
-		init1 = (cnst+sum(alpha * colMeans(XL))) /(1-beta)
+	gamma = ipars[idx["s1.gamma",1],1]
+	
+	pmu = gamma*(-cnst + as.numeric(XL%*%alpha))
+	if(modelinc[21]>0){
+		init1 = ( gamma*(-cnst+sum(alpha * colMeans(XL))) ) /(1-beta)
 		pmu = .recfilter(as.double(pmu), as.double(beta), init = as.double(init1))
 	}
 	probs = matrix(NA, ncol = 2, nrow = NROW(pmu))
@@ -457,12 +469,12 @@ dstar3path = function(arglist)
 	idx = model$pidx
 	XL = arglist$XL
 	modelinc = model$modelinc
-	if(modelinc[20]>0){
+	if(modelinc[21]>0){
 		beta1 = ipars[idx["s1.beta",1],1]
 	} else{
 		beta1 = 0
 	}
-	if(modelinc[23]>0){
+	if(modelinc[25]>0){
 		beta2 = ipars[idx["s2.beta",1],1]
 	} else{
 		beta2 = 0
@@ -471,14 +483,17 @@ dstar3path = function(arglist)
 	alpha2 = ipars[idx["s2.alpha",1]:idx["s2.alpha",2],1]
 	cnst1 = ipars[idx["s1.c",1],1]
 	cnst2 = ipars[idx["s2.c",1],1]
-	pmu1 = cnst1 + as.numeric(XL%*%alpha1)
-	pmu2 = cnst2 + as.numeric(XL%*%alpha2)
-	if(modelinc[20]>0){
-		init1 = (cnst1+sum(alpha1 * colMeans(XL))) /(1-beta1)
+	gamma1 = ipars[idx["s1.gamma",1],1]
+	gamma2 = ipars[idx["s2.gamma",1],1]
+	
+	pmu1 = gamma1*(-cnst1 + as.numeric(XL%*%alpha1))
+	pmu2 = gamma2*(-cnst2 + as.numeric(XL%*%alpha2))
+	if(modelinc[21]>0){
+		init1 = (gamma1*(-cnst1+sum(alpha1 * colMeans(XL)))) /(1-beta1)
 		pmu1 = .recfilter(as.double(pmu1), as.double(beta1), init = as.double(init1))
 	}
-	if(modelinc[23]>0){
-		init2 = (cnst2+sum(alpha2 * colMeans(XL))) /(1-beta2)
+	if(modelinc[25]>0){
+		init2 = (gamma2*(-cnst2+sum(alpha2 * colMeans(XL)))) /(1-beta2)
 		pmu2 = .recfilter(as.double(pmu2), as.double(beta2), init = as.double(init2))
 	}
 	p1 = 1/(1+exp(pmu1))
@@ -502,17 +517,17 @@ dstar4path = function(arglist)
 	idx = model$pidx
 	XL = arglist$XL
 	modelinc = model$modelinc
-	if(modelinc[20]>0){
+	if(modelinc[21]>0){
 		beta1 = ipars[idx["s1.beta",1],1]
 	} else{
 		beta1 = 0
 	}
-	if(modelinc[23]>0){
+	if(modelinc[25]>0){
 		beta2 = ipars[idx["s2.beta",1],1]
 	} else{
 		beta2 = 0
 	}
-	if(modelinc[26]>0){
+	if(modelinc[29]>0){
 		beta3 = ipars[idx["s3.beta",1],1]
 	} else{
 		beta3 = 0
@@ -522,23 +537,26 @@ dstar4path = function(arglist)
 	alpha3 = ipars[idx["s3.alpha",1]:idx["s3.alpha",2],1]
 	cnst1 = ipars[idx["s1.c",1],1]
 	cnst2 = ipars[idx["s2.c",1],1]
-	cnst3 = ipars[idx["s3.c",1],1]	
-	pmu1 = cnst1 + as.numeric(XL%*%alpha1)
-	pmu2 = cnst2 + as.numeric(XL%*%alpha2)
-	pmu3 = cnst3 + as.numeric(XL%*%alpha3)
+	cnst3 = ipars[idx["s3.c",1],1]
+	gamma1 = ipars[idx["s1.gamma",1],1]
+	gamma2 = ipars[idx["s2.gamma",1],1]
+	gamma3 = ipars[idx["s3.gamma",1],1]
+	pmu1 = gamma1*(-cnst1 + as.numeric(XL%*%alpha1))
+	pmu2 = gamma2*(-cnst2 + as.numeric(XL%*%alpha2))
+	pmu3 = gamma3*(-cnst3 + as.numeric(XL%*%alpha3))
 	
-	if(modelinc[20]>0){
-		init1 = (cnst1+sum(alpha1 * colMeans(XL))) /(1-beta1)
+	if(modelinc[21]>0){
+		init1 = (gamma1*(-cnst1+sum(alpha1 * colMeans(XL)))) /(1-beta1)
 		pmu1 = .recfilter(as.double(pmu1), as.double(beta1), init = as.double(init1))
 	}
-	if(modelinc[23]>0){
-		init2 = (cnst2+sum(alpha2 * colMeans(XL))) /(1-beta2)
+	if(modelinc[25]>0){
+		init2 = (gamma2*(-cnst2+sum(alpha2 * colMeans(XL)))) /(1-beta2)
 		pmu2 = .recfilter(as.double(pmu2), as.double(beta2), init = as.double(init2))
 	}
-	if(modelinc[26]>0){
-		init3 = (cnst3+sum(alpha3 * colMeans(XL))) /(1-beta3)
+	if(modelinc[29]>0){
+		init3 = (gamma3*(-cnst3+sum(alpha3 * colMeans(XL)))) /(1-beta3)
 		pmu3 = .recfilter(as.double(pmu3), as.double(beta3), init = as.double(init3))
-	}	
+	}
 	p1 = 1/(1+exp(pmu1))
 	p2 = 1/(1+exp(pmu2))
 	p3 = 1/(1+exp(pmu3))

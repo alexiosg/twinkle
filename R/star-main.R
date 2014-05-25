@@ -50,24 +50,24 @@
 	}
 	n.start = round(out.sample,0)
 	# extract data and index
-	xdata = rugarch:::.extractdata(data)
+	xdata = .extractdata(data)
 	if(!is.numeric(out.sample)) stop("\nstarfit-->error: out.sample must be numeric\n")
 	if(as.numeric(out.sample)<0) stop("\nstarfit-->error: out.sample must be positive\n")
 	n = length(xdata$data)
 	#---------------------------------------------------------
 	# check x (state regressors)
 	#---------------------------------------------------------
-	if(modelinc[44]==0){
-		if(modelinc[46]==2){
+	if(modelinc[47]==0){
+		if(modelinc[49]==2){
 			chk = all(index(data)==index(model$modeldata$s))
 			if(!is.logical(chk) | chk == FALSE){
 				print(paste("\n",chk,sep=""))
-				stop("\nstarfit-->error: data and x indices do not match\n")
+				stop("\nstarfit-->error: data and s indices do not match\n")
 			}
 			XL = model$modeldata$s[1:(n-n.start), , drop = FALSE]
 		} else{
 			# we apply yfun here if it is needed for efficiency:
-			if(modelinc[45]==1){
+			if(modelinc[48]==1){
 				ytmp = xts(model$modeldata$fun(data[1:(n-n.start),1]), index(data[1:(n-n.start),1]))
 			} else{
 				ytmp = data[1:(n-n.start),1]
@@ -90,7 +90,7 @@
 	# check fixed.probs (in case a set of fixed state probabilities
 	# have been provided)
 	#---------------------------------------------------------
-	if(modelinc[44]==1){
+	if(modelinc[47]==1){
 		chk = all(index(data)==index(model$fixed.prob))
 		if(!is.logical(chk) | chk == FALSE){
 			print(paste("\n",chk,sep=""))
@@ -98,7 +98,7 @@
 		}
 		probs = coredata(model$fixed.prob[1:(n-n.start), , drop = FALSE])
 	} else{
-		probs = matrix(0, ncol = modelinc[43], nrow = (n-n.start))
+		probs = matrix(0, ncol = modelinc[46], nrow = (n-n.start))
 	}
 	#---------------------------------------------------------
 	
@@ -117,7 +117,7 @@
 		mexdata = NULL
 	}
 	
-	if(modelinc[36] > 0){
+	if(modelinc[39] > 0){
 		chk = all(index(data)==index(model$modeldata$vexdata))
 		if(!is.logical(chk) | chk == FALSE){
 			print(paste("\n",chk,sep=""))
@@ -149,7 +149,7 @@
 	arglist$trace = trace
 	arglist$fit.control = fit.control
 	model$modeldata$T = T = length(as.numeric(data))
-	recinit = rugarch:::.checkrec(fit.control$rec.init, T)
+	recinit = .checkrec(fit.control$rec.init, T)
 	arglist$recinit = recinit
 	dist = model$modeldesc$distribution
 	arglist$data = data
@@ -199,19 +199,23 @@
 	arglist$fit.control = fit.control
 	# need to control for use of parallel environment which cannot handle the
 	# calls between the locally stored environment
-	if(modelinc[47]>0){
-		if(modelinc[47]==4){
-			# special case for 2-state STAR model with Normal Mixture
-			llfun = .stars2dLLH2mix
+	if(modelinc[50]>0){
+		if(modelinc[50]==4){
+			# There is no 1-state mixture so just use the 2-state for the switching
+			llfun = switch(modelinc[46],
+					.stars2dLLH2mix,
+					.stars2dLLH2mix,
+					.stars3dLLH3mix,
+					.stars4dLLH4mix)
 		} else{
-			llfun = switch(modelinc[43],
+			llfun = switch(modelinc[46],
 					.stars1dLLH,
 					.stars2dLLH,
 					.stars3dLLH,
 					.stars4dLLH)
 		}
 	} else{
-		llfun = switch(modelinc[43],
+		llfun = switch(modelinc[46],
 				.stars1sLLH,
 				.stars2sLLH,
 				.stars3sLLH,
@@ -231,7 +235,7 @@
 		timer = Sys.time()-tic		
 		if(!is.null(sol$pars)){
 			ipars[estidx, 1] = sol$pars
-			if(modelinc[47]>0 && modelinc[28]==0){
+			if(modelinc[50]>0 && modelinc[31]==0){
 				# call it once more to get omega
 				ipars[pidx["omega",1], 1] = get("omega", starenv)
 			}
@@ -307,15 +311,15 @@
 	}
 	n.start = round(out.sample,0)
 	# extract data and index
-	xdata = rugarch:::.extractdata(data)
+	xdata = .extractdata(data)
 	if(!is.numeric(out.sample)) stop("\nstarfit-->error: out.sample must be numeric\n")
 	if(as.numeric(out.sample)<0) stop("\nstarfit-->error: out.sample must be positive\n")
 	n = length(xdata$data)
 	#---------------------------------------------------------
 	# check x (state regressors)
 	#---------------------------------------------------------
-	if(modelinc[44]==0){
-		if(modelinc[46]==2){
+	if(modelinc[47]==0){
+		if(modelinc[49]==2){
 			chk = all(index(data)==index(model$modeldata$s))
 			if(!is.logical(chk) | chk == FALSE){
 				print(paste("\n",chk,sep=""))
@@ -324,7 +328,7 @@
 			XL = model$modeldata$s[1:(n-n.start), , drop = FALSE]
 		} else{
 			# we apply yfun here if it is needed for efficiency:
-			if(modelinc[45]==1){
+			if(modelinc[48]==1){
 				ytmp = xts(model$modeldata$fun(data[1:(n-n.start),1]), index(data[1:(n-n.start),1]))
 			} else{
 				ytmp = data[1:(n-n.start),1]
@@ -346,7 +350,7 @@
 	# check fixed.probs (in case a set of fixed state probabilities
 	# have been provided)
 	#---------------------------------------------------------
-	if(modelinc[44]==1){
+	if(modelinc[47]==1){
 		chk = all(index(data)==index(model$fixed.prob))
 		if(!is.logical(chk) | chk == FALSE){
 			print(paste("\n",chk,sep=""))
@@ -354,7 +358,7 @@
 		}
 		probs = coredata(model$fixed.prob[1:(n-n.start), , drop = FALSE])
 	} else{
-		probs = matrix(0, ncol = modelinc[43], nrow = (n-n.start))
+		probs = matrix(0, ncol = modelinc[46], nrow = (n-n.start))
 	}
 	#---------------------------------------------------------
 	
@@ -373,7 +377,7 @@
 		mexdata = NULL
 	}
 	
-	if(modelinc[36] > 0){
+	if(modelinc[39] > 0){
 		chk = all(index(data)==index(model$modeldata$vexdata))
 		if(!is.logical(chk) | chk == FALSE){
 			print(paste("\n",chk,sep=""))
@@ -405,7 +409,7 @@
 	arglist$trace = trace
 	arglist$fit.control = fit.control
 	model$modeldata$T = T = length(as.numeric(data))
-	recinit = rugarch:::.checkrec(fit.control$rec.init, T)
+	recinit = .checkrec(fit.control$rec.init, T)
 	arglist$recinit = recinit
 	dist = model$modeldesc$distribution
 	arglist$data = data
@@ -456,19 +460,22 @@
 	arglist$transform=TRUE
 	# need to control for use of parallel environment which cannot handle the
 	# calls between the locally stored environment
-	if(modelinc[47]>0){
-		if(modelinc[47]==4){
-			# special case for 2-state STAR model with Normal Mixture
-			llfun = .stars2dLLH2mix
+	if(modelinc[50]>0){
+		if(modelinc[50]==4){
+			llfun = switch(modelinc[46],
+					.stars2dLLH2mix,
+					.stars2dLLH2mix,
+					.stars3dLLH3mix,
+					.stars4dLLH4mix)
 		} else{
-			llfun = switch(modelinc[43],
+			llfun = switch(modelinc[46],
 					.stars1dLLH,
 					.stars2dLLH,
 					.stars3dLLH,
 					.stars4dLLH)
 		}
 	} else{
-		llfun = switch(modelinc[43],
+		llfun = switch(modelinc[46],
 				.stars1sLLH,
 				.stars2sLLH,
 				.stars3sLLH,
@@ -510,10 +517,19 @@
 	modelinc = model$modelinc
 	solver.control = list(trace=0, method="BFGS", reltol=1e-6, maxit=1000)
 	idx = spec@model$pos.matrix
-	if(max(idx[1:17,2])>0) idx_lin = 1:max(idx[1:17,2]) else idx_lin = NULL
-	if(max(idx[18:26,2])==0) stop("\nstarfit-->error: strategy cannot be used when (most probably) state probabilities are fixed...")
-	idx_state = (max(idx[1:17,2])+1):max(idx[18:26,2])
-	idx_other = (max(idx_state)+1):max(idx[27:40,2])
+	pest = spec@model$pars[,4]
+	ptyp = spec@model$pars[,8]
+	plin = 1:length(which(pest==1 & ptyp==1))
+	nn = max(plin, 0)
+	if(length(which(pest==1 & ptyp==2))>0){
+		pnlin = (nn+1):(nn+length(which(pest==1 & ptyp==2)))
+		nn = max(pnlin, 0)
+	}
+	if(length(which(pest==1 & ptyp==3))>0) pnoth = (nn+1):(nn+length(which(pest==1 & ptyp==3)))
+	if(length(plin)>0) idx_lin = plin else idx_lin = NULL
+	if(length(pnlin)==0) stop("\nstarfit-->error: strategy cannot be used when (most probably) state probabilities are fixed...")
+	idx_state = pnlin
+	idx_other = pnoth
 	sol = .starfitx(spec, data, out.sample = out.sample, solver.control = solver.control,
 			fit.control = fit.control, only.start=TRUE)
 	# this returns a set of (transformed) parameters
@@ -580,7 +596,7 @@
 	fit.control$rec.init = rec.init
 	n.start = round(out.sample,0)
 	# extract data and index
-	xdata = rugarch:::.extractdata(data)
+	xdata = .extractdata(data)
 	if(!is.numeric(out.sample)) stop("\nstarfilter-->error: out.sample must be numeric\n")
 	if(as.numeric(out.sample)<0) stop("\nstarfilter-->error: out.sample must be positive\n")
 	n = length(xdata$data)
@@ -588,8 +604,8 @@
 	#---------------------------------------------------------
 	# check x (state regressors)
 	#---------------------------------------------------------
-	if(modelinc[44]==0){
-		if(modelinc[46]==2){
+	if(modelinc[47]==0){
+		if(modelinc[49]==2){
 			chk = all.equal(index(data), index(model$modeldata$s))
 			if(!is.logical(chk) | chk == FALSE){
 				print(paste("\n",chk,sep=""))
@@ -597,7 +613,7 @@
 			}
 			XL = model$modeldata$s[1:(n-n.start), , drop = FALSE]
 		} else{
-			if(modelinc[45]==1){
+			if(modelinc[48]==1){
 				ytmp = xts(model$modeldata$fun(data[1:(n-n.start),1]), index(data[1:(n-n.start),1]))
 			} else{
 				ytmp = data[1:(n-n.start),1]
@@ -619,7 +635,7 @@
 	# check fixed.probs (in case a set of fixed state probabilities
 	# have been provided)
 	#---------------------------------------------------------
-	if(modelinc[44]==1){
+	if(modelinc[47]==1){
 		chk = all.equal(index(data), index(model$fixed.prob))
 		if(!is.logical(chk) | chk == FALSE){
 			print(paste("\n",chk,sep=""))
@@ -627,7 +643,7 @@
 		}
 		probs = coredata(model$fixed.prob[1:(n-n.start), , drop = FALSE])
 	} else{
-		probs = matrix(0, ncol = modelinc[43], nrow = (n-n.start))
+		probs = matrix(0, ncol = modelinc[46], nrow = (n-n.start))
 	}
 	#---------------------------------------------------------
 	
@@ -646,7 +662,7 @@
 		mexdata = NULL
 	}
 	
-	if(modelinc[36] > 0){
+	if(modelinc[39] > 0){
 		chk = all(index(data)==index(model$modeldata$vexdata))
 		if(!is.logical(chk) | chk == FALSE){
 			print(paste("\n",chk,sep=""))
@@ -679,7 +695,7 @@
 	arglist$N = Nx
 	arglist$fit.control = list()
 	model$modeldata$T = T = length(as.numeric(data))
-	recinit = rugarch:::.checkrec(rec.init, Nx)
+	recinit = .checkrec(rec.init, Nx)
 	arglist$recinit = recinit
 	dist = model$modeldesc$distribution
 	arglist$data = data
@@ -700,19 +716,22 @@
 	arglist$returnType ="all"
 	# need to control for use of parallel environment which cannot handle the
 	# calls between the locally stored environment
-	if(modelinc[47]>0){
-		if(modelinc[47]==4){
-			# special case for 2-state STAR model with Normal Mixture
-			llfun = .stars2dLLH2mix
+	if(modelinc[50]>0){
+		if(modelinc[50]==4){
+			llfun = switch(modelinc[46],
+					.stars2dLLH2mix,
+					.stars2dLLH2mix,
+					.stars3dLLH3mix,
+					.stars4dLLH4mix)
 		} else{
-			llfun = switch(modelinc[43],
+			llfun = switch(modelinc[46],
 					.stars1dLLH,
 					.stars2dLLH,
 					.stars3dLLH,
 					.stars4dLLH)
 		}
 	} else{
-		llfun = switch(modelinc[43],
+		llfun = switch(modelinc[46],
 				.stars1sLLH,
 				.stars2sLLH,
 				.stars3sLLH,
@@ -730,8 +749,8 @@
 	filter$constm = temp$constm
 	filter$probability = temp$probs
 	filter$pmu = temp$pmu
-	if(sum(modelinc[28:37])>0){
-		if(modelinc[47]==4) filter$sigma = temp$h else filter$sigma = sqrt(temp$h)
+	if(sum(modelinc[31:40])>0){
+		if(modelinc[50]==4) filter$sigma = temp$h else filter$sigma = sqrt(temp$h)
 	}
 	filter$ipars = model$pars
 	model$modeldata$data = origdata
@@ -771,7 +790,7 @@
 	xreg = .forcregressors(model, external.forecasts$xregfor, 
 			external.forecasts$vregfor, external.forecasts$sfor, 
 			external.forecasts$probfor, n.ahead, Nor, out.sample = ns, n.roll)
-	if(modelinc[47]>0) dynamic = TRUE else dynamic = FALSE
+	if(modelinc[50]>0) dynamic = TRUE else dynamic = FALSE
 	# need 1 extra for case that n.roll==out.sample+1 (extend the index)
 	fcreq = ifelse(ns >= (n.ahead+n.roll), n.ahead+n.roll, ns+1)
 	pindex = as.POSIXct(index)
@@ -779,31 +798,31 @@
 	
 	# This is only for the 1-ahead filter
 	if(modelinc[3]>0) mxfx = xts(xreg$mxf[1:(N + fcreq),,drop=FALSE], newindex[1:(N + fcreq)]) else mxfx = NULL
-	if(modelinc[36]>0) vxfx = xts(xreg$vxf[1:(N + fcreq),,drop=FALSE], newindex[1:(N + fcreq)]) else vxfx = NULL
-	if(modelinc[19]>0 && modelinc[46]==2) sxfx = xts(xreg$sxf[1:(N + fcreq),,drop=FALSE], newindex[1:(N + fcreq)]) else sxfx = NULL
-	if(modelinc[44]>0) pxfx = xts(xreg$pxf[1:(N + fcreq),,drop=FALSE], newindex[1:(N + fcreq)]) else pxfx = NULL
-	if(modelinc[47]==2){
-		if(modelinc[29]>0) kappa = pneg(ipars[idx["ghlambda",1],1], ipars[idx["shape",1],1], ipars[idx["skew",1],1], model$modeldesc$distribution)
-	} else if(modelinc[47]==3){
+	if(modelinc[39]>0) vxfx = xts(xreg$vxf[1:(N + fcreq),,drop=FALSE], newindex[1:(N + fcreq)]) else vxfx = NULL
+	if(modelinc[20]>0 && modelinc[49]==2) sxfx = xts(xreg$sxf[1:(N + fcreq),,drop=FALSE], newindex[1:(N + fcreq)]) else sxfx = NULL
+	if(modelinc[47]>0) pxfx = xts(xreg$pxf[1:(N + fcreq),,drop=FALSE], newindex[1:(N + fcreq)]) else pxfx = NULL
+	if(modelinc[50]==2){
+		if(modelinc[32]>0) kappa = pneg(ipars[idx["ghlambda",1],1], ipars[idx["shape",1],1], ipars[idx["skew",1],1], model$modeldesc$distribution)
+	} else if(modelinc[50]==3){
 		kappa = egarchKappa(ipars[idx["ghlambda",1],1], ipars[idx["shape",1],1], ipars[idx["skew",1],1], model$modeldesc$distribution)
 	} else{
 		kappa = 1
 	}
-	if(dynamic) vmodel = c("sGARCH","gjrGARCH","eGARCH","mixture")[modelinc[47]] else vmodel = NULL
-	if(dynamic && modelinc[47]<4) usegarch = TRUE else usegarch = FALSE 
+	if(dynamic) vmodel = c("sGARCH","gjrGARCH","eGARCH","mixture")[modelinc[50]] else vmodel = NULL
+	if(dynamic && modelinc[50]<4) usegarch = TRUE else usegarch = FALSE 
 	
 	fspec = starspec(mean.model = list(
-					states = modelinc[43],
+					states = modelinc[46],
 					include.intercept = modelinc[c(1,5,9,13)], 
 					arOrder = model$modeldata$arOrder,
 					maOrder = model$modeldata$maOrder,
 					matype = ifelse(modelinc[17]>0, "linear","state"),
-					statevar = c("y","s")[modelinc[46]],
+					statevar = c("y","s")[modelinc[49]],
 					s = sxfx, statear = model$modeldesc$statear,
 					ylags = model$modeldata$ylags, 
 					xreg = mxfx, yfun = model$modeldata$fun),
 			variance.model = list(dynamic = dynamic, 
-					model = vmodel, garchOrder = c(modelinc[29], modelinc[30]), 
+					model = vmodel, garchOrder = c(modelinc[32], modelinc[33]), 
 					submodel = NULL, vreg = vxfx),  
 			distribution.model = model$modeldesc$distribution, fixed.pars = as.list(pars),
 			fixed.probs = pxfx)
@@ -819,14 +838,14 @@
 	constmfilter = flt@filter$constm
 	
 	sigmaFor = seriesFor =  matrix(NA, ncol = n.roll+1, nrow = n.ahead)
-	condmFor = probFor = array(NA, dim=c(n.ahead, n.roll+1, modelinc[43]), 
-			dimnames = list(paste("T+", 1:n.ahead, sep=""), as.character(index[N:(N+n.roll)]), paste("State_",1:modelinc[43],sep="")))
+	condmFor = probFor = array(NA, dim=c(n.ahead, n.roll+1, modelinc[46]), 
+			dimnames = list(paste("T+", 1:n.ahead, sep=""), as.character(index[N:(N+n.roll)]), paste("State_",1:modelinc[46],sep="")))
 	colnames(seriesFor) = colnames(sigmaFor) = as.character(index[N:(N+n.roll)])
 	rownames(seriesFor) = rownames(sigmaFor) = paste("T+", 1:n.ahead, sep="")
 	# The 1-ahead
 	if(dynamic) sigmaFor[1,] = tail(sigmafilter, n.roll+1) else sigmaFor = NULL
 	seriesFor[1,] = tail(rowSums(condmfilter*probfilter), n.roll+1)
-	for(i in 1:modelinc[43]){
+	for(i in 1:modelinc[46]){
 		probFor[1,,i] = tail(probfilter[,i], n.roll+1)
 		condmFor[1,,i] = tail(condmfilter[,i], n.roll+1)
 	}
@@ -843,8 +862,8 @@
 		arglist$kappa = kappa
 		arglist$method = method
 		arglist$mc.sims = mc.sims
-		if(modelinc[45]>0) arglist$yfun = model$modeldata$fun
-		arglist$gfun = switch(modelinc[43],"starxsim1", "starxsim2","starxsim3","starxsim4")
+		if(modelinc[48]>0) arglist$yfun = model$modeldata$fun
+		arglist$gfun = switch(modelinc[46],"starxsim1", "starxsim2","starxsim3","starxsim4")
 		if(method!="analytic"){
 			# the distribution of the returns using the mc methods
 			# each slot in the list will contain a matrix of dim=c(sims, n.ahead)
@@ -869,9 +888,9 @@
 			arglist$zresiduals = zfilter
 			# forecast of externals is provided outside the system
 			if(modelinc[3]>0)  arglist$mxfi = xreg$mxf[1:(N+i-1+n.ahead), , drop = FALSE]
-			if(modelinc[36]>0) arglist$vxfi = xreg$vxf[1:(N+i-1+n.ahead), , drop = FALSE]
-			if(modelinc[44]>0) arglist$pxfi = xreg$pxf[1:(N+i-1+n.ahead), , drop = FALSE]
-			if(modelinc[46]==2) arglist$sxfi = xreg$sxf[1:(N+i-1+n.ahead), , drop = FALSE]
+			if(modelinc[39]>0) arglist$vxfi = xreg$vxf[1:(N+i-1+n.ahead), , drop = FALSE]
+			if(modelinc[47]>0) arglist$pxfi = xreg$pxf[1:(N+i-1+n.ahead), , drop = FALSE]
+			if(modelinc[49]==2) arglist$sxfi = xreg$sxf[1:(N+i-1+n.ahead), , drop = FALSE]
 			if(usegarch){
 				ans = switch(vmodel, 
 						"sGARCH"   = .nsgarchforecast(arglist), 
@@ -879,7 +898,7 @@
 						"eGARCH"   = .negarchforecast(arglist))
 				sigmaFor[,i] = tail(ans$h, n.ahead)
 			} else{
-				if(modelinc[47]==4){
+				if(modelinc[50]==4){
 					ans = starfmix(arglist)
 					sigmaFor[2:n.ahead,i] = tail(ans$h, n.ahead-1)
 				} else{
@@ -887,7 +906,7 @@
 				}
 			}
 			seriesFor[2:n.ahead,i] = tail(ans$y, n.ahead-1)
-			for(k in 1:modelinc[43]) probFor[2:n.ahead,i,k] = tail(ans$probs[,k], n.ahead-1)
+			for(k in 1:modelinc[46]) probFor[2:n.ahead,i,k] = tail(ans$probs[,k], n.ahead-1)
 			ydist[[i]] = ans$ydist
 			esim[[i]] = ans$esim
 		}
@@ -920,7 +939,7 @@
 	spec    = fitORspec
 	if(is.null(data)) stop("\nstarforecast-->error: data must not be NULL when using a specification!")
 	if(n.ahead==1) method="n.ahead-1" else method = method[1]
-	xdata = rugarch:::.extractdata(data)
+	xdata = .extractdata(data)
 	Nor = length(as.numeric(xdata$data))
 	data = xdata$data
 	N = length(as.numeric(data))
@@ -933,7 +952,7 @@
 	ipars = model$pars
 	pars = unlist(model$fixed.pars)
 	parnames = names(pars)
-	modelnames = rugarch:::.checkallfixed(spec)
+	modelnames = .checkallfixed(spec)
 	if(is.na(all(match(modelnames, parnames), 1:length(modelnames)))) {
 		cat("\nstarforecast-->error: parameters names do not match specification\n")
 		cat("Expected Parameters are: ")
@@ -950,7 +969,7 @@
 	model$modeldata$data = data
 	model$modeldata$index = index
 	model$modeldata$period = period
-	if(modelinc[47]>0) dynamic = TRUE else dynamic = FALSE
+	if(modelinc[50]>0) dynamic = TRUE else dynamic = FALSE
 	
 	# check if necessary the external regressor forecasts provided first
 	xreg = .forcregressors(model, external.forecasts$xregfor, 
@@ -963,31 +982,31 @@
 	
 	# This is only for the 1-ahead filter
 	if(modelinc[3]>0) mxfx = xts(xreg$mxf[1:(N + fcreq),,drop=FALSE], newindex[1:(N + fcreq)]) else mxfx = NULL
-	if(modelinc[36]>0) vxfx = xts(xreg$vxf[1:(N + fcreq),,drop=FALSE], newindex[1:(N + fcreq)]) else vxfx = NULL
-	if(modelinc[19]>0 && modelinc[46]==2) sxfx = xts(xreg$sxf[1:(N + fcreq),,drop=FALSE], newindex[1:(N + fcreq)]) else sxfx = NULL
-	if(modelinc[44]>0) pxfx = xts(xreg$pxf[1:(N + fcreq),,drop=FALSE], newindex[1:(N + fcreq)]) else pxfx = NULL
-	if(modelinc[47]==2){
-		if(modelinc[29]>0) kappa = pneg(ipars[idx["ghlambda",1],1], ipars[idx["shape",1],1], ipars[idx["skew",1],1], model$modeldesc$distribution)
-	} else if(modelinc[47]==3){
+	if(modelinc[39]>0) vxfx = xts(xreg$vxf[1:(N + fcreq),,drop=FALSE], newindex[1:(N + fcreq)]) else vxfx = NULL
+	if(modelinc[20]>0 && modelinc[49]==2) sxfx = xts(xreg$sxf[1:(N + fcreq),,drop=FALSE], newindex[1:(N + fcreq)]) else sxfx = NULL
+	if(modelinc[47]>0) pxfx = xts(xreg$pxf[1:(N + fcreq),,drop=FALSE], newindex[1:(N + fcreq)]) else pxfx = NULL
+	if(modelinc[50]==2){
+		if(modelinc[32]>0) kappa = pneg(ipars[idx["ghlambda",1],1], ipars[idx["shape",1],1], ipars[idx["skew",1],1], model$modeldesc$distribution)
+	} else if(modelinc[50]==3){
 		kappa = egarchKappa(ipars[idx["ghlambda",1],1], ipars[idx["shape",1],1], ipars[idx["skew",1],1], model$modeldesc$distribution)
 	} else{
 		kappa = 1
 	}
-	if(dynamic) vmodel = c("sGARCH","gjrGARCH","eGARCH","mixture")[modelinc[47]] else vmodel = NULL
-	if(dynamic && modelinc[42]<4) usegarch = TRUE else usegarch = FALSE 
+	if(dynamic) vmodel = c("sGARCH","gjrGARCH","eGARCH","mixture")[modelinc[50]] else vmodel = NULL
+	if(dynamic && modelinc[50]<4) usegarch = TRUE else usegarch = FALSE 
 	
 	fspec = starspec(mean.model = list(
-					states = modelinc[43],
+					states = modelinc[46],
 					include.intercept = modelinc[c(1,5,9,13)], 
 					arOrder = model$modeldata$arOrder,
 					maOrder = model$modeldata$maOrder,
 					matype = ifelse(modelinc[17]>0, "linear","state"),
-					statevar = c("y","s")[modelinc[46]],
+					statevar = c("y","s")[modelinc[49]],
 					s = sxfx, statear = model$modeldesc$statear,
 					ylags = model$modeldata$ylags, 
 					xreg = mxfx, yfun = model$modeldata$fun),
 			variance.model = list(dynamic = dynamic, 
-					model = vmodel, garchOrder = c(modelinc[29], modelinc[30]), 
+					model = vmodel, garchOrder = c(modelinc[32], modelinc[33]), 
 					submodel = NULL, vreg = vxfx),  
 			distribution.model = model$modeldesc$distribution, fixed.pars = as.list(pars),
 			fixed.probs = pxfx)
@@ -1003,14 +1022,14 @@
 	constmfilter = flt@filter$constm
 	
 	sigmaFor = seriesFor =  matrix(NA, ncol = n.roll+1, nrow = n.ahead)
-	condmFor = probFor = array(NA, dim=c(n.ahead, n.roll+1, modelinc[43]), 
-			dimnames = list(paste("T+", 1:n.ahead, sep=""), as.character(index[N:(N+n.roll)]), paste("State_",1:modelinc[43],sep="")))
+	condmFor = probFor = array(NA, dim=c(n.ahead, n.roll+1, modelinc[46]), 
+			dimnames = list(paste("T+", 1:n.ahead, sep=""), as.character(index[N:(N+n.roll)]), paste("State_",1:modelinc[46],sep="")))
 	colnames(seriesFor) = colnames(sigmaFor) = as.character(index[N:(N+n.roll)])
 	rownames(seriesFor) = rownames(sigmaFor) = paste("T+", 1:n.ahead, sep="")
 	# The 1-ahead
 	if(dynamic) sigmaFor[1,] = tail(sigmafilter, n.roll+1) else sigmaFor = NULL
 	seriesFor[1,] = tail(rowSums(condmfilter*probfilter), n.roll+1)
-	for(i in 1:modelinc[43]){
+	for(i in 1:modelinc[46]){
 		probFor[1,,i] = tail(probfilter[,i], n.roll+1)
 		condmFor[1,,i] = tail(condmfilter[,i], n.roll+1)
 	}
@@ -1026,8 +1045,8 @@
 		arglist$kappa = kappa
 		arglist$method = method
 		arglist$mc.sims = mc.sims
-		if(modelinc[45]>0) arglist$yfun = model$modeldata$fun
-		arglist$gfun = switch(modelinc[43],"starxsim1", "starxsim2","starxsim3","starxsim4")
+		if(modelinc[48]>0) arglist$yfun = model$modeldata$fun
+		arglist$gfun = switch(modelinc[46],"starxsim1", "starxsim2","starxsim3","starxsim4")
 		if(method!="analytic"){
 			# the distribution of the returns using the mc methods
 			# each slot in the list will contain a matrix of dim=c(sims, n.ahead)
@@ -1051,9 +1070,9 @@
 			arglist$residuals = resfilter
 			# forecast of externals is provided outside the system
 			if(modelinc[3]>0)  arglist$mxfi = xreg$mxf[1:(N+i-1+n.ahead), , drop = FALSE]
-			if(modelinc[36]>0) arglist$vxfi = xreg$vxf[1:(N+i-1+n.ahead), , drop = FALSE]
-			if(modelinc[44]>0) arglist$pxfi = xreg$pxf[1:(N+i-1+n.ahead), , drop = FALSE]
-			if(modelinc[46]==2) arglist$sxfi = xreg$sxf[1:(N+i-1+n.ahead), , drop = FALSE]
+			if(modelinc[39]>0) arglist$vxfi = xreg$vxf[1:(N+i-1+n.ahead), , drop = FALSE]
+			if(modelinc[47]>0) arglist$pxfi = xreg$pxf[1:(N+i-1+n.ahead), , drop = FALSE]
+			if(modelinc[49]==2) arglist$sxfi = xreg$sxf[1:(N+i-1+n.ahead), , drop = FALSE]
 			if(usegarch){
 				ans = switch(vmodel, 
 						"sGARCH"   = .nsgarchforecast(arglist), 
@@ -1061,7 +1080,7 @@
 						"eGARCH"   = .negarchforecast(arglist))
 				sigmaFor[,i] = tail(ans$h, n.ahead)
 			} else{
-				if(modelinc[47]==4){
+				if(modelinc[50]==4){
 					ans = starfmix(arglist)
 					sigmaFor[2:n.ahead,i] = tail(ans$h, n.ahead-1)
 				} else{
@@ -1069,7 +1088,7 @@
 				}
 			}
 			seriesFor[2:n.ahead,i] = tail(ans$y, n.ahead-1)
-			for(k in 1:modelinc[43]) probFor[2:n.ahead,i,k] = tail(ans$probs[,k], n.ahead-1)
+			for(k in 1:modelinc[46]) probFor[2:n.ahead,i,k] = tail(ans$probs[,k], n.ahead-1)
 			ydist[[i]] = ans$ydist
 			esim[[i]] = ans$esim
 		}
@@ -1121,8 +1140,8 @@
 	modelinc = model$modelinc
 	yfun = model$modeldata$fun
 	# max of AR & MA terms and STAR dynamics in the case that y is used
-	mar = max(c(modelinc[c(2,6,10,14,4,8,12,16,17)], ifelse(modelinc[46]==1, max(model$modeldata$ylags), 0)))
-	m = max(c(modelinc[29:30], mar))
+	mar = max(c(modelinc[c(2,6,10,14,4,8,12,16,17)], ifelse(modelinc[49]==1, max(model$modeldata$ylags), 0)))
+	m = max(c(modelinc[32:33], mar))
 	
 	idx = model$pidx
 	ipars = fit@fit$ipars
@@ -1179,7 +1198,7 @@
 	residSim =  matrix(0, ncol = m.sim, nrow = n.sim)
 	condmSim = probSim  =  vector(mode="list", length = m.sim)
 	z[is.na(z) | is.nan(z) | !is.finite(z)] = 0
-	constm = matrix(0, ncol = modelinc[43], nrow = n)
+	constm = matrix(0, ncol = modelinc[46], nrow = n)
 	# 2 cases for the star model:
 	# case 1: probability determined by external regressors in which case
 	# the simulation is quite fast
@@ -1197,7 +1216,7 @@
 		h = c(presigma^2, rep(0, n))
 		x = c(prereturns, rep(0, n))
 		
-		if(modelinc[47]==2){
+		if(modelinc[50]==2){
 			ngrd = which(preres<0)
 			tmpr = rep(0, length(preres))
 			tmpr[ngrd] = preres[ngrd] * preres[ngrd]
@@ -1205,7 +1224,7 @@
 		} else{
 			nres = 0
 		}
-		if(modelinc[47]==3){
+		if(modelinc[50]==3){
 			kappa = egarchKappa(ipars[idx["ghlambda",1],1], ipars[idx["shape",1],1], ipars[idx["skew",1],1], model$modeldesc$distribution)	
 		} else{
 			kappa = 1
@@ -1223,36 +1242,36 @@
 		residSim[,i] = ans1$res[(n.start + m + 1):(n+m)]
 		# since m = max(garchOrder, mar)
 		simres = tail(ans1$res,n+mar)
-		for(j in 1:modelinc[43]){
+		for(j in 1:modelinc[46]){
 			if(modelinc[c(1,5,9,13)[j]]>0) constm[,j] = as.numeric(ipars[idx[paste("s",j,".phi0",sep=""),1],1])
 		}
 		if(modelinc[3]>0){
-			for(j in 1:modelinc[43]) constm[,j] = constm[,j] + matrix( ipars[idx[paste("s",j,".xi",sep=""),1]:idx[paste("s",j,".xi",sep=""),2], 1], ncol = modelinc[3] ) %*% t( matrix( mexsim[[i]], ncol = modelinc[3] ) )
+			for(j in 1:modelinc[46]) constm[,j] = constm[,j] + matrix( ipars[idx[paste("s",j,".xi",sep=""),1]:idx[paste("s",j,".xi",sep=""),2], 1], ncol = modelinc[3] ) %*% t( matrix( mexsim[[i]], ncol = modelinc[3] ) )
 		}
-		constm = rbind(matrix(0, ncol=modelinc[43], nrow=mar), constm)
-		if(modelinc[46]==2){
+		constm = rbind(matrix(0, ncol=modelinc[46], nrow=mar), constm)
+		if(modelinc[49]==2){
 			arglist$XL = ssim[[i]]
 			# sim starts at (m=mar) and end at n+mar
 			# get probabilities
-			ptmp = switch(modelinc[43], dstar1sim(arglist), dstar2sim(arglist), dstar3sim(arglist), dstar4sim(arglist))
-			rsim = switch(modelinc[43],
+			ptmp = switch(modelinc[46], dstar1sim(arglist), dstar2sim(arglist), dstar3sim(arglist), dstar4sim(arglist))
+			rsim = switch(modelinc[46],
 					try(.C("starxsim1", model = as.integer(modelinc), pars = as.double(ipars[,1]), idx = as.integer(idx[,1]-1), x = as.double(x), 
-									s = double(modelinc[43]*(n+mar)),res = as.double(simres), prob = as.double(ptmp$probs), constm = as.double(constm), 
+									s = double(modelinc[46]*(n+mar)),res = as.double(simres), prob = as.double(ptmp$probs), constm = as.double(constm), 
 									m = as.integer(mar), T = as.integer(mar+n), PACKAGE="twinkle"), silent = TRUE),
 					try(.C("starxsim2", model = as.integer(modelinc), pars = as.double(ipars[,1]), idx = as.integer(idx[,1]-1), x = as.double(x), 
-									s = double(modelinc[43]*(n+mar)),res = as.double(simres), prob = as.double(ptmp$probs), constm = as.double(constm), 
+									s = double(modelinc[46]*(n+mar)),res = as.double(simres), prob = as.double(ptmp$probs), constm = as.double(constm), 
 									m = as.integer(mar), T = as.integer(mar+n), PACKAGE="twinkle"), silent = TRUE),
 					try(.C("starxsim3", model = as.integer(modelinc), pars = as.double(ipars[,1]), idx = as.integer(idx[,1]-1), x = as.double(x), 
-									s = double(modelinc[43]*(n+mar)),res = as.double(simres), prob = as.double(ptmp$probs), constm = as.double(constm), 
+									s = double(modelinc[46]*(n+mar)),res = as.double(simres), prob = as.double(ptmp$probs), constm = as.double(constm), 
 									m = as.integer(mar), T = as.integer(mar+n), PACKAGE="twinkle"), silent = TRUE),
 					try(.C("starxsim4", model = as.integer(modelinc), pars = as.double(ipars[,1]), idx = as.integer(idx[,1]-1), x = as.double(x), 
-									s = double(modelinc[43]*(n+mar)),res = as.double(simres), prob = as.double(ptmp$probs), constm = as.double(constm), 
+									s = double(modelinc[46]*(n+mar)),res = as.double(simres), prob = as.double(ptmp$probs), constm = as.double(constm), 
 									m = as.integer(mar), T = as.integer(mar+n), PACKAGE="twinkle"), silent = TRUE)
 					)
 			seriesSim[,i] = tail(rsim$x, n.sim)
 			probSim[[i]]  = tail(ptmp$probs, n.sim)
-			condmSim[[i]]  = tail(matrix(rsim$s, ncol = modelinc[43]), n.sim)
-			colnames(condmSim[[i]]) = colnames(probSim[[i]]) = paste("state[",1:modelinc[43],"]",sep="")
+			condmSim[[i]]  = tail(matrix(rsim$s, ncol = modelinc[46]), n.sim)
+			colnames(condmSim[[i]]) = colnames(probSim[[i]]) = paste("state[",1:modelinc[46],"]",sep="")
 			rownames(condmSim[[i]]) = rownames(probSim[[i]]) = paste("T+",1:n.sim,sep="")			
 		} else{
 			# NOTE: would probably benefit from using .Call and performing the whole process in C++ with a call to R for "yfun"...
@@ -1260,10 +1279,10 @@
 			y = c(data, rep(0, n))
 			y[(N-mar+1):N] = prereturns
 			
-			psim = matrix(0, ncol = modelinc[43], nrow = mar+n)
-			xcondm = matrix(0, ncol = modelinc[43], nrow = mar+n)
+			psim = matrix(0, ncol = modelinc[46], nrow = mar+n)
+			xcondm = matrix(0, ncol = modelinc[46], nrow = mar+n)
 			for(j in 1:n){
-				if(modelinc[45]==1) ytmp = c(yfun(as.numeric(y[1:(ndx+j-1)])), NA) else ytmp = c(as.numeric(y[1:(ndx+j-1)]),NA)		
+				if(modelinc[48]==1) ytmp = c(yfun(as.numeric(y[1:(ndx+j-1)])), NA) else ytmp = c(as.numeric(y[1:(ndx+j-1)]),NA)		
 				XL = matrix(NA, ncol = length(ylags), nrow = ndx+j)
 				nXL = nrow(XL)
 				for(k in 1:ncol(XL)){
@@ -1271,34 +1290,34 @@
 				}
 				XL[is.na(XL)]=0
 				arglist$XL = XL
-				ptmp = switch(modelinc[43], dstar1sim(arglist), dstar2sim(arglist), dstar3sim(arglist), dstar4sim(arglist))
+				ptmp = switch(modelinc[46], dstar1sim(arglist), dstar2sim(arglist), dstar3sim(arglist), dstar4sim(arglist))
 				psim[mar+j,] = tail(ptmp$probs, 1)
-				rsim = switch(modelinc[43],
+				rsim = switch(modelinc[46],
 						try(.C("starxsim1", model = as.integer(modelinc), pars = as.double(ipars[,1]), idx = as.integer(idx[,1]-1), 
-										x = as.double(x), s = double(modelinc[43]*(mar+j)), res = as.double(simres[1:(mar+j)]),
+										x = as.double(x), s = double(modelinc[46]*(mar+j)), res = as.double(simres[1:(mar+j)]),
 										prob = as.double(psim[1:(mar+j),,drop=FALSE]), constm = as.double(constm[1:(mar+j),,drop=FALSE]),
 										m = as.integer(mar+j-1), T = as.integer(mar+j), PACKAGE="twinkle"), silent = TRUE),
 						try(.C("starxsim2", model = as.integer(modelinc), pars = as.double(ipars[,1]), idx = as.integer(idx[,1]-1), 
-										x = as.double(x), s = double(modelinc[43]*(mar+j)), res = as.double(simres[1:(mar+j)]),
+										x = as.double(x), s = double(modelinc[46]*(mar+j)), res = as.double(simres[1:(mar+j)]),
 										prob = as.double(psim[1:(mar+j),,drop=FALSE]), constm = as.double(constm[1:(mar+j),,drop=FALSE]),
 										m = as.integer(mar+j-1), T = as.integer(mar+j), PACKAGE="twinkle"), silent = TRUE),
 						try(.C("starxsim3", model = as.integer(modelinc), pars = as.double(ipars[,1]), idx = as.integer(idx[,1]-1), 
-										x = as.double(x), s = double(modelinc[43]*(mar+j)), res = as.double(simres[1:(mar+j)]),
+										x = as.double(x), s = double(modelinc[46]*(mar+j)), res = as.double(simres[1:(mar+j)]),
 										prob = as.double(psim[1:(mar+j),,drop=FALSE]), constm = as.double(constm[1:(mar+j),,drop=FALSE]),
 										m = as.integer(mar+j-1), T = as.integer(mar+j), PACKAGE="twinkle"), silent = TRUE),
 						try(.C("starxsim4", model = as.integer(modelinc), pars = as.double(ipars[,1]), idx = as.integer(idx[,1]-1), 
-										x = as.double(x), s = double(modelinc[43]*(mar+j)), res = as.double(simres[1:(mar+j)]),
+										x = as.double(x), s = double(modelinc[46]*(mar+j)), res = as.double(simres[1:(mar+j)]),
 										prob = as.double(psim[1:(mar+j),,drop=FALSE]), constm = as.double(constm[1:(mar+j),,drop=FALSE]),
 										m = as.integer(mar+j-1), T = as.integer(mar+j), PACKAGE="twinkle"), silent = TRUE)
 				)
 				x[mar+j] = rsim$x[mar+j]
 				y[ndx+j] = rsim$x[mar+j]
-				xcondm[mar+j,] = tail(matrix(rsim$s, ncol = modelinc[43]),1)
+				xcondm[mar+j,] = tail(matrix(rsim$s, ncol = modelinc[46]),1)
 			}
 			seriesSim[,i] = tail(x, n.sim)
 			probSim[[i]]  = tail(ptmp$probs, n.sim)
 			condmSim[[i]] = tail(xcondm, n.sim)
-			colnames(probSim[[i]]) = paste("state[",1:modelinc[43],"]",sep="")
+			colnames(probSim[[i]]) = paste("state[",1:modelinc[46],"]",sep="")
 			rownames(probSim[[i]]) = paste("T+",1:n.sim,sep="")
 		}
 	}
@@ -1316,7 +1335,7 @@
 	return(sol)
 }
 
-# CONTINUE HERE
+# CONTINUE HERE: Change code to include 3 and 4 mixtures
 .starsim.mixture = function(fit, n.sim = 1000, n.start = 0, m.sim = 1, prereturns = NA, preresiduals = NA, rseed = NA, 
 		custom.dist = list(name = NA, distfit = NA), xregsim = NULL, ssim = NULL, probsim = NULL)
 {
@@ -1334,20 +1353,24 @@
 	data = data[1:(N - fit@model$n.start)]
 	N = length(as.numeric(data))
 	resids = fit@fit$residuals	
+	modelinc = fit@model$modelinc
+	
 	sig1 = coef(fit)["s1.sigma"]
 	sig2 = coef(fit)["s2.sigma"]
+	if(modelinc[46]==3)	sig3 = coef(fit)["s3.sigma"] else sig3 = NULL
+	if(modelinc[46]==4)	sig4 = coef(fit)["s4.sigma"] else sig4 = NULL
+	
 	pmu = fit@fit$pmu
 	probs = fit@fit$probability
 	condm = fit@fit$condm
 	model = fit@model
-	modelinc = model$modelinc
 	yfun = model$modeldata$fun
 	# max of AR terms and STAR dynamics in the case that y is used
-	mar = max(c(modelinc[c(2,6,10,14,4,8,12,16,17)], ifelse(modelinc[46]==1, max(model$modeldata$ylags), 0)))
+	mar = max(c(modelinc[c(2,6,10,14,4,8,12,16,17)], ifelse(modelinc[49]==1, max(model$modeldata$ylags), 0)))
 	idx = model$pidx
 	ipars = fit@fit$ipars
 	ylags = model$modeldata$ylags
-	gfun = switch(modelinc[43],"starxsim1", "starxsim2","starxsim3","starxsim4")
+	gfun = switch(modelinc[46],"starxsim1", "starxsim2","starxsim3","starxsim4")
 	# check if necessary the external regressor forecasts provided first
 	xreg = .simregressors(model, xregsim, NULL, ssim, N, n, m.sim)	
 	mexsim = xreg$mexsimlist
@@ -1391,7 +1414,7 @@
 	sigmaSim =  matrix(0, ncol = m.sim, nrow = n.sim)
 	seriesSim = matrix(0, ncol = m.sim, nrow = n.sim)
 	condmSim = probSim  =  vector(mode="list", length = m.sim)
-	constm = matrix(0, ncol = modelinc[43], nrow = n)
+	constm = matrix(0, ncol = modelinc[46], nrow = n)
 	# 2 cases for the star model:
 	# case 1: probability determined by external regressors in which case
 	# the simulation is quite fast
@@ -1407,42 +1430,46 @@
 	for(i in 1:m.sim){
 		x = c(prereturns, rep(0, n))	
 		
-		for(j in 1:modelinc[43]){
+		for(j in 1:modelinc[46]){
 			if(modelinc[c(1,5,9,13)[j]]>0) constm[,j] = as.numeric(ipars[idx[paste("s",j,".phi0",sep=""),1],1])
 		}
 		if(modelinc[3]>0){
-			for(j in 1:modelinc[43]) constm[,j] = constm[,j] + matrix( ipars[idx[paste("s",j,".xi",sep=""),1]:idx[paste("s",j,".xi",sep=""),2], 1], ncol = modelinc[3] ) %*% t( matrix( mexsim[[i]], ncol = modelinc[3] ) )			
+			for(j in 1:modelinc[46]) constm[,j] = constm[,j] + matrix( ipars[idx[paste("s",j,".xi",sep=""),1]:idx[paste("s",j,".xi",sep=""),2], 1], ncol = modelinc[3] ) %*% t( matrix( mexsim[[i]], ncol = modelinc[3] ) )			
 		}
-		constm = rbind(matrix(0, ncol=modelinc[43], nrow=mar), constm)
-		if(modelinc[46]==2){
+		constm = rbind(matrix(0, ncol=modelinc[46], nrow=mar), constm)
+		if(modelinc[49]==2){
 			arglist$XL = ssim[[i]]
 			# sim starts at (m=mar) and end at n+mar
 			# get probabilities
-			ptmp = switch(modelinc[43], dstar1sim(arglist), dstar2sim(arglist), dstar3sim(arglist), dstar4sim(arglist))
-			# This is a 2 state model
-			sigsim = tail(ptmp$probs[,1]*sig1 + ptmp$probs[,2]*sig2, n)
+			ptmp = switch(modelinc[46], dstar1sim(arglist), dstar2sim(arglist), dstar3sim(arglist), dstar4sim(arglist))
+			sigsim = switch(modelinc[46],
+					tail(ptmp$probs[,1]*sig1 + ptmp$probs[,2]*sig2, n),
+					tail(ptmp$probs[,1]*sig1 + ptmp$probs[,2]*sig2, n),
+					tail(ptmp$probs[,1]*sig1 + ptmp$probs[,2]*sig2 + ptmp$probs[,3]*sig3, n),
+					tail(ptmp$probs[,1]*sig1 + ptmp$probs[,2]*sig2 + ptmp$probs[,3]*sig3 + ptmp$probs[,4]*sig4, n))
+			
 			simres = c(preres, zresidSim[,i]*sigsim)
 			
-			rsim = switch(modelinc[43],
+			rsim = switch(modelinc[46],
 					try(.C("starxsim1", model = as.integer(modelinc), pars = as.double(ipars[,1]), idx = as.integer(idx[,1]-1), 
-									x = as.double(x), s = double(modelinc[43]*(n+mar)), res = as.double(simres), prob = as.double(ptmp$probs), 
+									x = as.double(x), s = double(modelinc[46]*(n+mar)), res = as.double(simres), prob = as.double(ptmp$probs), 
 									constm = as.double(constm), m = as.integer(mar), T = as.integer(mar+n), PACKAGE="twinkle"), silent = TRUE),
 					try(.C("starxsim2", model = as.integer(modelinc), pars = as.double(ipars[,1]), idx = as.integer(idx[,1]-1), 
-									x = as.double(x), s = double(modelinc[43]*(n+mar)), res = as.double(simres), prob = as.double(ptmp$probs), 
+									x = as.double(x), s = double(modelinc[46]*(n+mar)), res = as.double(simres), prob = as.double(ptmp$probs), 
 									constm = as.double(constm), m = as.integer(mar), T = as.integer(mar+n), PACKAGE="twinkle"), silent = TRUE),
 					try(.C("starxsim3", model = as.integer(modelinc), pars = as.double(ipars[,1]), idx = as.integer(idx[,1]-1), 
-									x = as.double(x), s = double(modelinc[43]*(n+mar)), res = as.double(simres), prob = as.double(ptmp$probs), 
+									x = as.double(x), s = double(modelinc[46]*(n+mar)), res = as.double(simres), prob = as.double(ptmp$probs), 
 									constm = as.double(constm), m = as.integer(mar), T = as.integer(mar+n), PACKAGE="twinkle"), silent = TRUE),
 					try(.C("starxsim4", model = as.integer(modelinc), pars = as.double(ipars[,1]), idx = as.integer(idx[,1]-1), 
-									x = as.double(x), s = double(modelinc[43]*(n+mar)), res = as.double(simres), prob = as.double(ptmp$probs), 
+									x = as.double(x), s = double(modelinc[46]*(n+mar)), res = as.double(simres), prob = as.double(ptmp$probs), 
 									constm = as.double(constm), m = as.integer(mar), T = as.integer(mar+n), PACKAGE="twinkle"), silent = TRUE)
 			)			
 			seriesSim[,i] = tail(rsim$x, n.sim)
 			residSim[,i] = tail(zresidSim[,i]*sigsim,n.sim)
 			sigmaSim[,i] = tail(sigsim,n.sim)
 			probSim[[i]]  = tail(ptmp$probs, n.sim)
-			condmSim[[i]]  = tail(matrix(rsim$s, ncol = modelinc[43]), n.sim)
-			colnames(condmSim[[i]]) = colnames(probSim[[i]]) = paste("state[",1:modelinc[43],"]",sep="")
+			condmSim[[i]]  = tail(matrix(rsim$s, ncol = modelinc[46]), n.sim)
+			colnames(condmSim[[i]]) = colnames(probSim[[i]]) = paste("state[",1:modelinc[46],"]",sep="")
 			rownames(condmSim[[i]]) = rownames(probSim[[i]]) = paste("T+",1:n.sim,sep="")			
 		} else{
 			# NOTE: would probably benefit from using .Call and performing the whole process in C++ with a call to R for "yfun"...
@@ -1450,10 +1477,10 @@
 			simres[1:mar] = preres
 			ndx = length(data)
 			y = c(data, rep(0, n))
-			psim = matrix(0, ncol = modelinc[43], nrow = mar+n)
-			xcondm = matrix(0, ncol = modelinc[43], nrow = mar+n)
+			psim = matrix(0, ncol = modelinc[46], nrow = mar+n)
+			xcondm = matrix(0, ncol = modelinc[46], nrow = mar+n)
 			for(j in 1:n){
-				if(modelinc[45]==1) ytmp = c(yfun(as.numeric(y[1:(ndx+j-1)])), NA) else ytmp = c(as.numeric(y[1:(ndx+j-1)]),NA)		
+				if(modelinc[48]==1) ytmp = c(yfun(as.numeric(y[1:(ndx+j-1)])), NA) else ytmp = c(as.numeric(y[1:(ndx+j-1)]),NA)		
 				XL = matrix(NA, ncol = length(ylags), nrow = ndx+j)
 				nXL = nrow(XL)
 				for(k in 1:ncol(XL)){
@@ -1461,38 +1488,45 @@
 				}
 				XL[is.na(XL)]=0
 				arglist$XL = XL
-				ptmp = switch(modelinc[43], dstar1sim(arglist), dstar2sim(arglist), dstar3sim(arglist), dstar4sim(arglist))
+				ptmp = switch(modelinc[46], dstar1sim(arglist), dstar2sim(arglist), dstar3sim(arglist), dstar4sim(arglist))
 				psim[mar+j,] = tail(ptmp$probs, 1)
-				sigsim[mar+j] = psim[mar+j,1]*sig1+psim[mar+j,2]*sig2
+				
+				msimx = switch(modelinc[46],
+						psim[mar+j,1]*sig1+psim[mar+j,2]*sig2,
+						psim[mar+j,1]*sig1+psim[mar+j,2]*sig2,
+						psim[mar+j,1]*sig1+psim[mar+j,2]*sig2+psim[mar+j,3]*sig3,
+						psim[mar+j,1]*sig1+psim[mar+j,2]*sig2+psim[mar+j,3]*sig3+psim[mar+j,4]*sig4)
+				
+				sigsim[mar+j] = msimx
 				simres[mar+j] = zresidSim[j,i]*sigsim[mar+j]
-				rsim = switch(modelinc[43],
+				rsim = switch(modelinc[46],
 						try(.C("starxsim1", model = as.integer(modelinc), pars = as.double(ipars[,1]), idx = as.integer(idx[,1]-1), 
-										x = as.double(x), s = double(modelinc[43]*(mar+j)), res = as.double(simres[1:(mar+j)]),
+										x = as.double(x), s = double(modelinc[46]*(mar+j)), res = as.double(simres[1:(mar+j)]),
 										prob = as.double(psim[1:(mar+j),,drop=FALSE]), constm = as.double(constm[1:(mar+j),,drop=FALSE]),
 										m = as.integer(mar+j-1), T = as.integer(mar+j), PACKAGE="twinkle"), silent = TRUE),
 						try(.C("starxsim2",  model = as.integer(modelinc), pars = as.double(ipars[,1]), idx = as.integer(idx[,1]-1), 
-										x = as.double(x), s = double(modelinc[43]*(mar+j)), res = as.double(simres[1:(mar+j)]),
+										x = as.double(x), s = double(modelinc[46]*(mar+j)), res = as.double(simres[1:(mar+j)]),
 										prob = as.double(psim[1:(mar+j),,drop=FALSE]), constm = as.double(constm[1:(mar+j),,drop=FALSE]),
 										m = as.integer(mar+j-1), T = as.integer(mar+j), PACKAGE="twinkle"), silent = TRUE),
 						try(.C("starxsim3", model = as.integer(modelinc), pars = as.double(ipars[,1]), idx = as.integer(idx[,1]-1), 
-										x = as.double(x), s = double(modelinc[43]*(mar+j)), res = as.double(simres[1:(mar+j)]),
+										x = as.double(x), s = double(modelinc[46]*(mar+j)), res = as.double(simres[1:(mar+j)]),
 										prob = as.double(psim[1:(mar+j),,drop=FALSE]), constm = as.double(constm[1:(mar+j),,drop=FALSE]),
 										m = as.integer(mar+j-1), T = as.integer(mar+j), PACKAGE="twinkle"), silent = TRUE),
 						try(.C("starxsim4",  model = as.integer(modelinc), pars = as.double(ipars[,1]), idx = as.integer(idx[,1]-1), 
-										x = as.double(x), s = double(modelinc[43]*(mar+j)), res = as.double(simres[1:(mar+j)]),
+										x = as.double(x), s = double(modelinc[46]*(mar+j)), res = as.double(simres[1:(mar+j)]),
 										prob = as.double(psim[1:(mar+j),,drop=FALSE]), constm = as.double(constm[1:(mar+j),,drop=FALSE]),
 										m = as.integer(mar+j-1), T = as.integer(mar+j), PACKAGE="twinkle"), silent = TRUE)
 				)
 				x[mar+j] = rsim$x[mar+j]
 				y[ndx+j] = rsim$x[mar+j]
-				xcondm[mar+j,] = tail(matrix(rsim$s, ncol = modelinc[43]),1)
+				xcondm[mar+j,] = tail(matrix(rsim$s, ncol = modelinc[46]),1)
 			}
 			seriesSim[,i] = tail(x, n,sim)
 			residSim[,i] = tail(simres, n.sim)
 			sigmaSim[,i] = tail(sigsim, n.sim)
 			probSim[[i]]  = tail(ptmp$probs, n.sim)
 			condmSim[[i]] = tail(xcondm, n.sim)
-			colnames(probSim[[i]]) = paste("state[",1:modelinc[43],"]",sep="")
+			colnames(probSim[[i]]) = paste("state[",1:modelinc[46],"]",sep="")
 			rownames(probSim[[i]]) = paste("T+",1:n.sim,sep="")
 		}
 	}
@@ -1533,11 +1567,11 @@
 	modelinc = model$modelinc
 	yfun = model$modeldata$fun
 	# max of AR terms and STAR dynamics in the case that y is used
-	mar = max(c(modelinc[c(2,6,10,14,4,8,12,16,17)], ifelse(modelinc[46]==1, max(model$modeldata$ylags), 0)))
+	mar = max(c(modelinc[c(2,6,10,14,4,8,12,16,17)], ifelse(modelinc[49]==1, max(model$modeldata$ylags), 0)))
 	idx = model$pidx
 	ipars = fit@fit$ipars
 	ylags = model$modeldata$ylags
-	gfun = switch(modelinc[43],"starxsim1", "starxsim2","starxsim3","starxsim4")
+	gfun = switch(modelinc[46],"starxsim1", "starxsim2","starxsim3","starxsim4")
 	# check if necessary the external regressor forecasts provided first
 	xreg = .simregressors(model, xregsim, NULL, ssim, N, n, m.sim)	
 	mexsim = xreg$mexsimlist
@@ -1576,7 +1610,7 @@
 	# outpus matrices
 	seriesSim = matrix(0, ncol = m.sim, nrow = n.sim)
 	condmSim = probSim  =  vector(mode="list", length = m.sim)
-	constm = matrix(0, ncol = modelinc[43], nrow = n)
+	constm = matrix(0, ncol = modelinc[46], nrow = n)
 	# 2 cases for the star model:
 	# case 1: probability determined by external regressors in which case
 	# the simulation is quite fast
@@ -1594,41 +1628,41 @@
 		
 		simres = c(preres, residSim[,i])
 		# ToDo: change to accomodate modelinc[20]
-		for(j in 1:modelinc[43]){
+		for(j in 1:modelinc[46]){
 			if(modelinc[c(1,5,9,13)[j]]>0) constm[,j] = as.numeric(ipars[idx[paste("s",j,".phi0",sep=""),1],1])
 		}
 		if(modelinc[3]>0){
-			for(j in 1:modelinc[43]) constm[,j] = constm[,j] + matrix( ipars[idx[paste("s",j,".xi",sep=""),1]:idx[paste("s",j,".xi",sep=""),2], 1], ncol = modelinc[3] ) %*% t( matrix( mexsim[[i]], ncol = modelinc[3] ) )			
+			for(j in 1:modelinc[46]) constm[,j] = constm[,j] + matrix( ipars[idx[paste("s",j,".xi",sep=""),1]:idx[paste("s",j,".xi",sep=""),2], 1], ncol = modelinc[3] ) %*% t( matrix( mexsim[[i]], ncol = modelinc[3] ) )			
 		}
-		constm = rbind(matrix(0, ncol=modelinc[43], nrow=mar), constm)
-		if(modelinc[46]==2){
+		constm = rbind(matrix(0, ncol=modelinc[46], nrow=mar), constm)
+		if(modelinc[49]==2){
 			arglist$XL = ssim[[i]]
 			# sim starts at (m=mar) and end at n+mar
 			# get probabilities
-			ptmp = switch(modelinc[43], dstar1sim(arglist), dstar2sim(arglist), dstar3sim(arglist), dstar4sim(arglist))
+			ptmp = switch(modelinc[46], dstar1sim(arglist), dstar2sim(arglist), dstar3sim(arglist), dstar4sim(arglist))
 			
-			rsim = switch(modelinc[43],
+			rsim = switch(modelinc[46],
 					try(.C("starxsim1", model = as.integer(modelinc), pars = as.double(ipars[,1]), idx = as.integer(idx[,1]-1), 
-									x = as.double(x), s = double(modelinc[43]*(n+mar)), res = as.double(simres),
+									x = as.double(x), s = double(modelinc[46]*(n+mar)), res = as.double(simres),
 									prob = as.double(ptmp$probs), constm = as.double(constm), m = as.integer(mar),
 									T = as.integer(mar+n), PACKAGE="twinkle"), silent = TRUE),
 					try(.C("starxsim2", model = as.integer(modelinc), pars = as.double(ipars[,1]), idx = as.integer(idx[,1]-1), 
-									x = as.double(x), s = double(modelinc[43]*(n+mar)), res = as.double(simres),
+									x = as.double(x), s = double(modelinc[46]*(n+mar)), res = as.double(simres),
 									prob = as.double(ptmp$probs), constm = as.double(constm), m = as.integer(mar),
 									T = as.integer(mar+n), PACKAGE="twinkle"), silent = TRUE),
 					try(.C("starxsim3",model = as.integer(modelinc), pars = as.double(ipars[,1]), idx = as.integer(idx[,1]-1), 
-									x = as.double(x), s = double(modelinc[43]*(n+mar)), res = as.double(simres),
+									x = as.double(x), s = double(modelinc[46]*(n+mar)), res = as.double(simres),
 									prob = as.double(ptmp$probs), constm = as.double(constm), m = as.integer(mar),
 									T = as.integer(mar+n), PACKAGE="twinkle"), silent = TRUE),
 					try(.C("starxsim4", model = as.integer(modelinc), pars = as.double(ipars[,1]), idx = as.integer(idx[,1]-1), 
-									x = as.double(x), s = double(modelinc[43]*(n+mar)), res = as.double(simres),
+									x = as.double(x), s = double(modelinc[46]*(n+mar)), res = as.double(simres),
 									prob = as.double(ptmp$probs), constm = as.double(constm), m = as.integer(mar),
 									T = as.integer(mar+n), PACKAGE="twinkle"), silent = TRUE)
 			)
 			seriesSim[,i] = tail(rsim$x, n.sim)
 			probSim[[i]]  = tail(ptmp$probs, n.sim)
-			condmSim[[i]]  = tail(matrix(rsim$s, ncol = modelinc[43]), n.sim)
-			colnames(condmSim[[i]]) = colnames(probSim[[i]]) = paste("state[",1:modelinc[43],"]",sep="")
+			condmSim[[i]]  = tail(matrix(rsim$s, ncol = modelinc[46]), n.sim)
+			colnames(condmSim[[i]]) = colnames(probSim[[i]]) = paste("state[",1:modelinc[46],"]",sep="")
 			rownames(condmSim[[i]]) = rownames(probSim[[i]]) = paste("T+",1:n.sim,sep="")			
 		} else{
 			# NOTE: would probably benefit from using .Call and performing the whole process in C++ with a call to R for "yfun"...
@@ -1636,10 +1670,10 @@
 			# y is padded with pre-returns
 			y = c(data, rep(0, n))
 			y[(N-mar+1):N] = prereturns
-			psim = matrix(0, ncol = modelinc[43], nrow = mar+n)
-			xcondm = matrix(0, ncol = modelinc[43], nrow = mar+n)
+			psim = matrix(0, ncol = modelinc[46], nrow = mar+n)
+			xcondm = matrix(0, ncol = modelinc[46], nrow = mar+n)
 			for(j in 1:n){
-				if(modelinc[45]==1) ytmp = c(yfun(as.numeric(y[1:(ndx+j-1)])), NA) else ytmp = c(as.numeric(y[1:(ndx+j-1)]),NA)		
+				if(modelinc[48]==1) ytmp = c(yfun(as.numeric(y[1:(ndx+j-1)])), NA) else ytmp = c(as.numeric(y[1:(ndx+j-1)]),NA)		
 				XL = matrix(NA, ncol = length(ylags), nrow = ndx+j)
 				nXL = nrow(XL)
 				for(k in 1:ncol(XL)){
@@ -1647,34 +1681,34 @@
 				}
 				XL[is.na(XL)]=0
 				arglist$XL = XL
-				ptmp = switch(modelinc[43], dstar1sim(arglist), dstar2sim(arglist), dstar3sim(arglist), dstar4sim(arglist))
+				ptmp = switch(modelinc[46], dstar1sim(arglist), dstar2sim(arglist), dstar3sim(arglist), dstar4sim(arglist))
 				psim[mar+j,] = tail(ptmp$probs, 1)
-				rsim = switch(modelinc[43],
+				rsim = switch(modelinc[46],
 						try(.C("starxsim1", model = as.integer(modelinc), pars = as.double(ipars[,1]), idx = as.integer(idx[,1]-1), 
-										x = as.double(x), s = double(modelinc[43]*(mar+j)),res = as.double(simres[1:(mar+j)]),
+										x = as.double(x), s = double(modelinc[46]*(mar+j)),res = as.double(simres[1:(mar+j)]),
 										prob = as.double(psim[1:(mar+j),,drop=FALSE]), constm = as.double(constm[1:(mar+j),,drop=FALSE]),
 										m = as.integer(mar+j-1), T = as.integer(mar+j), PACKAGE="twinkle"), silent = TRUE),
 						try(.C("starxsim2", model = as.integer(modelinc), pars = as.double(ipars[,1]), idx = as.integer(idx[,1]-1), 
-										x = as.double(x), s = double(modelinc[43]*(mar+j)),res = as.double(simres[1:(mar+j)]),
+										x = as.double(x), s = double(modelinc[46]*(mar+j)),res = as.double(simres[1:(mar+j)]),
 										prob = as.double(psim[1:(mar+j),,drop=FALSE]), constm = as.double(constm[1:(mar+j),,drop=FALSE]),
 										m = as.integer(mar+j-1), T = as.integer(mar+j), PACKAGE="twinkle"), silent = TRUE),
 						try(.C("starxsim3", model = as.integer(modelinc), pars = as.double(ipars[,1]), idx = as.integer(idx[,1]-1), 
-										x = as.double(x), s = double(modelinc[43]*(mar+j)),res = as.double(simres[1:(mar+j)]),
+										x = as.double(x), s = double(modelinc[46]*(mar+j)),res = as.double(simres[1:(mar+j)]),
 										prob = as.double(psim[1:(mar+j),,drop=FALSE]), constm = as.double(constm[1:(mar+j),,drop=FALSE]),
 										m = as.integer(mar+j-1), T = as.integer(mar+j), PACKAGE="twinkle"), silent = TRUE),
 						try(.C("starxsim4", model = as.integer(modelinc), pars = as.double(ipars[,1]), idx = as.integer(idx[,1]-1), 
-										x = as.double(x), s = double(modelinc[43]*(mar+j)),res = as.double(simres[1:(mar+j)]),
+										x = as.double(x), s = double(modelinc[46]*(mar+j)),res = as.double(simres[1:(mar+j)]),
 										prob = as.double(psim[1:(mar+j),,drop=FALSE]), constm = as.double(constm[1:(mar+j),,drop=FALSE]),
 										m = as.integer(mar+j-1), T = as.integer(mar+j), PACKAGE="twinkle"), silent = TRUE)
 				)
 				x[mar+j] = rsim$x[mar+j]
 				y[ndx+j] = rsim$x[mar+j]
-				xcondm[mar+j,] = tail(matrix(rsim$s, ncol = modelinc[43]),1)
+				xcondm[mar+j,] = tail(matrix(rsim$s, ncol = modelinc[46]),1)
 			}
 			seriesSim[,i] = tail(x, n.sim)
 			probSim[[i]]  = tail(ptmp$probs, n.sim)
 			condmSim[[i]] = tail(xcondm, n.sim)
-			colnames(probSim[[i]]) = paste("state[",1:modelinc[43],"]",sep="")
+			colnames(probSim[[i]]) = paste("state[",1:modelinc[46],"]",sep="")
 			rownames(probSim[[i]]) = paste("T+",1:n.sim,sep="")
 		}
 	}
@@ -1733,9 +1767,9 @@
 	sig = ipars["sigma",1]
 	yfun = model$modeldata$fun
 	# max of AR terms and STAR dynamics in the case that y is used
-	mar = max(c(modelinc[c(2,6,10,14,4,8,12,16,17)], ifelse(modelinc[46]==1, max(model$modeldata$ylags), 0)))
+	mar = max(c(modelinc[c(2,6,10,14,4,8,12,16,17)], ifelse(modelinc[49]==1, max(model$modeldata$ylags), 0)))
 	ylags = model$modeldata$ylags
-	gfun = switch(modelinc[43],"starxsim1", "starxsim2","starxsim3","starxsim4")
+	gfun = switch(modelinc[46],"starxsim1", "starxsim2","starxsim3","starxsim4")
 	# check if necessary the external regressor forecasts provided first
 	# Random Samples from the Distribution
 	if(length(sseed) == 1){
@@ -1773,7 +1807,7 @@
 	# outpus matrices
 	seriesSim = matrix(0, ncol = m.sim, nrow = n.sim)
 	condmSim = probSim  =  vector(mode="list", length = m.sim)
-	constm = matrix(0, ncol = modelinc[43], nrow = n)
+	constm = matrix(0, ncol = modelinc[46], nrow = n)
 	# 2 cases for the star model:
 	# case 1: probability determined by external regressors in which case
 	# the simulation is quite fast
@@ -1784,42 +1818,42 @@
 	arglist$ipars = ipars
 	arglist$idx = idx
 	arglist$model = model
-	arglist$probs = matrix(0, ncol=modelinc[43], nrow=n)
+	arglist$probs = matrix(0, ncol=modelinc[46], nrow=n)
 	
 	for(i in 1:m.sim){
 		x = c(prereturnsx, rep(0, n))	
 		
 		simres = c(preres, residSim[,i])
-		for(j in 1:modelinc[43]){
+		for(j in 1:modelinc[46]){
 			if(modelinc[c(1,5,9,13)[j]]>0) constm[,j] = as.numeric(ipars[idx[paste("s",j,".phi0",sep=""),1],1])
 		}
 		if(modelinc[3]>0){
-			for(j in 1:modelinc[43]) constm[,j] = constm[,j] + matrix( ipars[idx[paste("s",j,".xi",sep=""),1]:idx[paste("s",j,".xi",sep=""),2], 1], ncol = modelinc[3] ) %*% t( matrix( mexsim[[i]], ncol = modelinc[3] ) )			
+			for(j in 1:modelinc[46]) constm[,j] = constm[,j] + matrix( ipars[idx[paste("s",j,".xi",sep=""),1]:idx[paste("s",j,".xi",sep=""),2], 1], ncol = modelinc[3] ) %*% t( matrix( mexsim[[i]], ncol = modelinc[3] ) )			
 		}
-		constm = rbind(matrix(0, ncol=modelinc[43], nrow=mar), constm)
-		if(modelinc[46]==2){
+		constm = rbind(matrix(0, ncol=modelinc[46], nrow=mar), constm)
+		if(modelinc[49]==2){
 			arglist$XL = ssim[[i]]
 			# sim starts at (m=mar) and end at n+mar
 			# get probabilities
-			ptmp = switch(modelinc[43], dstar1path(arglist), dstar2path(arglist), dstar3path(arglist), dstar4path(arglist))
-			rsim = switch(modelinc[43],
+			ptmp = switch(modelinc[46], dstar1path(arglist), dstar2path(arglist), dstar3path(arglist), dstar4path(arglist))
+			rsim = switch(modelinc[46],
 					try(.C("starxsim1", model = as.integer(modelinc), pars = as.double(ipars[,1]), idx = as.integer(idx[,1]-1), 
-									x = as.double(x), s = double(modelinc[43]*(n+mar)), res = as.double(simres), prob = as.double(ptmp$probs), 
+									x = as.double(x), s = double(modelinc[46]*(n+mar)), res = as.double(simres), prob = as.double(ptmp$probs), 
 									constm = as.double(constm), m = as.integer(mar), T = as.integer(mar+n), PACKAGE="twinkle"), silent = TRUE),
 					try(.C("starxsim2", model = as.integer(modelinc), pars = as.double(ipars[,1]), idx = as.integer(idx[,1]-1), 
-									x = as.double(x), s = double(modelinc[43]*(n+mar)), res = as.double(simres), prob = as.double(ptmp$probs), 
+									x = as.double(x), s = double(modelinc[46]*(n+mar)), res = as.double(simres), prob = as.double(ptmp$probs), 
 									constm = as.double(constm), m = as.integer(mar), T = as.integer(mar+n), PACKAGE="twinkle"), silent = TRUE),
 					try(.C("starxsim3", model = as.integer(modelinc), pars = as.double(ipars[,1]), idx = as.integer(idx[,1]-1), 
-									x = as.double(x), s = double(modelinc[43]*(n+mar)), res = as.double(simres), prob = as.double(ptmp$probs), 
+									x = as.double(x), s = double(modelinc[46]*(n+mar)), res = as.double(simres), prob = as.double(ptmp$probs), 
 									constm = as.double(constm), m = as.integer(mar), T = as.integer(mar+n), PACKAGE="twinkle"), silent = TRUE),
 					try(.C("starxsim4", model = as.integer(modelinc), pars = as.double(ipars[,1]), idx = as.integer(idx[,1]-1), 
-									x = as.double(x), s = double(modelinc[43]*(n+mar)), res = as.double(simres), prob = as.double(ptmp$probs), 
+									x = as.double(x), s = double(modelinc[46]*(n+mar)), res = as.double(simres), prob = as.double(ptmp$probs), 
 									constm = as.double(constm), m = as.integer(mar), T = as.integer(mar+n), PACKAGE="twinkle"), silent = TRUE)
 			)
 			seriesSim[,i] = tail(rsim$x, n.sim)
 			probSim[[i]]  = tail(ptmp$probs, n.sim)
-			condmSim[[i]]  = tail(matrix(rsim$s, ncol = modelinc[43]), n.sim)
-			colnames(condmSim[[i]]) = colnames(probSim[[i]]) = paste("state[",1:modelinc[43],"]",sep="")
+			condmSim[[i]]  = tail(matrix(rsim$s, ncol = modelinc[46]), n.sim)
+			colnames(condmSim[[i]]) = colnames(probSim[[i]]) = paste("state[",1:modelinc[46],"]",sep="")
 			rownames(condmSim[[i]]) = rownames(probSim[[i]]) = paste("T+",1:n.sim)	
 		} else{
 			# NOTE: would probably benefit from using .Call and performing the whole process in C++ with a call to R for "yfun"...
@@ -1829,10 +1863,10 @@
 			# NOTE: sometimes the user may need to pass a vector which is longer since yfun may have
 			# a lag structure (see base example with vDF dataset).
 			yf = c(prereturnsy, rep(0, n))
-			psim = matrix(0, ncol = modelinc[43], nrow = mar+n)
-			xcondm = matrix(0, ncol = modelinc[43], nrow = mar+n)
+			psim = matrix(0, ncol = modelinc[46], nrow = mar+n)
+			xcondm = matrix(0, ncol = modelinc[46], nrow = mar+n)
 			for(j in 1:n){
-				if(modelinc[45]==1){
+				if(modelinc[48]==1){
 					ytmp = c(yfun(as.numeric(yf[1:(yfn+j-1)])), NA)
 					ytmp = tail(ytmp, mar+j)
 				} else{
@@ -1845,35 +1879,35 @@
 				}
 				XL[is.na(XL)]=0
 				arglist$XL = XL
-				ptmp = switch(modelinc[43], dstar1path(arglist), dstar2path(arglist), dstar3path(arglist), dstar4path(arglist))
+				ptmp = switch(modelinc[46], dstar1path(arglist), dstar2path(arglist), dstar3path(arglist), dstar4path(arglist))
 				psim[mar+j,] = tail(ptmp$probs, 1)
-				rsim = switch(modelinc[43],
+				rsim = switch(modelinc[46],
 						try(.C("starxsim1", model = as.integer(modelinc), pars = as.double(ipars[,1]), idx = as.integer(idx[,1]-1), 
-										x = as.double(x), s = double(modelinc[43]*(mar+j)),res = as.double(simres[1:(mar+j)]),
+										x = as.double(x), s = double(modelinc[46]*(mar+j)),res = as.double(simres[1:(mar+j)]),
 										prob = as.double(psim[1:(mar+j),,drop=FALSE]), constm = as.double(constm[1:(mar+j),,drop=FALSE]),
 										m = as.integer(mar+j-1), T = as.integer(mar+j), PACKAGE="twinkle"), silent = TRUE),
 						try(.C("starxsim2", model = as.integer(modelinc), pars = as.double(ipars[,1]), idx = as.integer(idx[,1]-1), 
-										x = as.double(x), s = double(modelinc[43]*(mar+j)),res = as.double(simres[1:(mar+j)]),
+										x = as.double(x), s = double(modelinc[46]*(mar+j)),res = as.double(simres[1:(mar+j)]),
 										prob = as.double(psim[1:(mar+j),,drop=FALSE]), constm = as.double(constm[1:(mar+j),,drop=FALSE]),
 										m = as.integer(mar+j-1), T = as.integer(mar+j), PACKAGE="twinkle"), silent = TRUE),
 						try(.C("starxsim3", model = as.integer(modelinc), pars = as.double(ipars[,1]), idx = as.integer(idx[,1]-1), 
-										x = as.double(x), s = double(modelinc[43]*(mar+j)),res = as.double(simres[1:(mar+j)]),
+										x = as.double(x), s = double(modelinc[46]*(mar+j)),res = as.double(simres[1:(mar+j)]),
 										prob = as.double(psim[1:(mar+j),,drop=FALSE]), constm = as.double(constm[1:(mar+j),,drop=FALSE]),
 										m = as.integer(mar+j-1), T = as.integer(mar+j), PACKAGE="twinkle"), silent = TRUE),
 						try(.C("starxsim4", model = as.integer(modelinc), pars = as.double(ipars[,1]), idx = as.integer(idx[,1]-1), 
-										x = as.double(x), s = double(modelinc[43]*(mar+j)),res = as.double(simres[1:(mar+j)]),
+										x = as.double(x), s = double(modelinc[46]*(mar+j)),res = as.double(simres[1:(mar+j)]),
 										prob = as.double(psim[1:(mar+j),,drop=FALSE]), constm = as.double(constm[1:(mar+j),,drop=FALSE]),
 										m = as.integer(mar+j-1), T = as.integer(mar+j), PACKAGE="twinkle"), silent = TRUE)
 				)
 				x[mar+j] = rsim$x[mar+j]
 				y[mar+j] = rsim$x[mar+j]
 				yf[yfn+j] = y[mar+j]
-				xcondm[mar+j,] = tail(matrix(rsim$s, ncol = modelinc[43]),1)
+				xcondm[mar+j,] = tail(matrix(rsim$s, ncol = modelinc[46]),1)
 			}
 			seriesSim[,i] = tail(x, n.sim)
 			probSim[[i]]  = tail(ptmp$probs, n.sim)
 			condmSim[[i]] = tail(xcondm, n.sim)
-			colnames(probSim[[i]]) = paste("state[",1:modelinc[43],"]",sep="")
+			colnames(probSim[[i]]) = paste("state[",1:modelinc[46],"]",sep="")
 			rownames(probSim[[i]]) = paste("T+",1:n.sim)
 		}
 	}
@@ -1931,10 +1965,10 @@
 	distribution = model$modeldesc$distribution	
 	sig = ipars["sigma",1]
 	yfun = model$modeldata$fun
-	mar = max(c(modelinc[c(2,6,10,14,4,8,12,16,17)], ifelse(modelinc[46]==1, max(model$modeldata$ylags), 0)))
-	m = max(c(modelinc[29:30], mar))
+	mar = max(c(modelinc[c(2,6,10,14,4,8,12,16,17)], ifelse(modelinc[49]==1, max(model$modeldata$ylags), 0)))
+	m = max(c(modelinc[32:33], mar))
 	ylags = model$modeldata$ylags
-	gfun = switch(modelinc[43],"starxsim1", "starxsim2","starxsim3","starxsim4")
+	gfun = switch(modelinc[46],"starxsim1", "starxsim2","starxsim3","starxsim4")
 	if(length(sseed) == 1){
 		set.seed(sseed)
 		z = .custzdist(custom.dist = custom.dist, distribution = model$modeldesc$distribution, n = n, m.sim = m.sim, 
@@ -1985,7 +2019,7 @@
 	residSim =  matrix(0, ncol = m.sim, nrow = n.sim)
 	condmSim = probSim  =  vector(mode="list", length = m.sim)
 	z[is.na(z) | is.nan(z) | !is.finite(z)] = 0
-	constm = matrix(0, ncol = modelinc[43], nrow = n)
+	constm = matrix(0, ncol = modelinc[46], nrow = n)
 	# 2 cases for the star model:
 	# case 1: probability determined by external regressors in which case
 	# the simulation is quite fast
@@ -2001,7 +2035,7 @@
 		h = c(presigma^2, rep(0, n))
 		x = c(prereturnsx, rep(0, n))
 		
-		if(modelinc[47]==2){
+		if(modelinc[50]==2){
 			ngrd = which(preres<0)
 			tmpr = rep(0, length(preres))
 			tmpr[ngrd] = preres[ngrd] * preres[ngrd]
@@ -2009,7 +2043,7 @@
 		} else{
 			nres = 0
 		}
-		if(modelinc[47]==3){
+		if(modelinc[50]==3){
 			kappa = egarchKappa(ipars[idx["ghlambda",1],1], ipars[idx["shape",1],1], ipars[idx["skew",1],1], model$modeldesc$distribution)	
 		} else{
 			kappa = 1
@@ -2026,48 +2060,48 @@
 		residSim[,i] = ans1$res[(n.start + m + 1):(n+m)]
 		simres = tail(ans1$res,n+mar)
 		# ToDo: change to accomodate modelinc[20]
-		for(j in 1:modelinc[43]){
+		for(j in 1:modelinc[46]){
 			if(modelinc[c(1,5,9,13)[j]]>0) constm[,j] = as.numeric(ipars[idx[paste("s",j,".phi0",sep=""),1],1])
 		}
 		if(modelinc[3]>0){
-			for(j in 1:modelinc[43]) constm[,j] = constm[,j] + matrix( ipars[idx[paste("s",j,".xi",sep=""),1]:idx[paste("s",j,".xi",sep=""),2], 1], ncol = modelinc[3] ) %*% t( matrix( mexsim[[i]], ncol = modelinc[3] ) )
+			for(j in 1:modelinc[46]) constm[,j] = constm[,j] + matrix( ipars[idx[paste("s",j,".xi",sep=""),1]:idx[paste("s",j,".xi",sep=""),2], 1], ncol = modelinc[3] ) %*% t( matrix( mexsim[[i]], ncol = modelinc[3] ) )
 		}
-		constm = rbind(matrix(0, ncol=modelinc[43], nrow=mar), constm)
-		if(modelinc[46]==2){
+		constm = rbind(matrix(0, ncol=modelinc[46], nrow=mar), constm)
+		if(modelinc[49]==2){
 			arglist$XL = ssim[[i]]
-			ptmp = switch(modelinc[43], dstar1path(arglist), dstar2path(arglist), dstar3path(arglist), dstar4path(arglist))
-			rsim = switch(modelinc[43],
+			ptmp = switch(modelinc[46], dstar1path(arglist), dstar2path(arglist), dstar3path(arglist), dstar4path(arglist))
+			rsim = switch(modelinc[46],
 					try(.C("starxsim1", model = as.integer(modelinc), pars = as.double(ipars[,1]), idx = as.integer(idx[,1]-1), 
-									x = as.double(x), s = double(modelinc[43]*(n+mar)), res = as.double(simres),
+									x = as.double(x), s = double(modelinc[46]*(n+mar)), res = as.double(simres),
 									prob = as.double(ptmp$probs), constm = as.double(constm), m = as.integer(mar),
 									T = as.integer(mar+n), PACKAGE="twinkle"), silent = TRUE),
 					try(.C("starxsim2", model = as.integer(modelinc), pars = as.double(ipars[,1]), idx = as.integer(idx[,1]-1), 
-									x = as.double(x), s = double(modelinc[43]*(n+mar)), res = as.double(simres),
+									x = as.double(x), s = double(modelinc[46]*(n+mar)), res = as.double(simres),
 									prob = as.double(ptmp$probs), constm = as.double(constm), m = as.integer(mar),
 									T = as.integer(mar+n), PACKAGE="twinkle"), silent = TRUE),
 					try(.C("starxsim3", model = as.integer(modelinc), pars = as.double(ipars[,1]), idx = as.integer(idx[,1]-1), 
-									x = as.double(x), s = double(modelinc[43]*(n+mar)), res = as.double(simres),
+									x = as.double(x), s = double(modelinc[46]*(n+mar)), res = as.double(simres),
 									prob = as.double(ptmp$probs), constm = as.double(constm), m = as.integer(mar),
 									T = as.integer(mar+n), PACKAGE="twinkle"), silent = TRUE),
 					try(.C("starxsim4", model = as.integer(modelinc), pars = as.double(ipars[,1]), idx = as.integer(idx[,1]-1), 
-									x = as.double(x), s = double(modelinc[43]*(n+mar)), res = as.double(simres),
+									x = as.double(x), s = double(modelinc[46]*(n+mar)), res = as.double(simres),
 									prob = as.double(ptmp$probs), constm = as.double(constm), m = as.integer(mar),
 									T = as.integer(mar+n), PACKAGE="twinkle"), silent = TRUE)
 			)
 			seriesSim[,i] = tail(rsim$x, n.sim)
 			probSim[[i]]  = tail(ptmp$probs, n.sim)
-			condmSim[[i]]  = tail(matrix(rsim$s, ncol = modelinc[43]), n.sim)
-			colnames(condmSim[[i]]) = colnames(probSim[[i]]) = paste("state[",1:modelinc[43],"]",sep="")
+			condmSim[[i]]  = tail(matrix(rsim$s, ncol = modelinc[46]), n.sim)
+			colnames(condmSim[[i]]) = colnames(probSim[[i]]) = paste("state[",1:modelinc[46],"]",sep="")
 			rownames(condmSim[[i]]) = rownames(probSim[[i]]) = paste("T+",1:n.sim,sep="")	
 		} else{
 			# NOTE: would probably benefit from using .Call and performing the whole process in C++ with a call to R for "yfun"...
 			x = c(prereturnsx, rep(0, n))
 			y = c(prereturnsx, rep(0, n))
 			yf = c(prereturnsy, rep(0, n))
-			psim = matrix(0, ncol = modelinc[43], nrow = mar+n)
-			xcondm = matrix(0, ncol = modelinc[43], nrow = mar+n)
+			psim = matrix(0, ncol = modelinc[46], nrow = mar+n)
+			xcondm = matrix(0, ncol = modelinc[46], nrow = mar+n)
 			for(j in 1:n){
-				if(modelinc[45]==1){
+				if(modelinc[48]==1){
 					ytmp = c(yfun(as.numeric(yf[1:(yfn+j-1)])), NA)
 					ytmp = tail(ytmp, mar+j)
 				} else{
@@ -2080,35 +2114,35 @@
 				}
 				XL[is.na(XL)]=0
 				arglist$XL = XL
-				ptmp = switch(modelinc[43], dstar1path(arglist), dstar2path(arglist), dstar3path(arglist), dstar4path(arglist))
+				ptmp = switch(modelinc[46], dstar1path(arglist), dstar2path(arglist), dstar3path(arglist), dstar4path(arglist))
 				psim[mar+j,] = tail(ptmp$probs, 1)
-				rsim = switch(modelinc[43],
+				rsim = switch(modelinc[46],
 						try(.C("starxsim1", model = as.integer(modelinc), pars = as.double(ipars[,1]), idx = as.integer(idx[,1]-1), 
-										x = as.double(x), s = double(modelinc[43]*(mar+j)), res = as.double(simres[1:(mar+j)]),
+										x = as.double(x), s = double(modelinc[46]*(mar+j)), res = as.double(simres[1:(mar+j)]),
 										prob = as.double(psim[1:(mar+j),,drop=FALSE]), constm = as.double(constm[1:(mar+j),,drop=FALSE]),
 										m = as.integer(mar+j-1), T = as.integer(mar+j), PACKAGE="twinkle"), silent = TRUE),
 						try(.C("starxsim2",  model = as.integer(modelinc), pars = as.double(ipars[,1]), idx = as.integer(idx[,1]-1), 
-										x = as.double(x), s = double(modelinc[43]*(mar+j)), res = as.double(simres[1:(mar+j)]),
+										x = as.double(x), s = double(modelinc[46]*(mar+j)), res = as.double(simres[1:(mar+j)]),
 										prob = as.double(psim[1:(mar+j),,drop=FALSE]), constm = as.double(constm[1:(mar+j),,drop=FALSE]),
 										m = as.integer(mar+j-1), T = as.integer(mar+j), PACKAGE="twinkle"), silent = TRUE),
 						try(.C("starxsim3",  model = as.integer(modelinc), pars = as.double(ipars[,1]), idx = as.integer(idx[,1]-1), 
-										x = as.double(x), s = double(modelinc[43]*(mar+j)), res = as.double(simres[1:(mar+j)]),
+										x = as.double(x), s = double(modelinc[46]*(mar+j)), res = as.double(simres[1:(mar+j)]),
 										prob = as.double(psim[1:(mar+j),,drop=FALSE]), constm = as.double(constm[1:(mar+j),,drop=FALSE]),
 										m = as.integer(mar+j-1), T = as.integer(mar+j), PACKAGE="twinkle"), silent = TRUE),
 						try(.C("starxsim4",  model = as.integer(modelinc), pars = as.double(ipars[,1]), idx = as.integer(idx[,1]-1), 
-										x = as.double(x), s = double(modelinc[43]*(mar+j)), res = as.double(simres[1:(mar+j)]),
+										x = as.double(x), s = double(modelinc[46]*(mar+j)), res = as.double(simres[1:(mar+j)]),
 										prob = as.double(psim[1:(mar+j),,drop=FALSE]), constm = as.double(constm[1:(mar+j),,drop=FALSE]),
 										m = as.integer(mar+j-1), T = as.integer(mar+j), PACKAGE="twinkle"), silent = TRUE),
 				)
 				x[mar+j] = rsim$x[mar+j]
 				y[mar+j] = rsim$x[mar+j]
 				yf[yfn+j] = y[mar+j]
-				xcondm[mar+j,] = tail(matrix(rsim$s, ncol = modelinc[43]),1)
+				xcondm[mar+j,] = tail(matrix(rsim$s, ncol = modelinc[46]),1)
 			}
 			seriesSim[,i] = tail(x, n.sim)
 			probSim[[i]]  = tail(ptmp$probs, n.sim)
 			condmSim[[i]] = tail(xcondm, n.sim)
-			colnames(probSim[[i]]) = paste("state[",1:modelinc[43],"]",sep="")
+			colnames(probSim[[i]]) = paste("state[",1:modelinc[46],"]",sep="")
 			rownames(probSim[[i]]) = paste("T+",1:n.sim,sep="")
 		}
 	}
@@ -2160,15 +2194,18 @@
 	N = 0
 	sig1 = ipars["s1.sigma",1]
 	sig2 = ipars["s2.sigma",1]
+	if(modelinc[46]==3)	sig3 = ipars["s3.sigma",1] else sig3 = NULL
+	if(modelinc[46]==4)	sig4 = ipars["s4.sigma",1] else sig4 = NULL
+	
 	xreg = .simregressorspath(model, xregsim = xregsim, vregsim = NULL, ssim = ssim, n, m.sim)
 	mexsim = xreg$mexsimlist
 	ssim = xreg$ssimlist
 	distribution = model$modeldesc$distribution	
 	yfun = model$modeldata$fun
 	# max of AR terms and STAR dynamics in the case that y is used
-	mar = max(c(modelinc[c(2,6,10,14,4,8,12,16,17)], ifelse(modelinc[46]==1, max(model$modeldata$ylags), 0)))
+	mar = max(c(modelinc[c(2,6,10,14,4,8,12,16,17)], ifelse(modelinc[49]==1, max(model$modeldata$ylags), 0)))
 	ylags = model$modeldata$ylags
-	gfun = switch(modelinc[43],"starxsim1", "starxsim2","starxsim3","starxsim4")
+	gfun = switch(modelinc[46],"starxsim1", "starxsim2","starxsim3","starxsim4")
 	# Random Samples from the Distribution
 	# will postmultiply by mixture sigma once we have probs
 	if(length(sseed) == 1){
@@ -2208,7 +2245,7 @@
 	sigmaSim =  matrix(0, ncol = m.sim, nrow = n.sim)
 	seriesSim = matrix(0, ncol = m.sim, nrow = n.sim)
 	condmSim = probSim  =  vector(mode="list", length = m.sim)
-	constm = matrix(0, ncol = modelinc[43], nrow = n)
+	constm = matrix(0, ncol = modelinc[46], nrow = n)
 	# 2 cases for the star model:
 	# case 1: probability determined by external regressors in which case
 	# the simulation is quite fast
@@ -2219,38 +2256,43 @@
 	arglist$ipars = ipars
 	arglist$idx = idx
 	arglist$model = model
-	arglist$probs = matrix(0, ncol=modelinc[43], nrow=n)
+	arglist$probs = matrix(0, ncol=modelinc[46], nrow=n)
 	for(i in 1:m.sim){
 		x = c(prereturnsx, rep(0, n))
 		
-		for(j in 1:modelinc[43]){
+		for(j in 1:modelinc[46]){
 			if(modelinc[c(1,5,9,13)[j]]>0) constm[,j] = as.numeric(ipars[idx[paste("s",j,".phi0",sep=""),1],1])
 		}
 		if(modelinc[3]>0){
-			for(j in 1:modelinc[43]) constm[,j] = constm[,j] + matrix( ipars[idx[paste("s",j,".xi",sep=""),1]:idx[paste("s",j,".xi",sep=""),2], 1], ncol = modelinc[3] ) %*% t( matrix( mexsim[[i]], ncol = modelinc[3] ) )			
+			for(j in 1:modelinc[46]) constm[,j] = constm[,j] + matrix( ipars[idx[paste("s",j,".xi",sep=""),1]:idx[paste("s",j,".xi",sep=""),2], 1], ncol = modelinc[3] ) %*% t( matrix( mexsim[[i]], ncol = modelinc[3] ) )			
 		}
-		constm = rbind(matrix(0, ncol=modelinc[43], nrow=mar), constm)
-		if(modelinc[46]==2){
+		constm = rbind(matrix(0, ncol=modelinc[46], nrow=mar), constm)
+		if(modelinc[49]==2){
 			arglist$XL = ssim[[i]]
-			ptmp = switch(modelinc[43], dstar1path(arglist), dstar2path(arglist), dstar3path(arglist), dstar4path(arglist))
+			ptmp = switch(modelinc[46], dstar1path(arglist), dstar2path(arglist), dstar3path(arglist), dstar4path(arglist))
 			# This is a 2 state model
-			sigsim = tail(ptmp$probs[,1]*sig1 + ptmp$probs[,2]*sig2,n)
+			sigsim = switch(modelinc[46],
+					tail(ptmp$probs[,1]*sig1 + ptmp$probs[,2]*sig2, n),
+					tail(ptmp$probs[,1]*sig1 + ptmp$probs[,2]*sig2, n),
+					tail(ptmp$probs[,1]*sig1 + ptmp$probs[,2]*sig2 + ptmp$probs[,3]*sig3, n),
+					tail(ptmp$probs[,1]*sig1 + ptmp$probs[,2]*sig2 + ptmp$probs[,3]*sig3 + ptmp$probs[,4]*sig4, n))
+				
 			simres = c(preres, zresidSim[,i]*sigsim)
-			rsim = switch(modelinc[43],
+			rsim = switch(modelinc[46],
 					try(.C("starxsim1", model = as.integer(modelinc), pars = as.double(ipars[,1]), idx = as.integer(idx[,1]-1), 
-									x = as.double(x), s = double(modelinc[43]*(n+mar)), res = as.double(simres),
+									x = as.double(x), s = double(modelinc[46]*(n+mar)), res = as.double(simres),
 									prob = as.double(ptmp$probs), constm = as.double(constm), m = as.integer(mar),
 									T = as.integer(mar+n), PACKAGE="twinkle"), silent = TRUE),
 					try(.C("starxsim2", model = as.integer(modelinc), pars = as.double(ipars[,1]), idx = as.integer(idx[,1]-1), 
-									x = as.double(x), s = double(modelinc[43]*(n+mar)), res = as.double(simres),
+									x = as.double(x), s = double(modelinc[46]*(n+mar)), res = as.double(simres),
 									prob = as.double(ptmp$probs), constm = as.double(constm), m = as.integer(mar),
 									T = as.integer(mar+n), PACKAGE="twinkle"), silent = TRUE),
 					try(.C("starxsim3", model = as.integer(modelinc), pars = as.double(ipars[,1]), idx = as.integer(idx[,1]-1), 
-									x = as.double(x), s = double(modelinc[43]*(n+mar)), res = as.double(simres),
+									x = as.double(x), s = double(modelinc[46]*(n+mar)), res = as.double(simres),
 									prob = as.double(ptmp$probs), constm = as.double(constm), m = as.integer(mar),
 									T = as.integer(mar+n), PACKAGE="twinkle"), silent = TRUE),
 					try(.C("starxsim4",model = as.integer(modelinc), pars = as.double(ipars[,1]), idx = as.integer(idx[,1]-1), 
-									x = as.double(x), s = double(modelinc[43]*(n+mar)), res = as.double(simres),
+									x = as.double(x), s = double(modelinc[46]*(n+mar)), res = as.double(simres),
 									prob = as.double(ptmp$probs), constm = as.double(constm), m = as.integer(mar),
 									T = as.integer(mar+n), PACKAGE="twinkle"), silent = TRUE)
 			)
@@ -2258,8 +2300,8 @@
 			residSim[,i] = tail(zresidSim[,i]*sigsim,n.sim)
 			sigmaSim[,i] = tail(sigsim,n.sim)
 			probSim[[i]]  = tail(ptmp$probs, n.sim)
-			condmSim[[i]]  = tail(matrix(rsim$s, ncol = modelinc[43]), n.sim)
-			colnames(condmSim[[i]]) = colnames(probSim[[i]]) = paste("state[",1:modelinc[43],"]",sep="")
+			condmSim[[i]]  = tail(matrix(rsim$s, ncol = modelinc[46]), n.sim)
+			colnames(condmSim[[i]]) = colnames(probSim[[i]]) = paste("state[",1:modelinc[46],"]",sep="")
 			rownames(condmSim[[i]]) = rownames(probSim[[i]]) = paste("T+",1:n.sim,sep="")			
 		} else{
 			# NOTE: would probably benefit from using .Call and performing the whole process in C++ with a call to R for "yfun"...
@@ -2269,12 +2311,12 @@
 			# NOTE: sometimes the user may need to pass a vector which is longer since yfun may have
 			# a lag structure (see base example with vDF dataset).
 			yf = c(prereturnsy, rep(0, n))
-			psim = matrix(0, ncol = modelinc[43], nrow = mar+n)
-			xcondm = matrix(0, ncol = modelinc[43], nrow = mar+n)
+			psim = matrix(0, ncol = modelinc[46], nrow = mar+n)
+			xcondm = matrix(0, ncol = modelinc[46], nrow = mar+n)
 			sigsim = simres = c(rep(0, mar+n))
 			simres[1:mar] = preres
 			for(j in 1:n){
-				if(modelinc[45]==1){
+				if(modelinc[48]==1){
 					ytmp = c(yfun(as.numeric(yf[1:(yfn+j-1)])), NA)
 					ytmp = tail(ytmp, mar+j)
 				} else{
@@ -2287,40 +2329,46 @@
 				}
 				XL[is.na(XL)]=0
 				arglist$XL = XL
-				ptmp = switch(modelinc[43], dstar1path(arglist), dstar2path(arglist), dstar3path(arglist), dstar4path(arglist))
+				ptmp = switch(modelinc[46], dstar1path(arglist), dstar2path(arglist), dstar3path(arglist), dstar4path(arglist))
 				psim[mar+j,] = tail(ptmp$probs, 1)
-				sigsim[mar+j] = psim[mar+j,1]*sig1+psim[mar+j,2]*sig2
+				msimx = switch(modelinc[46],
+						psim[mar+j,1]*sig1+psim[mar+j,2]*sig2,
+						psim[mar+j,1]*sig1+psim[mar+j,2]*sig2,
+						psim[mar+j,1]*sig1+psim[mar+j,2]*sig2+psim[mar+j,3]*sig3,
+						psim[mar+j,1]*sig1+psim[mar+j,2]*sig2+psim[mar+j,3]*sig3+psim[mar+j,4]*sig4)
+				
+				sigsim[mar+j] = msimx
 				# zresidSim is size (burnin+n.sim) x m.sim (no mar)
 				simres[mar+j] = zresidSim[j,i]*sigsim[mar+j]
-				rsim = switch(modelinc[43],
+				rsim = switch(modelinc[46],
 						try(.C("starxsim1", model = as.integer(modelinc), pars = as.double(ipars[,1]), idx = as.integer(idx[,1]-1), 
-										x = as.double(x), s = double(modelinc[43]*(mar+j)),res = as.double(simres[1:(mar+j)]),
+										x = as.double(x), s = double(modelinc[46]*(mar+j)),res = as.double(simres[1:(mar+j)]),
 										prob = as.double(psim[1:(mar+j),,drop=FALSE]), constm = as.double(constm[1:(mar+j),,drop=FALSE]),
 										m = as.integer(mar+j-1), T = as.integer(mar+j), PACKAGE="twinkle"), silent = TRUE),
 						try(.C("starxsim2", model = as.integer(modelinc), pars = as.double(ipars[,1]), idx = as.integer(idx[,1]-1), 
-										x = as.double(x), s = double(modelinc[43]*(mar+j)),res = as.double(simres[1:(mar+j)]),
+										x = as.double(x), s = double(modelinc[46]*(mar+j)),res = as.double(simres[1:(mar+j)]),
 										prob = as.double(psim[1:(mar+j),,drop=FALSE]), constm = as.double(constm[1:(mar+j),,drop=FALSE]),
 										m = as.integer(mar+j-1), T = as.integer(mar+j), PACKAGE="twinkle"), silent = TRUE),
 						try(.C("starxsim3", model = as.integer(modelinc), pars = as.double(ipars[,1]), idx = as.integer(idx[,1]-1), 
-										x = as.double(x), s = double(modelinc[43]*(mar+j)),res = as.double(simres[1:(mar+j)]),
+										x = as.double(x), s = double(modelinc[46]*(mar+j)),res = as.double(simres[1:(mar+j)]),
 										prob = as.double(psim[1:(mar+j),,drop=FALSE]), constm = as.double(constm[1:(mar+j),,drop=FALSE]),
 										m = as.integer(mar+j-1), T = as.integer(mar+j), PACKAGE="twinkle"), silent = TRUE),
 						try(.C("starxsim4", model = as.integer(modelinc), pars = as.double(ipars[,1]), idx = as.integer(idx[,1]-1), 
-										x = as.double(x), s = double(modelinc[43]*(mar+j)),res = as.double(simres[1:(mar+j)]),
+										x = as.double(x), s = double(modelinc[46]*(mar+j)),res = as.double(simres[1:(mar+j)]),
 										prob = as.double(psim[1:(mar+j),,drop=FALSE]), constm = as.double(constm[1:(mar+j),,drop=FALSE]),
 										m = as.integer(mar+j-1), T = as.integer(mar+j), PACKAGE="twinkle"), silent = TRUE)
 				)
 				x[mar+j] = rsim$x[mar+j]
 				y[mar+j] = rsim$x[mar+j]
 				yf[yfn+j] = y[mar+j]
-				xcondm[mar+j,] = tail(matrix(rsim$s, ncol = modelinc[43]),1)
+				xcondm[mar+j,] = tail(matrix(rsim$s, ncol = modelinc[46]),1)
 			}
 			seriesSim[,i] = tail(x, n,sim)
 			residSim[,i] = tail(simres, n.sim)
 			sigmaSim[,i] = tail(sigsim, n.sim)
 			probSim[[i]]  = tail(ptmp$probs, n.sim)
 			condmSim[[i]] = tail(xcondm, n.sim)
-			colnames(probSim[[i]]) = paste("state[",1:modelinc[43],"]",sep="")
+			colnames(probSim[[i]]) = paste("state[",1:modelinc[46],"]",sep="")
 			rownames(probSim[[i]]) = paste("T+",1:n.sim,sep="")
 		}
 	}

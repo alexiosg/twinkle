@@ -36,6 +36,8 @@ void starxfilters3sx(int* model, double *pars, int *idx, double *x, double *res,
 		double *mexdata, double *prob, double *constm, double *condm, double *marx,  int *T);
 void starxfilters4sx(int* model, double *pars, int *idx, double *x, double *res, double *z,
 		double *mexdata, double *prob, double *constm, double *condm, double *marx,  int *T);
+void mixturefilterC(int* model, double *pars, int *idx, double *prob, double *res, double *z,
+		double *h, int *T, double *LHT, double *llh);
 void garchfilterC(int* model, double *pars, int *idx, double *prob, double *res, double *e,
 		double *z, double *vexdata, double *hEst, double *h, double *nres, double *meanz,
 		int *m, int *T, double *LHT, double *llh);

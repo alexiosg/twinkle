@@ -23,6 +23,9 @@
 \alias{convergence,STARfit-method}
 \alias{plot,STARfit,missing-method}
 \alias{show,STARfit-method}
+\alias{nonlinearTest,STARfit,xts-method}
+\alias{nonlinearTest,STARfit,missing-method}
+\alias{nonlinearTest}
 \title{class: Univariate STAR Fit Class}
 \description{Class for the univariate STAR fit.}
 \section{Objects from the Class}{A virtual Class: No objects may be created from it.}
@@ -72,6 +75,10 @@ Calculates and returns, given a vector of probabilities (additional argument
 \item{pit}{\code{signature(object = "STARfit")}: 
 Calculates and returns the conditional probability integral transform given the
 data and estimated density.}
+\item{nonlinearTest}{\code{signature(object = "STARfit", data = "missing")}: 
+Luukkonen, Saikkonen and Terasvirta (1988) test of STAR nonlinearity against
+linearity. Takes additional argument \sQuote{robust} indicating whether to 
+adjust the test to account for heteroscedasticity in the errors.}
 \item{plot}{\code{signature(x = "STARfit", y = "missing")}: 
 Fit plots. }
 \item{show}{\code{signature(object = "STARfit")}: 

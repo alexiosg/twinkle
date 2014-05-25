@@ -1,0 +1,8 @@
+twinkle/src/distributions.o
+twinkle/src/gig.o
+twinkle/src/nig.o
+twinkle/src/starfilters.o
+twinkle/src/symbols.rds
+twinkle/src/twinkle.o
+twinkle/src/twinkle.so
+*.dll

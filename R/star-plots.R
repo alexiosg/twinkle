@@ -25,7 +25,7 @@ plot.starfit = function(x, ...)
 	def.par <- par(no.readonly = TRUE)
 	T = x@model$modeldata$T
 	D = as.Date(x@model$modeldata$index[1:T])
-	if(modelinc[43]==4){
+	if(modelinc[46]==4){
 		mat = matrix(c(1,1,1,2,3,4,5,5,5),3,3,byrow=TRUE)
 		nf=layout(mat)
 		plot(D, as.numeric(states(x)[,1]), ylim=c(0,1), main = "Prob[state={1,2,3,4}]", type="l", ylab="Probability", xlab="Time")
@@ -34,7 +34,7 @@ plot.starfit = function(x, ...)
 		lines(D, as.numeric(states(x)[,4]), col=4, lty=2)
 		grid()
 		legend("topleft", c("[state=1]", "[state=2]", "[state=3]", "[state=4]"), col=1:4, lty=c(1,2,2,2), bty="n")
-		if(modelinc[44]==0){
+		if(modelinc[47]==0){
 			plot(D, as.numeric(states(x, type="pmu")[,1]), main = "State Dynamics[1]", type="l", ylab=expression(pi['1,t']), xlab="Time")
 			grid()
 			plot(D, as.numeric(states(x, type="pmu")[,2]), main = "State Dynamics[2]", type="l", ylab=expression(pi['2,t']), xlab="Time")
@@ -45,7 +45,7 @@ plot.starfit = function(x, ...)
 		plot(D, as.numeric(x@model$modeldata$data[1:x@model$modeldata$T]), main = "Fitted vs Actual", type="l", ylab="Value", xlab="Time")
 		lines(D, as.numeric(fitted(x)), col="steelblue", lwd=2)
 		grid()
-	} else if(modelinc[43]==3){
+	} else if(modelinc[46]==3){
 		mat = matrix(c(1,1,2,3,4,4),3,2,byrow=TRUE)
 		nf=layout(mat)
 		plot(D, as.numeric(states(x)[,1]), ylim=c(0,1), main = "Prob[state={1,2,3}]", type="l", ylab="Probability", xlab="Time")
@@ -53,7 +53,7 @@ plot.starfit = function(x, ...)
 		lines(D, as.numeric(states(x)[,3]), col=3, lty=2)
 		grid()
 		legend("topleft", c("[state=1]", "[state=2]", "[state=3]"), col=1:3, lty=c(1,2,2), bty="n")
-		if(modelinc[44]==0){
+		if(modelinc[47]==0){
 			plot(D, as.numeric(states(x, type="pmu")[,1]), main = "State Dynamics[1]", type="l", ylab=expression(pi['1,t']), xlab="Time")
 			grid()
 			plot(D, as.numeric(states(x, type="pmu")[,2]), main = "State Dynamics[2]", type="l", ylab=expression(pi['2,t']), xlab="Time")
@@ -62,11 +62,11 @@ plot.starfit = function(x, ...)
 		plot(D, as.numeric(x@model$modeldata$data[1:x@model$modeldata$T]), main = "Fitted vs Actual", type="l", ylab="Value", xlab="Time")
 		lines(D, as.numeric(fitted(x)), col="steelblue", lwd=2)
 		grid()
-	} else if(modelinc[43]==2){
+	} else if(modelinc[46]==2){
 		par(mfrow=c(3,1))
 		plot(D, as.numeric(states(x)[,1]), main = "Prob[state=1]", type="l", ylab="Probability", xlab="Time")
 		grid()
-		if(modelinc[44]==0){
+		if(modelinc[47]==0){
 			plot(D, as.numeric(states(x, type="pmu")), main = "State Dynamics", type="l", ylab=expression(pi[t]), xlab="Time")
 			grid()
 		}
@@ -95,15 +95,15 @@ plot.starfit = function(x, ...)
 # only for 2 states
 trans2fun2d = function(object, colidx = 1, fixed.values = NULL, doplot = TRUE, ...)
 {
-	if(object@model$modelinc[43]!=2) stop("\ntwinkle-->error: function only works for the 2 states case at present.")
+	if(object@model$modelinc[46]!=2) stop("\ntwinkle-->error: function only works for the 2 states case at present.")
 	model = object@model
 	modelinc = model$modelinc
 	T = model$modeldata$T
-	if(modelinc[44]==0){
-		if(modelinc[46]==2){
+	if(modelinc[47]==0){
+		if(modelinc[49]==2){
 			XL = model$modeldata$s[1:T, , drop = FALSE]
 		} else{
-			if(modelinc[45]==1) ytmp = model$modeldata$fun(as.numeric(model$modeldata$data[1:T])) else ytmp = as.numeric(model$modeldata$data[1:T])
+			if(modelinc[48]==1) ytmp = model$modeldata$fun(as.numeric(model$modeldata$data[1:T])) else ytmp = as.numeric(model$modeldata$data[1:T])
 			XL = NULL
 			for(i in 1:length(model$modeldata$ylags)){
 				if(i==1) XL = lagf.numeric(ytmp, model$modeldata$ylags[i]) else XL = cbind(XL, lagf.numeric(ytmp, model$modeldata$ylags[i]))
@@ -133,7 +133,7 @@ trans2fun2d = function(object, colidx = 1, fixed.values = NULL, doplot = TRUE, .
 	}
 	sol = dstar2trans(object, newX, initp)
 	if(doplot){
-		if(modelinc[46]==1){
+		if(modelinc[49]==1){
 			px = paste("y['",colidx,",t-",model$modeldata$ylags[colidx],"']",sep="")
 			expr2 =  parse(text=paste("G(",paste("y['",colidx,",t-",model$modeldata$ylags[colidx],"']",sep=""),", ...)",sep=""))
 		} else{
@@ -149,17 +149,17 @@ trans2fun2d = function(object, colidx = 1, fixed.values = NULL, doplot = TRUE, .
 
 trans2fun3d = function(object, colidx = c(1,2), fixed.values = NULL, doplot = TRUE, ...)
 {
-	if(object@model$modelinc[43]!=2) stop("\ntwinkle-->error: function only works for the 2 states case at present.")
+	if(object@model$modelinc[46]!=2) stop("\ntwinkle-->error: function only works for the 2 states case at present.")
 	model = object@model
 	modelinc = model$modelinc
 	T = model$modeldata$T
-	if(modelinc[44]==0){
-		if(modelinc[46]==2){
+	if(modelinc[47]==0){
+		if(modelinc[49]==2){
 			XL = model$modeldata$s[1:T, , drop = FALSE]
 		} else{
 			XL = NULL
 			if(length(model$modeldata$lags)<2) stop("\ntwinkle-->error: transfun3d requires transition variable to have at least 2 columns.")
-			if(modelinc[45]==1) ytmp = model$modeldata$fun(as.numeric(model$modeldata$data[1:T])) else ytmp = as.numeric(model$modeldata$data[1:T])
+			if(modelinc[48]==1) ytmp = model$modeldata$fun(as.numeric(model$modeldata$data[1:T])) else ytmp = as.numeric(model$modeldata$data[1:T])
 			for(i in 1:length(model$modeldata$lags)){
 			}
 				if(i==1) XL = lagf.numeric(ytmp, model$modeldata$ylags[i]) else XL = cbind(XL, lagf.numeric(ytmp, model$modeldata$ylags[i]))
@@ -195,14 +195,14 @@ trans2fun3d = function(object, colidx = c(1,2), fixed.values = NULL, doplot = TR
 	}
 	xp = c(model$pars[model$pidx["s1.c",1],1], initp, 
 			model$pars[model$pidx["s1.alpha",1]:model$pidx["s1.alpha",2],1][colidx],
-			model$pars[model$pidx["s1.beta",1],1])
+			model$pars[model$pidx["s1.beta",1],1],model$pars[model$pidx["s1.gamma",1],1])
 	# st[2] is varing
 	#1/(1+exp(-(xp[1]+xp[3]*d2X[,1] + xp[4]*d2X[2,2] + xp[5]*xp[2])))
 	sol<-try(.C("star3dfun", n = as.integer(100), pars = as.double(xp), zmat=double(100*100),
 			v = as.double(d2X), PACKAGE="twinkle"), silent=TRUE)	
 	zmat = matrix(sol$zmat,100,100,byrow=TRUE)
 	if(doplot){
-		if(modelinc[46]==1){
+		if(modelinc[49]==1){
 			px1 = paste("y['",colidx[1],",t-",model$modeldata$ylags[colidx[1]],"']",sep="")
 			px2 = paste("y['",colidx[2],",t-",model$modeldata$ylags[colidx[2]],"']",sep="")
 			expr3 =  parse(text=paste("G(",paste("y[t]",sep=""),", ...)",sep=""))			
@@ -224,15 +224,15 @@ trans2fun3d = function(object, colidx = c(1,2), fixed.values = NULL, doplot = TR
 
 trans3fun2d = function(object, colidx = 1, fixed.values = NULL, doplot = TRUE, ...)
 {
-	if(object@model$modelinc[43]!=3) stop("\ntwinkle-->error: function only works for the 3 state case.")
+	if(object@model$modelinc[46]!=3) stop("\ntwinkle-->error: function only works for the 3 state case.")
 	model = object@model
 	modelinc = model$modelinc
 	T = model$modeldata$T
-	if(modelinc[44]==0){
-		if(modelinc[46]==2){
+	if(modelinc[47]==0){
+		if(modelinc[49]==2){
 			XL = model$modeldata$s[1:T, , drop = FALSE]
 		} else{
-			if(modelinc[45]==1) ytmp = model$modeldata$fun(as.numeric(model$modeldata$data[1:T])) else ytmp = as.numeric(model$modeldata$data[1:T])
+			if(modelinc[48]==1) ytmp = model$modeldata$fun(as.numeric(model$modeldata$data[1:T])) else ytmp = as.numeric(model$modeldata$data[1:T])
 			XL = NULL
 			for(i in 1:length(model$modeldata$lags)){
 				if(i==1) XL = lagf.numeric(ytmp, model$modeldata$ylags[i]) else XL = cbind(XL, lagf.numeric(ytmp, model$modeldata$ylags[i]))
@@ -263,7 +263,7 @@ trans3fun2d = function(object, colidx = 1, fixed.values = NULL, doplot = TRUE, .
 	sol = dstar3trans2d(object, newX, initp)
 	if(doplot){
 		par(mfrow=c(3,1))
-		if(modelinc[46]==1){
+		if(modelinc[49]==1){
 			px1 = paste("y['",1,",",colidx,",t-",model$modeldata$ylags[colidx],"']",sep="")
 			px2 = paste("y['",2,",",colidx,",t-",model$modeldata$ylags[colidx],"']",sep="")
 			px3 = paste("y['",3,",",colidx,",t-",model$modeldata$ylags[colidx],"']",sep="")
@@ -298,15 +298,17 @@ dstar2trans = function(object, XL, initp)
 	idx = model$pidx
 	modelinc = model$modelinc
 	ipars = object@fit$ipars
-	if(modelinc[20]>0){
+	if(modelinc[21]>0){
 		beta = ipars[idx["s1.beta",1],1]
 	} else{
 		beta = 0
 	}
 	alpha = ipars[idx["s1.alpha",1]:idx["s1.alpha",2],1]
 	cnst = ipars[idx["s1.c",1],1]
-	pmu = apply(XL, 1, function(x){ cnst + as.numeric(sum(x*alpha)) })
-	if(modelinc[20]>0) pmu = sapply(pmu, function(x) initp*beta+x)
+	gamma = ipars[idx["s1.gamma",1],1]
+	
+	pmu = apply(XL, 1, function(x){ gamma*(as.numeric(sum(x*alpha))-cnst) })
+	if(modelinc[21]>0) pmu = sapply(pmu, function(x) initp*beta+x)
 	ans = 1/(1+exp(-pmu))
 	return(ans)
 }
@@ -317,12 +319,12 @@ dstar3trans2d = function(object, XL, initp)
 	idx = model$pidx
 	modelinc = model$modelinc
 	ipars = object@fit$ipars
-	if(modelinc[20]>0){
+	if(modelinc[21]>0){
 		beta1 = ipars[idx["s1.beta",1],1]
 	} else{
 		beta1 = 0
 	}
-	if(modelinc[23]>0){
+	if(modelinc[25]>0){
 		beta2 = ipars[idx["s2.beta",1],1]
 	} else{
 		beta2 = 0
@@ -331,12 +333,15 @@ dstar3trans2d = function(object, XL, initp)
 	alpha2 = ipars[idx["s2.alpha",1]:idx["s2.alpha",2],1]
 	cnst1 = ipars[idx["s1.c",1],1]
 	cnst2 = ipars[idx["s2.c",1],1]
+	gamma1 = ipars[idx["s1.gamma",1],1]
+	gamma2 = ipars[idx["s2.gamma",1],1]
 	
-	pmu1 = apply(XL, 1, function(x){ cnst1 + as.numeric(sum(x*alpha1)) })
-	pmu2 = apply(XL, 1, function(x){ cnst2 + as.numeric(sum(x*alpha2)) })
 	
-	if(modelinc[20]>0) pmu1 = sapply(pmu1, function(x) initp[1]*beta1+x)
-	if(modelinc[23]>0) pmu2 = sapply(pmu2, function(x) initp[2]*beta2+x)
+	pmu1 = apply(XL, 1, function(x){ gamma1*(-cnst1 + as.numeric(sum(x*alpha1))) })
+	pmu2 = apply(XL, 1, function(x){ gamma2*(-cnst2 + as.numeric(sum(x*alpha2))) })
+	
+	if(modelinc[21]>0) pmu1 = sapply(pmu1, function(x) initp[1]*beta1+x)
+	if(modelinc[25]>0) pmu2 = sapply(pmu2, function(x) initp[2]*beta2+x)
 	
 	probs = matrix(0, ncol=3, nrow=nrow(pmu1))
 	expmu1 = pmin(exp(100), exp(pmu1))
@@ -353,7 +358,7 @@ dstar2trans3d = function(object, d2X, augX, initp, colidx)
 	idx = model$pidx
 	modelinc = model$modelinc
 	ipars = object@fit$ipars
-	if(modelinc[20]>0){
+	if(modelinc[21]>0){
 		beta = ipars[idx["s1.beta",1],1]
 	} else{
 		beta = 0
@@ -362,18 +367,20 @@ dstar2trans3d = function(object, d2X, augX, initp, colidx)
 	d3Y = matrix(NA, n, n)
 	alpha = ipars[idx["s1.alpha",1]:idx["s1.alpha",2],1]
 	cnst = ipars[idx["s1.c",1],1]
+	gamma = ipars[idx["s1.gamma",1],1]
+	
 	# move this to C++
 	for(i in 1:n){
 		for(j in 1:n){
 			if(!is.null(augX)){
 				tmp = augX[1,]
 				tmp[colidx] = c(d2X[i,1], d2X[j,2])
-				d3Y[i,j] = cnst + as.numeric(sum(tmp*alpha))
-				if(modelinc[20]>0) d3Y[i,j] = initp*beta+d3Y[i,j]
+				d3Y[i,j] = gamma*(-cnst + as.numeric(sum(tmp*alpha)))
+				if(modelinc[21]>0) d3Y[i,j] = initp*beta+d3Y[i,j]
 			} else{
 				tmp = c(d2X[i,1], d2X[j,2])
-				d3Y[i,j] = cnst + as.numeric(sum(tmp*alpha))
-				if(modelinc[20]>0) d3Y[i,j] = initp*beta+d3Y[i,j]
+				d3Y[i,j] = gamma*(-cnst + as.numeric(sum(tmp*alpha)))
+				if(modelinc[21]>0) d3Y[i,j] = initp*beta+d3Y[i,j]
 			}
 		}
 	}

@@ -1932,7 +1932,7 @@ dkurtosis = function(distribution = "norm", skew = 1, shape = 5, lambda = -0.5)
 }
 
 .ghypskew = function(lambda, alpha, beta, delta, mu){
-	skew = rugarch:::ghypMom(3, lambda, alpha, beta, delta, mu, momType = "central")/(.ghypsigma(lambda, alpha, beta, delta, mu)^3)
+	skew = ghypMom(3, lambda, alpha, beta, delta, mu, momType = "central")/(.ghypsigma(lambda, alpha, beta, delta, mu)^3)
 	return(skew)
 }
 
@@ -1948,7 +1948,7 @@ dkurtosis = function(distribution = "norm", skew = 1, shape = 5, lambda = -0.5)
 }
 
 .ghypexkurt = function(lambda, alpha, beta, delta, mu){
-	kurt = rugarch:::ghypMom(4, lambda, alpha, beta, delta, mu, momType = "central")/(.ghypsigma(lambda, alpha, beta, delta, mu)^4) - 3
+	kurt = ghypMom(4, lambda, alpha, beta, delta, mu, momType = "central")/(.ghypsigma(lambda, alpha, beta, delta, mu)^4) - 3
 	return(kurt)
 }
 
@@ -2121,4 +2121,14 @@ dkurtosis = function(distribution = "norm", skew = 1, shape = 5, lambda = -0.5)
 		ans = k1*(k21+k22+k23)
 	}
 	return( ans )
+}
+
+.kurtosis = function(x)
+{
+	sum((x-mean(x))^4/var(x)^2)/length(x) - 3
+}
+
+.skewness = function(x)
+{
+	sum((x-mean(x))^3/sqrt(var(x))^3)/length(x)
 }

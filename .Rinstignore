@@ -1,5 +1,4 @@
 ./vignettes/The_Twinkle_Package.tex
 ./vignettes/twinkle.tex
 ./inst/twinkle.tests
-./git
 .gitignore

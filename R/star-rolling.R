@@ -38,14 +38,14 @@
 		warning(paste(c("unidentified option(s) in fit.control:\n", enx), sep="", collapse=" "), call. = FALSE, domain = NULL)
 	}
 	refit.window = refit.window[1]
-	xdata = rugarch:::.extractdata(data)
+	xdata = .extractdata(data)
 	data = xdata$data
 	index = xdata$index
 	period = xdata$period
 	T = NROW(data)
 	modelinc = spec@model$modelinc
 	model = spec@model
-	if(modelinc[44]==1){
+	if(modelinc[47]==1){
 		chk = all.equal(index(data), index(model$fixed.prob))
 		if(!is.logical(chk) | chk == FALSE){
 			print(paste("\n",chk,sep=""))
@@ -69,7 +69,7 @@
 		mexdata = NULL
 		mex = FALSE
 	}
-	if(modelinc[46]==2){
+	if(modelinc[49]==2){
 		chk = all.equal(index(data), index(model$modeldata$s))
 		if(!is.logical(chk) | chk == FALSE){
 			print(paste("\n",chk,sep=""))
@@ -81,7 +81,7 @@
 		sxdata = NULL
 		sxex = FALSE
 	}
-	if(modelinc[36]>0){
+	if(modelinc[39]>0){
 		chk = all.equal(index(data), index(model$modeldata$vexdata))
 		if(!is.logical(chk) | chk == FALSE){
 			print(paste("\n",chk,sep=""))
@@ -130,7 +130,6 @@
 	
 	if( !is.null(cluster) ){
 		clusterEvalQ(cl = cluster, library(twinkle))
-		clusterEvalQ(cl = cluster, library(xts))
 		clusterExport(cluster, c("data", "index", "s","refit.every", 
 						"keep.coef", "shaped", "skewed", "ghyp", 
 						"rollind", "spec", "out.sample", "mex", "vex", "sxex", "fex",
@@ -145,7 +144,7 @@
 					if(vex) spec@model$modeldata$vexdata = vexdata[rollind[[i]],,drop=FALSE]
 					if(sxex) spec@model$modeldata$s = sxdata[rollind[[i]],,drop=FALSE]
 					if(fex) spec@model$fixed.prob = fprobs[rollind[[i]],,drop=FALSE]
-					fit = try(starfit(spec, xts(data[rollind[[i]]], index[rollind[[i]]]), out.sample = out.sample[i], 
+					fit = try(starfit(spec, xts::xts(data[rollind[[i]]], index[rollind[[i]]]), out.sample = out.sample[i], 
 									solver = solver, solver.control = solver.control, 
 									fit.control = fit.control, n = n), silent=TRUE)
 					# 3 cases: General Error, Failure to Converge, Failure to invert Hessian (bad solution)
@@ -160,7 +159,7 @@
 								external.forecasts = list(xregfor = fmex, vregfor = fvex, sfor = fsxex,
 										probfor = ffex))
 						ret = as.numeric( fitted(f) )
-						if(spec@model$modelinc[47]>0) sig = as.numeric( sigma(f) ) else sig = rep(coef(fit)["sigma"], length(ret))
+						if(spec@model$modelinc[50]>0) sig = as.numeric( sigma(f) ) else sig = rep(coef(fit)["sigma"], length(ret))
 						if(shaped) shp = rep(coef(fit)["shape"], out.sample[i]) else shp = rep(0, out.sample[i])
 						if(skewed) skw = rep(coef(fit)["skew"], out.sample[i]) else skw = rep(0, out.sample[i])
 						if(ghyp) shpgig = rep(coef(fit)["ghlambda"], out.sample[i]) else shpgig = rep(0, out.sample[i])
@@ -181,7 +180,7 @@
 					if(vex) spec@model$modeldata$vexdata = vexdata[rollind[[i]],,drop=FALSE]
 					if(sxex) spec@model$modeldata$s = sxdata[rollind[[i]],,drop=FALSE]
 					if(fex) spec@model$fixed.prob = fprobs[rollind[[i]],,drop=FALSE]
-					fit = try(starfit(spec, xts::xts(data[rollind[[i]]], index[rollind[[i]]]), out.sample = out.sample[i], 
+					fit = try(starfit(spec, xts(data[rollind[[i]]], index[rollind[[i]]]), out.sample = out.sample[i], 
 									solver = solver, solver.control = solver.control, 
 									fit.control = fit.control, n = n), silent=TRUE)
 					if(inherits(fit, 'try-error') || convergence(fit)!=0 || is.null(fit@fit$cvar)){
@@ -195,7 +194,7 @@
 								external.forecasts = list(xregfor = fmex, vregfor = fvex, sfor = fsxex,
 										probfor = ffex))
 						ret = as.numeric( fitted(f) )
-						if(spec@model$modelinc[47]>0) sig = as.numeric( sigma(f) ) else sig = rep(coef(fit)["sigma"], length(ret))
+						if(spec@model$modelinc[50]>0) sig = as.numeric( sigma(f) ) else sig = rep(coef(fit)["sigma"], length(ret))
 						if(shaped) shp = rep(coef(fit)["shape"], out.sample[i]) else shp = rep(0, out.sample[i])
 						if(skewed) skw = rep(coef(fit)["skew"], out.sample[i]) else skw = rep(0, out.sample[i])
 						if(ghyp) shpgig = rep(coef(fit)["ghlambda"], out.sample[i]) else shpgig = rep(0, out.sample[i])
@@ -324,7 +323,7 @@
 		modelinc = spec@model$modelinc
 		calculate.VaR = model$calculate.VaR
 		VaR.alpha = model$VaR.alpha
-		if(modelinc[44]==1){
+		if(modelinc[47]==1){
 			chk = all.equal(index, index(model$fixed.prob))
 			if(!is.logical(chk) | chk == FALSE){
 				print(paste("\n",chk,sep=""))
@@ -348,7 +347,7 @@
 			mexdata = NULL
 			mex = FALSE
 		}
-		if(modelinc[46]==2){
+		if(modelinc[49]==2){
 			chk = all.equal(index, index(model$modeldata$s))
 			if(!is.logical(chk) | chk == FALSE){
 				print(paste("\n",chk,sep=""))
@@ -360,7 +359,7 @@
 			sxdata = NULL
 			sxex = FALSE
 		}
-		if(modelinc[36]>0){
+		if(modelinc[39]>0){
 			chk = all.equal(index, index(model$modeldata$vexdata))
 			if(!is.logical(chk) | chk == FALSE){
 				print(paste("\n",chk,sep=""))
@@ -412,7 +411,6 @@
 		if(any(distribution==c("ghyp"))) ghyp = TRUE else ghyp = FALSE
 		if( !is.null(cluster) ){
 			clusterEvalQ(cl = cluster, library(twinkle))
-			clusterEvalQ(cl = cluster, library(xts))
 			clusterExport(cluster, c("data", "index","s","refit.every",
 							"keep.coef", "shaped", "skewed", "ghyp", 
 							"rollind", "spec", "out.sample", "mex", "vex", "sxex", "fex",
@@ -426,7 +424,7 @@
 						if(vex) spec@model$modeldata$vexdata = vexdata[rollind[[i]],,drop=FALSE]
 						if(sxex) spec@model$modeldata$s = sxdata[rollind[[i]],,drop=FALSE]
 						if(fex) spec@model$fixed.prob = fprobs[rollind[[i]],,drop=FALSE]
-						fit = try(starfit(spec, xts(data[rollind[[i]]], index[rollind[[i]]]), out.sample = out.sample[i], 
+						fit = try(starfit(spec, xts::xts(data[rollind[[i]]], index[rollind[[i]]]), out.sample = out.sample[i], 
 										solver = solver, solver.control = solver.control, 
 										fit.control = fit.control, n = n), silent=TRUE)
 						# 3 cases: General Error, Failure to Converge, Failure to invert Hessian (bad solution)
@@ -441,7 +439,7 @@
 									external.forecasts = list(xregfor = fmex, vregfor = fvex, sfor = fsxex,
 											probfor = ffex))
 							ret = as.numeric( fitted(f) )
-							if(spec@model$modelinc[47]>0) sig = as.numeric( sigma(f) ) else sig = rep(coef(fit)["sigma"], length(ret))
+							if(spec@model$modelinc[50]>0) sig = as.numeric( sigma(f) ) else sig = rep(coef(fit)["sigma"], length(ret))
 							if(shaped) shp = rep(coef(fit)["shape"], out.sample[i]) else shp = rep(0, out.sample[i])
 							if(skewed) skw = rep(coef(fit)["skew"], out.sample[i]) else skw = rep(0, out.sample[i])
 							if(ghyp) shpgig = rep(coef(fit)["ghlambda"], out.sample[i]) else shpgig = rep(0, out.sample[i])
@@ -462,7 +460,7 @@
 						if(vex) spec@model$modeldata$vexdata = vexdata[rollind[[i]],,drop=FALSE]
 						if(sxex) spec@model$modeldata$s = sxdata[rollind[[i]],,drop=FALSE]
 						if(fex) spec@model$fixed.prob = fprobs[rollind[[i]],,drop=FALSE]
-						fit = try(starfit(spec, xts::xts(data[rollind[[i]]], index[rollind[[i]]]), out.sample = out.sample[i], 
+						fit = try(starfit(spec, xts(data[rollind[[i]]], index[rollind[[i]]]), out.sample = out.sample[i], 
 										solver = solver, solver.control = solver.control, 
 										fit.control = fit.control, n = n), silent=TRUE)
 						if(inherits(fit, 'try-error') || convergence(fit)!=0 || is.null(fit@fit$cvar)){
@@ -476,7 +474,7 @@
 									external.forecasts = list(xregfor = fmex, vregfor = fvex, sfor = fsxex,
 											probfor = ffex))
 							ret = as.numeric( fitted(f) )
-							if(spec@model$modelinc[47]>0) sig = as.numeric( sigma(f) ) else sig = rep(coef(fit)["sigma"], length(ret))
+							if(spec@model$modelinc[50]>0) sig = as.numeric( sigma(f) ) else sig = rep(coef(fit)["sigma"], length(ret))
 							if(shaped) shp = rep(coef(fit)["shape"], out.sample[i]) else shp = rep(0, out.sample[i])
 							if(skewed) skw = rep(coef(fit)["skew"], out.sample[i]) else skw = rep(0, out.sample[i])
 							if(ghyp) shpgig = rep(coef(fit)["ghlambda"], out.sample[i]) else shpgig = rep(0, out.sample[i])

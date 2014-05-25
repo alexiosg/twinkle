@@ -28,8 +28,8 @@ void starxfilters1s(int* model, double *pars, int *idx, double *x, double *res, 
 	for(i=0; i<*T; i++)
 	{
 		starxfilter1(model, pars, idx, x, res, mexdata, prob, constm, condm, marx, i, *T);
-		z[i] = res[i]/pars[idx[26]];
-		LHT[i] = log(garchdistribution(z[i], pars[idx[26]], pars[idx[37]], pars[idx[38]], pars[idx[39]], model[40]));
+		z[i] = res[i]/pars[idx[29]];
+		LHT[i] = log(garchdistribution(z[i], pars[idx[29]], pars[idx[40]], pars[idx[41]], pars[idx[42]], model[43]));
 		lk = lk - LHT[i];
 	}
 	*llh=lk;
@@ -42,8 +42,8 @@ void starxfilters2s(int* model, double *pars, int *idx, double *x, double *res, 
 	for(i=0; i<*T; i++)
 	{
 		starxfilter2(model, pars, idx, x, res, mexdata, prob, constm, condm, marx, i, *T);
-		z[i] = res[i]/pars[idx[26]];
-		LHT[i] = log(garchdistribution(z[i], pars[idx[26]], pars[idx[37]], pars[idx[38]], pars[idx[39]], model[40]));
+		z[i] = res[i]/pars[idx[29]];
+		LHT[i] = log(garchdistribution(z[i], pars[idx[29]], pars[idx[40]], pars[idx[41]], pars[idx[42]], model[43]));
 		lk = lk - LHT[i];
 	}
 	*llh=lk;
@@ -57,8 +57,8 @@ void starxfilters3s(int* model, double *pars, int *idx, double *x, double *res, 
 	for(i=0; i<*T; i++)
 	{
 		starxfilter3(model, pars, idx, x, res, mexdata, prob, constm, condm, marx, i, *T);
-		z[i] = res[i]/pars[idx[26]];
-		LHT[i] = log(garchdistribution(z[i], pars[idx[26]], pars[idx[37]], pars[idx[38]], pars[idx[39]], model[40]));
+		z[i] = res[i]/pars[idx[29]];
+		LHT[i] = log(garchdistribution(z[i], pars[idx[29]], pars[idx[40]], pars[idx[41]], pars[idx[42]], model[43]));
 		lk = lk - LHT[i];
 	}
 	*llh=lk;
@@ -72,8 +72,8 @@ void starxfilters4s(int* model, double *pars, int *idx, double *x, double *res, 
 	for(i=0; i<*T; i++)
 	{
 		starxfilter4(model, pars, idx, x, res, mexdata, prob, constm, condm, marx, i, *T);
-		z[i] = res[i]/pars[idx[26]];
-		LHT[i] = log(garchdistribution(z[i], pars[idx[26]], pars[idx[37]], pars[idx[38]], pars[idx[39]], model[40]));
+		z[i] = res[i]/pars[idx[29]];
+		LHT[i] = log(garchdistribution(z[i], pars[idx[29]], pars[idx[40]], pars[idx[41]], pars[idx[42]], model[43]));
 		lk = lk - LHT[i];
 	}
 	*llh=lk;
@@ -116,20 +116,71 @@ void starxfilters4sx(int* model, double *pars, int *idx, double *x, double *res,
 	}
 }
 
+void mixturefilterC(int* model, double *pars, int *idx, double *prob, double *res, double *z,
+		double *h, int *T, double *LHT, double *llh)
+{
+	int i;
+	double lk=0;
+	int TT = 2*(*T);
+	int TTT = 3*(*T);
+	switch(model[45]){
+	case 2:
+		for(i=0; i<*T; i++)
+		{
+			h[i] = prob[i]*pars[idx[29]] + prob[*T+i]*pars[idx[30]];
+			z[i] = res[i]/h[i];
+			LHT[i] = log(garchdistribution(z[i], h[i], pars[idx[40]], pars[idx[41]], pars[idx[42]], model[43]));
+			lk = lk - LHT[i];
+		}
+		*llh = lk;
+		break;
+	case 3:
+		for(i=0; i<*T; i++)
+		{
+			h[i] = prob[i]*pars[idx[29]] + prob[*T+i]*pars[idx[30]] + prob[TT+i]*pars[idx[31]];
+			z[i] = res[i]/h[i];
+			LHT[i] = log(garchdistribution(z[i], h[i], pars[idx[40]], pars[idx[41]], pars[idx[42]], model[43]));
+			lk = lk - LHT[i];
+		}
+		*llh = lk;
+		break;
+	case 4:
+		for(i=0; i<*T; i++)
+		{
+			h[i] = prob[i]*pars[idx[29]] + prob[*T+i]*pars[idx[30]] + prob[TT+i]*pars[idx[31]] + prob[TTT+i]*pars[idx[32]];
+			z[i] = res[i]/h[i];
+			LHT[i] = log(garchdistribution(z[i], h[i], pars[idx[40]], pars[idx[41]], pars[idx[42]], model[43]));
+			lk = lk - LHT[i];
+		}
+		*llh = lk;
+		break;
+	default:
+		for(i=0; i<*T; i++)
+		{
+			h[i] = prob[i]*pars[idx[29]] + prob[*T+i]*pars[idx[30]];
+			z[i] = res[i]/h[i];
+			LHT[i] = log(garchdistribution(z[i], h[i], pars[idx[40]], pars[idx[41]], pars[idx[42]], model[43]));
+			lk = lk - LHT[i];
+		}
+		*llh = lk;
+		break;
+	}
+}
+
 void garchfilterC(int* model, double *pars, int *idx, double *prob, double *res, double *e,
 		double *z, double *vexdata, double *hEst, double *h, double *nres, double *meanz,
 		int *m, int *T, double *LHT, double *llh)
 {
 	int i;
 	double lk=0;
-	switch(model[46]){
+	switch(model[49]){
 	case 1:
 		for(i=0; i<*m; i++)
 		{
 			h[i] = *hEst;
 			e[i] = res[i] * res[i];
 			z[i] = res[i]/sqrt(fabs(h[i]));
-			LHT[i] = log(garchdistribution(z[i], sqrt(fabs(h[i])), pars[idx[37]], pars[idx[38]], pars[idx[39]], model[40]));
+			LHT[i] = log(garchdistribution(z[i], sqrt(fabs(h[i])), pars[idx[40]], pars[idx[41]], pars[idx[42]], model[43]));
 			lk = lk - LHT[i];
 		}
 		for (i=*m; i<*T; i++)
@@ -137,7 +188,7 @@ void garchfilterC(int* model, double *pars, int *idx, double *prob, double *res,
 			sgarchfilter(model, pars, idx, vexdata, e, *T, i, h);
 			e[i] = res[i] * res[i];
 			z[i] = res[i]/sqrt(fabs(h[i]));
-			LHT[i] = log(garchdistribution(z[i], sqrt(fabs(h[i])), pars[idx[37]], pars[idx[38]], pars[idx[39]], model[40]));
+			LHT[i] = log(garchdistribution(z[i], sqrt(fabs(h[i])), pars[idx[40]], pars[idx[41]], pars[idx[42]], model[43]));
 			lk = lk - LHT[i];
 		}
 		*llh=lk;
@@ -149,7 +200,7 @@ void garchfilterC(int* model, double *pars, int *idx, double *prob, double *res,
 			e[i] = res[i] * res[i];
 			nres[i] = res[i] < 0.0 ? e[i] : 0.0;
 			z[i] = res[i]/sqrt(fabs(h[i]));
-			LHT[i] = log(garchdistribution(z[i], sqrt(fabs(h[i])), pars[idx[37]], pars[idx[38]], pars[idx[39]], model[40]));
+			LHT[i] = log(garchdistribution(z[i], sqrt(fabs(h[i])), pars[idx[40]], pars[idx[41]], pars[idx[42]], model[43]));
 			lk = lk - LHT[i];
 		}
 		// Main Loop
@@ -159,7 +210,7 @@ void garchfilterC(int* model, double *pars, int *idx, double *prob, double *res,
 			e[i] = res[i] * res[i];
 			nres[i] = res[i] < 0.0 ? e[i] : 0.0;
 			z[i] = res[i]/sqrt(fabs(h[i]));
-			LHT[i] = log(garchdistribution(z[i], sqrt(fabs(h[i])), pars[idx[37]], pars[idx[38]], pars[idx[39]], model[40]));
+			LHT[i] = log(garchdistribution(z[i], sqrt(fabs(h[i])), pars[idx[40]], pars[idx[41]], pars[idx[42]], model[43]));
 			lk = lk - LHT[i];
 		}
 		*llh = lk;
@@ -170,7 +221,7 @@ void garchfilterC(int* model, double *pars, int *idx, double *prob, double *res,
 			h[i] = *hEst;
 			e[i] = res[i] * res[i];
 			z[i] = res[i]/sqrt(h[i]);
-			LHT[i] = log(garchdistribution(z[i], sqrt(fabs(h[i])), pars[idx[37]], pars[idx[38]], pars[idx[39]], model[40]));
+			LHT[i] = log(garchdistribution(z[i], sqrt(fabs(h[i])), pars[idx[40]], pars[idx[41]], pars[idx[42]], model[43]));
 			lk = lk - LHT[i];
 		}
 		for ( i=*m; i<*T; i++ )
@@ -178,7 +229,7 @@ void garchfilterC(int* model, double *pars, int *idx, double *prob, double *res,
 			egarchfilter(model, pars, idx, *meanz, z, vexdata, *T, i, h);
 			e[i] = res[i] * res[i];
 			z[i] = res[i]/sqrt(h[i]);
-			LHT[i] = log(garchdistribution(z[i], sqrt(fabs(h[i])), pars[idx[37]], pars[idx[38]], pars[idx[39]], model[40]));
+			LHT[i] = log(garchdistribution(z[i], sqrt(fabs(h[i])), pars[idx[40]], pars[idx[41]], pars[idx[42]], model[43]));
 			lk = lk - LHT[i];
 		}
 		*llh = lk;
@@ -186,9 +237,9 @@ void garchfilterC(int* model, double *pars, int *idx, double *prob, double *res,
 	case 4:
 		for(i=0; i<*T; i++)
 		{
-			h[i] = prob[i]*pars[idx[26]] + prob[*T+i]*pars[idx[27]];
+			h[i] = prob[i]*pars[idx[29]] + prob[*T+i]*pars[idx[30]];
 			z[i] = res[i]/h[i];
-			LHT[i] = log(garchdistribution(z[i], h[i], pars[idx[37]], pars[idx[38]], pars[idx[39]], model[40]));
+			LHT[i] = log(garchdistribution(z[i], h[i], pars[idx[40]], pars[idx[41]], pars[idx[42]], model[43]));
 			lk = lk - LHT[i];
 		}
 		*llh = lk;
@@ -199,7 +250,7 @@ void garchfilterC(int* model, double *pars, int *idx, double *prob, double *res,
 			h[i] = *hEst;
 			e[i] = res[i] * res[i];
 			z[i] = res[i]/sqrt(fabs(h[i]));
-			LHT[i] = log(garchdistribution(z[i], sqrt(fabs(h[i])), pars[idx[37]], pars[idx[38]], pars[idx[39]], model[40]));
+			LHT[i] = log(garchdistribution(z[i], sqrt(fabs(h[i])), pars[idx[40]], pars[idx[41]], pars[idx[42]], model[43]));
 			lk = lk - LHT[i];
 		}
 		for (i=*m; i<*T; i++)
@@ -207,7 +258,7 @@ void garchfilterC(int* model, double *pars, int *idx, double *prob, double *res,
 			sgarchfilter(model, pars, idx, vexdata, e, *T, i, h);
 			e[i] = res[i] * res[i];
 			z[i] = res[i]/sqrt(fabs(h[i]));
-			LHT[i] = log(garchdistribution(z[i], sqrt(fabs(h[i])), pars[idx[37]], pars[idx[38]], pars[idx[39]], model[40]));
+			LHT[i] = log(garchdistribution(z[i], sqrt(fabs(h[i])), pars[idx[40]], pars[idx[41]], pars[idx[42]], model[43]));
 			lk = lk - LHT[i];
 		}
 		*llh=lk;
@@ -219,7 +270,7 @@ void garchsimC(int *model, double *pars, int *idx, double *h, double *z, double 
 		double *nres, double *meanz, double *vexdata, int *T, int *m)
 {
 	int i;
-	switch(model[46]){
+	switch(model[49]){
 	case 1:
 		for (i=*m; i<*T; i++)
 		{
@@ -259,7 +310,7 @@ void starxsim1(int* model, double *pars, int *idx, double *x, double *res,
 		double *prob, double *constm, int *m, int *T)
 {
 	int j, i;
-	double im = (double) model[47];
+	double im = (double) model[50];
 	for(i=*m; i<*T; i++)
 	{
 		x[i] = prob[i]*constm[i];
@@ -289,7 +340,7 @@ void starxsim2(int* model, double *pars, int *idx, double *x, double *s, double 
 		double *prob, double *constm, int *m, int *T)
 {
 	int j, i;
-	double im = (double) model[47];
+	double im = (double) model[50];
 	for(i=*m; i<*T; i++)
 	{
 		s[i]   = constm[i];
@@ -325,7 +376,7 @@ void starxsim3(int* model, double *pars, int *idx, double *x, double *s, double 
 		double *prob, double *constm, int *m, int *T)
 {
 	int j, i;
-	double im = (double) model[47];
+	double im = (double) model[50];
 	int TT = 2*(*T);
 	for(i=*m; i<*T; i++)
 	{
@@ -371,7 +422,7 @@ void starxsim4(int* model, double *pars, int *idx, double *x, double *s, double 
 		double *prob, double *constm, int *m, int *T)
 {
 	int j, i;
-	double im = (double) model[47];
+	double im = (double) model[50];
 	int TT = 2*(*T);
 	int TTT = 3*(*T);
 	for(i=*m; i<*T; i++)
