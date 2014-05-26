@@ -2,8 +2,9 @@
 \docType{class}
 \alias{STARfit-class}
 \alias{residuals,STARfit-method}
-\alias{modelmatrix,ANY-method}
-\alias{modelmatrix,STARfit-method}
+\alias{modelmatrix,STARfit,xts-method}
+\alias{modelmatrix,STARfit,ANY-method}
+\alias{modelmatrix,ANY,ANY-method}
 \alias{modelmatrix}
 \alias{states,ANY-method}
 \alias{states,STARfit-method}
@@ -55,7 +56,7 @@ the fitted values of each state, and anything else will return the untransformed
 dynamics.}
 \item{sigma}{\code{signature(object = "STARfit")}: 
 Extracts the conditional sigma values (depending on the type of model).}
-\item{modelmatrix}{\code{signature(object = "STARfit")}: 
+\item{modelmatrix}{\code{signature(object = "STARfit",data="missing")}: 
 S4 extractor for the model.matrix.}
 \item{score}{\code{signature(object = "STARfit")}: 
 S4 extractor for the score (jacobian) matrix.}

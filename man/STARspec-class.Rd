@@ -6,6 +6,7 @@
 \alias{setstart<-,STARspec,vector-method}
 \alias{setbounds<-,STARspec,vector-method}
 \alias{nonlinearTest,STARspec,xts-method}
+\alias{modelmatrix,STARspec,xts-method}
 \alias{show,STARspec-method}
 \title{class: Univariate STAR Specification Class}
 \description{Class for the univariate STAR specification.}
@@ -19,7 +20,7 @@
   \describe{
 	\item{show}{\code{signature(object = "STARspec")}: 
 	Specification summary.}
-	\item{modelmatrix}{\code{signature(object = "STARspec")}: 
+	\item{modelmatrix}{\code{signature(object = "STARspec",data="xts")}: 
 	S4 model.matrix extractor.}
 	\item{setfixed<-}{\code{signature(object = "STARspec", value = "vector")}: 
 	Sets the fixed parameters (which must be supplied as a named list). }

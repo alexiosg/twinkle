@@ -1865,10 +1865,11 @@ setMethod("score", signature(object = "STARfit"),  definition = .starscore)
 #------------------------------------------------------------------------------------
 # ToDo: provide option for returning the model.matrix of the state equation
 # together with a function to evaluate it.
+setOldClass("xts")
 
-modelmatrix = function(object, data = NULL, linear = TRUE, ... ) { UseMethod("modelmatrix") }
+modelmatrix = function(object, data, linear = TRUE, ... ) { UseMethod("modelmatrix") }
 
-.modelmatrix = function(object, data = NULL, linear = TRUE, ...)
+.modelmatrix = function(object, data, linear = TRUE, ...)
 {
 	model = object@model
 	modelinc = model$modelinc
@@ -1966,8 +1967,8 @@ modelmatrix = function(object, data = NULL, linear = TRUE, ... ) { UseMethod("mo
 	}
 	return(X)
 }
-setMethod("modelmatrix", signature(object = "STARfit"),  definition = .modelmatrix)
-setMethod("modelmatrix", signature(object = "STARspec"),  definition = .modelmatrix)
+setMethod("modelmatrix", signature(object = "STARfit", data="missing"),  definition = .modelmatrix)
+setMethod("modelmatrix", signature(object = "STARspec", data="xts"),  definition = .modelmatrix)
 
 #------------------------------------------------------------------------------------
 # sigma (GARCH)
@@ -2309,7 +2310,7 @@ setMethod(f = "plot", signature(x = "STARforecast", y = "missing"), plot.starfor
 #----------------------------------------------------------------------------------
 # Tests
 #----------------------------------------------------------------------------------
-setOldClass("xts")
+
 nonlinearTest = function(object, data, robust = FALSE, sig.level = 0.05, ...)
 {
 	UseMethod("linearTest")
