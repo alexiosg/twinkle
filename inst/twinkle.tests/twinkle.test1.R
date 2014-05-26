@@ -485,12 +485,12 @@ twinkle.test1e = function(cluster = NULL){
 	# Luukkonen Test
 	spec = starspec(mean.model=list(states=2,arOrder=c(2,2), statevar='y',ylags=1))
 	tmp = nonlinearTest(spec, data=log(ndx.rvol))
-	twinkle.ntest1 = c("statistic" = tmp$statistic, pvalue = tmp$pvalue)
+	twinkle.ntest1 = c("statistic" = tmp$F.statistic, pvalue = tmp$F.pvalue)
 	zivotbook.ntest1 = c("statistic" = 3.7068, "pvalue"=0.0014)
 	
 	spec = starspec(mean.model=list(states=2,arOrder=c(2,2), statevar='y',ylags=2))
 	tmp = nonlinearTest(spec, data=log(ndx.rvol))
-	twinkle.ntest2 = c("statistic" = tmp$statistic, pvalue = tmp$pvalue)
+	twinkle.ntest2 = c("statistic" = tmp$F.statistic, pvalue = tmp$F.pvalue)
 	zivotbook.ntest2 = c("statistic" = 2.3204, "pvalue" = 0.0333)
 	
 	# Luukkonen Test (Robust)
