@@ -1740,7 +1740,7 @@
 	# need to allow for arfima case:
 	model = spec@model
 	ipars = model$pars
-	pars = unlist(model$fixed.pars)
+	pars = ipars[ipars[,"Fixed"]==1,1]
 	parnames = names(pars)
 	modelnames = .checkallfixed(spec)
 	if(is.na(all(match(modelnames, parnames), 1:length(modelnames)))) {
@@ -1939,7 +1939,7 @@
 	}
 	model = spec@model
 	ipars = model$pars
-	pars = unlist(model$fixed.pars)
+	pars = ipars[ipars[,"Fixed"]==1,1]
 	parnames = names(pars)
 	modelnames = .checkallfixed(spec)
 	if(is.na(all(match(modelnames, parnames), 1:length(modelnames)))) {
@@ -2173,7 +2173,7 @@
 	# need to allow for arfima case:
 	model = spec@model
 	ipars = model$pars
-	pars = unlist(model$fixed.pars)
+	pars = ipars[ipars[,"Fixed"]==1,1]
 	parnames = names(pars)
 	modelnames = .checkallfixed(spec)
 	if(is.na(all(match(modelnames, parnames), 1:length(modelnames)))) {

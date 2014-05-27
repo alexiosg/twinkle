@@ -3,7 +3,7 @@
 \alias{STARfit-class}
 \alias{residuals,STARfit-method}
 \alias{modelmatrix,STARfit,xts-method}
-\alias{modelmatrix,STARfit,ANY-method}
+\alias{modelmatrix,STARfit,missing-method}
 \alias{modelmatrix,ANY,ANY-method}
 \alias{modelmatrix}
 \alias{states,ANY-method}

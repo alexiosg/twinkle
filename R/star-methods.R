@@ -1732,8 +1732,27 @@ setMethod("states", signature(object = "STARforecast"), .starstatef)
 	}
 	return(ans)
 }
+
+.starstatepath = function(object, type="prob", sim=1)
+{
+	sim = as.integer(max(sim,1))
+	m.sim = ncol(object@path$seriesSim)
+	if(sim>m.sim) stop("\ntwinkle-->error: sim>m.sim!")
+	if(type=="prob"){
+		ans = object@path$probSim[[sim]]
+		colnames(ans)<-paste("state[",1:ncol(ans),"]",sep="")
+		rownames(ans) = paste("T+",1:NROW(ans), sep="")
+	} else if(type=="condm"){
+		ans = object@path$condmSim[[sim]]
+		colnames(ans)<-paste("state[",1:ncol(ans),"]",sep="")
+		rownames(ans) = paste("T+",1:NROW(ans), sep="")
+	} else{
+		stop("\nOnly prob and condm type allowed for simulation objects.")
+	}
+	return(ans)
+}
 setMethod("states", signature(object = "STARsim"), .starstatesim)
-setMethod("states", signature(object = "STARpath"), .starstatesim)
+setMethod("states", signature(object = "STARpath"), .starstatepath)
 
 
 
@@ -2299,6 +2318,58 @@ setMethod("show",
 				cat("\n")				
 				invisible(object)
 			}
+		})
+
+setMethod("show",
+		signature(object = "STARsim"),
+		function(object){
+			model = object@model
+			cat(paste("\n*--------------------------------------*", sep = ""))
+			cat(paste("\n*          STAR Simulation             *", sep = ""))
+			cat(paste("\n*--------------------------------------*", sep = ""))
+			sim = object@simulation
+			sigma = sim$sigmaSim
+			series = sim$seriesSim
+			resids = sim$residSim
+			m = dim(series)[2]
+			N = dim(series)[1]
+			cat(paste("\nHorizon: ",N))
+			cat(paste("\nSimulations: ",m,"\n",sep=""))
+			cat(paste("\nSummary[m.sim=1]:\n"))
+			Z1 = cbind(fitted(object), states(object))
+			colnames(Z1)[1] = "series"
+			Z2 = cbind(fitted(object), states(object))
+			colnames(Z2) = NULL
+			print(head(Z1))
+			cat("\n.......\n")
+			print(tail(Z2))
+			cat("\n\n")
+		})
+
+setMethod("show",
+		signature(object = "STARpath"),
+		function(object){
+			model = object@model
+			cat(paste("\n*--------------------------------------*", sep = ""))
+			cat(paste("\n*          STAR Path Simulation        *", sep = ""))
+			cat(paste("\n*--------------------------------------*", sep = ""))
+			sim = object@path
+			sigma = sim$sigmaSim
+			series = sim$seriesSim
+			resids = sim$residSim
+			m = dim(series)[2]
+			N = dim(series)[1]
+			cat(paste("\nHorizon: ",N))
+			cat(paste("\nSimulations: ",m,"\n",sep=""))
+			cat(paste("\nSummary[m.sim=1]:\n"))
+			Z1 = cbind(fitted(object), states(object))
+			colnames(Z1)[1] = "series"
+			Z2 = cbind(fitted(object), states(object))
+			colnames(Z2) = NULL
+			print(head(Z1))
+			cat("\n.......\n")
+			print(tail(Z2))
+			cat("\n\n")
 		})
 #----------------------------------------------------------------------------------
 # plot methods
