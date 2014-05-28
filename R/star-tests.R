@@ -92,14 +92,22 @@ nonlinearTest.fit <- function(object, data, robust = FALSE, sig.level = 0.05)
 	if(model$modelinc[46]!=2) stop("\ntwinkle-->error: nonlinearTest only applies to 2-state model\n")
 	if(MA>0) stop("\ntwinkle-->error: nonlinearTest does not support MA terms in STAR model\n")
 	N = NROW(data) - p
-	X = coredata(modelmatrix(object, linear=TRUE)[-c(1:p),])
-	S = coredata(modelmatrix(object, linear=FALSE)[-c(1:p),])
+	if(p>0){
+		X = coredata(modelmatrix(object, linear=TRUE)[-c(1:p),])
+	} else{
+		X = coredata(modelmatrix(object, linear=TRUE))
+	}
+	if(p>0){
+		S = coredata(modelmatrix(object, linear=FALSE)[-c(1:p),])
+	} else{
+		S = coredata(modelmatrix(object, linear=FALSE))
+	}
 	if(ncol(S)>1){
 		warning("\ntwinkle-->warning: more than 1 threshold variable in equation...using state coefficients to collapse to vector.")
 		alpha = object@fit$ipars[model$pidx["s1.alpha",1]:model$pidx["s1.alpha",2],1]
 		S = S %*% alpha
 	}
-	Y = data[-c(1:p),,drop=FALSE]
+	if(p>0) Y = data[-c(1:p),,drop=FALSE] else Y = data
 	# Regressors under the null
 	# We consider the complete set (i.e. max(state1,state2) in terms of AR and Intercept parameters)
 	Nn = substr(colnames(X),4,20)
@@ -198,14 +206,22 @@ nonlinearTest.spec <- function(object, data, robust = FALSE, sig.level = 0.05)
 	if(model$modelinc[46]!=2) stop("\ntwinkle-->error: nonlinearTest only applies to 2-state model\n")
 	if(MA>0) stop("\ntwinkle-->error: nonlinearTest does not support MA terms in STAR model\n")
 	N = nrow(data) - p
-	X = coredata(modelmatrix(object, data = data, linear=TRUE)[-c(1:p),])
-	S = coredata(modelmatrix(object, data = data, linear=FALSE)[-c(1:p),])
+	if(p>0){
+		X = coredata(modelmatrix(object, data = data, linear=TRUE)[-c(1:p),])
+	} else{
+		X = coredata(modelmatrix(object, data = data, linear=TRUE))
+	}
+	if(p>0){
+		S = coredata(modelmatrix(object, data = data, linear=FALSE)[-c(1:p),])
+	} else{
+		S = coredata(modelmatrix(object, data = data, linear=FALSE))
+	}
 	if(ncol(S)>1){
 		warning("\ntwinkle-->warning: more than 1 threshold variable in equation...using state coefficients to collapse to vector.")
 		alpha = object@model$ipars[model$pidx["s1.alpha",1]:model$pidx["s1.alpha",2],1]
 		S = S %*% alpha
 	}
-	Y = matrix(coredata(data)[-c(1:p)], ncol=1)
+	if(p>0) Y = matrix(coredata(data)[-c(1:p)], ncol=1) else Y = matrix(coredata(data), ncol=1)
 	# Regressors under the null
 	# We consider the complete set (i.e. max(state1,state2) in terms of AR and Intercept parameters)
 	Nn = substr(colnames(X),4,20)
