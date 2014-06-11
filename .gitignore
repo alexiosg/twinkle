@@ -6,3 +6,8 @@ twinkle/src/symbols.rds
 twinkle/src/twinkle.o
 twinkle/src/twinkle.so
 *.dll
+src/starfilters.o
+src/symbols.rds
+src/twinkle.o
+src/twinkle.so
+vignettes/The_Twinkle_Package.bbl

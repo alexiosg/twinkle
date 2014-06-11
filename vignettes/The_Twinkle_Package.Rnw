@@ -2,7 +2,7 @@
 %\VignetteKeywords{STAR}
 %\VignettePackage{twinkle}
 \documentclass[11pt,a4paper]{article}
-\usepackage[utf8]{inputenc}
+%\usepackage[utf8]{inputenc}
 \usepackage[round]{natbib}
 \usepackage{graphicx}
 \usepackage{amsmath}
@@ -13,6 +13,9 @@
 \usepackage{ctable}
 \usepackage{subfig}
 \usepackage{hyperref}
+\usepackage{fancyvrb}
+\PassOptionsToPackage{usenames,dvipsnames}{xcolor}
+\usepackage[dvipsnames]{xcolor}
 \marginsize{2cm}{2cm}{1cm}{1cm}
 \setlength{\textwidth}{16cm}
 \setlength{\oddsidemargin}{0cm}
@@ -20,10 +23,15 @@
 \setlength{\headheight}{2cm}
 \newtheorem{proof}{Proof}
 \usepackage{Sweave}
-\bibliographystyle{plainnat}
+\definecolor{codegrey}{rgb}{0.25,0.25,0.25}
+\definecolor{codebackground}{rgb}{0.97,1,1}
+\definecolor{midnightblue}{rgb}{0.098039,0.098039,0.439216}
+\definecolor{steelblue}{rgb}{0.274510,0.509804,0.705882}
+\newcommand{\code}[1]{\textbf{\color{codegrey} #1}}
 \begin{document}
 \title{Smooth Transition AR Models in Twinkle.\\
-(Version 1.0)}
+(Version 0.9-1)}
+\author{Alexios Ghalanos}
 \author{Alexios Ghalanos}
 \date{\today}
 \maketitle
