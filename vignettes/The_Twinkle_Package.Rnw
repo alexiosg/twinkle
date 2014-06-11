@@ -32,7 +32,6 @@
 \title{Smooth Transition AR Models in Twinkle.\\
 (Version 0.9-1)}
 \author{Alexios Ghalanos}
-\author{Alexios Ghalanos}
 \date{\today}
 \maketitle
 \tableofcontents
