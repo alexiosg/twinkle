@@ -28,6 +28,7 @@
 \definecolor{midnightblue}{rgb}{0.098039,0.098039,0.439216}
 \definecolor{steelblue}{rgb}{0.274510,0.509804,0.705882}
 \newcommand{\code}[1]{\textbf{\color{codegrey} #1}}
+\bibliographystyle{plainnat}
 \begin{document}
 \title{Smooth Transition AR Models in Twinkle.\\
 (Version 0.9-1)}
