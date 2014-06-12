@@ -324,48 +324,48 @@
 		calculate.VaR = model$calculate.VaR
 		VaR.alpha = model$VaR.alpha
 		if(modelinc[47]==1){
-			chk = all.equal(dindex, index(model$fixed.prob))
+			chk = all.equal(dindex, index(spec@model$fixed.prob))
 			if(!is.logical(chk) | chk == FALSE){
 				print(paste("\n",chk,sep=""))
 				stop("\nrollstar-->error: data and fixed.probs indices do not match\n")
 			}
-			fprobs = model$fixed.prob
+			fprobs = spec@model$fixed.prob
 			fex = TRUE
 		} else{
 			fprobs = NULL
 			fex = FALSE
 		}
 		if(modelinc[3] > 0){
-			chk = all.equal(dindex, index(model$modeldata$mexdata))
+			chk = all.equal(dindex, index(spec@model$modeldata$mexdata))
 			if(!is.logical(chk) | chk == FALSE){
 				print(paste("\n",chk,sep=""))
 				stop("\nrollstar-->error: data and external.regressor (mean) indices do not match\n")
 			}
-			mexdata = model$modeldata$mexdata
+			mexdata = spec@model$modeldata$mexdata
 			mex = TRUE
 		} else{
 			mexdata = NULL
 			mex = FALSE
 		}
 		if(modelinc[49]==2){
-			chk = all.equal(dindex, index(model$modeldata$s))
+			chk = all.equal(dindex, index(spec@model$modeldata$s))
 			if(!is.logical(chk) | chk == FALSE){
 				print(paste("\n",chk,sep=""))
 				stop("\nrollstar-->error: data and 's' probability dynamics regressor indices do not match\n")
 			}
-			sxdata = model$modeldata$s
+			sxdata = spec@model$modeldata$s
 			sxex = TRUE
 		} else{
 			sxdata = NULL
 			sxex = FALSE
 		}
 		if(modelinc[39]>0){
-			chk = all.equal(dindex, index(model$modeldata$vexdata))
+			chk = all.equal(dindex, index(spec@model$modeldata$vexdata))
 			if(!is.logical(chk) | chk == FALSE){
 				print(paste("\n",chk,sep=""))
 				stop("\nrollstar-->error: data and external.regressor (variance) indices do not match\n")
 			}
-			vexdata = model$modeldata$vexdata
+			vexdata = spec@model$modeldata$vexdata
 			vex = TRUE
 		} else{
 			vexdata = NULL
