@@ -40,13 +40,13 @@
 	refit.window = refit.window[1]
 	xdata = .extractdata(data)
 	data = xdata$data
-	index = xdata$index
+	dindex = xdata$index
 	period = xdata$period
 	T = NROW(data)
 	modelinc = spec@model$modelinc
 	model = spec@model
 	if(modelinc[47]==1){
-		chk = all.equal(index(data), index(model$fixed.prob))
+		chk = all.equal(dindex, index(model$fixed.prob))
 		if(!is.logical(chk) | chk == FALSE){
 			print(paste("\n",chk,sep=""))
 			stop("\nrollstar-->error: data and fixed.probs indices do not match\n")
@@ -58,7 +58,7 @@
 		fex = FALSE
 	}
 	if(modelinc[3] > 0){
-		chk = all.equal(index(data), index(model$modeldata$mexdata))
+		chk = all.equal(dindex, index(model$modeldata$mexdata))
 		if(!is.logical(chk) | chk == FALSE){
 			print(paste("\n",chk,sep=""))
 			stop("\nrollstar-->error: data and external.regressor (mean) indices do not match\n")
@@ -70,7 +70,7 @@
 		mex = FALSE
 	}
 	if(modelinc[49]==2){
-		chk = all.equal(index(data), index(model$modeldata$s))
+		chk = all.equal(dindex, index(model$modeldata$s))
 		if(!is.logical(chk) | chk == FALSE){
 			print(paste("\n",chk,sep=""))
 			stop("\nrollstar-->error: data and 's' probability dynamics regressor indices do not match\n")
@@ -82,7 +82,7 @@
 		sxex = FALSE
 	}
 	if(modelinc[39]>0){
-		chk = all.equal(index(data), index(model$modeldata$vexdata))
+		chk = all.equal(dindex, index(model$modeldata$vexdata))
 		if(!is.logical(chk) | chk == FALSE){
 			print(paste("\n",chk,sep=""))
 			stop("\nrollstar-->error: data and external.regressor (variance) indices do not match\n")
@@ -130,7 +130,7 @@
 	
 	if( !is.null(cluster) ){
 		clusterEvalQ(cl = cluster, library(twinkle))
-		clusterExport(cluster, c("data", "index", "s","refit.every", 
+		clusterExport(cluster, c("data", "dindex", "s","refit.every", 
 						"keep.coef", "shaped", "skewed", "ghyp", 
 						"rollind", "spec", "out.sample", "mex", "vex", "sxex", "fex",
 						"solver", "solver.control", "fit.control", "n"), envir = environment())
@@ -144,7 +144,7 @@
 					if(vex) spec@model$modeldata$vexdata = vexdata[rollind[[i]],,drop=FALSE]
 					if(sxex) spec@model$modeldata$s = sxdata[rollind[[i]],,drop=FALSE]
 					if(fex) spec@model$fixed.prob = fprobs[rollind[[i]],,drop=FALSE]
-					fit = try(starfit(spec, xts::xts(data[rollind[[i]]], index[rollind[[i]]]), out.sample = out.sample[i], 
+					fit = try(starfit(spec, xts::xts(data[rollind[[i]]], dindex[rollind[[i]]]), out.sample = out.sample[i], 
 									solver = solver, solver.control = solver.control, 
 									fit.control = fit.control, n = n), silent=TRUE)
 					# 3 cases: General Error, Failure to Converge, Failure to invert Hessian (bad solution)
@@ -168,7 +168,7 @@
 						# use xts for indexing the forecasts
 						y = as.data.frame(cbind(ret, sig, skw, shp, shpgig, fp, rlz))
 						stx = paste("Prob[State=",1:ncol(fp),"]",sep="")
-						rownames(y) = tail(as.character(index[rollind[[i]]]), out.sample[i])						
+						rownames(y) = tail(as.character(dindex[rollind[[i]]]), out.sample[i])						
 						colnames(y) = c("Mu", "Sigma", "Skew", "Shape", "Shape(GIG)", stx, "Realized")
 						if(keep.coef) cf = fit@fit$robust.matcoef else cf = NA
 						ans = list(y = y, cf = cf, converge = TRUE, loglik = likelihood(fit))
@@ -180,7 +180,7 @@
 					if(vex) spec@model$modeldata$vexdata = vexdata[rollind[[i]],,drop=FALSE]
 					if(sxex) spec@model$modeldata$s = sxdata[rollind[[i]],,drop=FALSE]
 					if(fex) spec@model$fixed.prob = fprobs[rollind[[i]],,drop=FALSE]
-					fit = try(starfit(spec, xts(data[rollind[[i]]], index[rollind[[i]]]), out.sample = out.sample[i], 
+					fit = try(starfit(spec, xts(data[rollind[[i]]], dindex[rollind[[i]]]), out.sample = out.sample[i], 
 									solver = solver, solver.control = solver.control, 
 									fit.control = fit.control, n = n), silent=TRUE)
 					if(inherits(fit, 'try-error') || convergence(fit)!=0 || is.null(fit@fit$cvar)){
@@ -203,7 +203,7 @@
 						# use xts for indexing the forecasts
 						y = as.data.frame(cbind(ret, sig, skw, shp, shpgig, fp, rlz))
 						stx = paste("Prob[State=",1:ncol(fp),"]",sep="")
-						rownames(y) = tail(as.character(index[rollind[[i]]]), out.sample[i])						
+						rownames(y) = tail(as.character(dindex[rollind[[i]]]), out.sample[i])						
 						colnames(y) = c("Mu", "Sigma", "Skew", "Shape", "Shape(GIG)", stx, "Realized")
 						if(keep.coef) cf = fit@fit$robust.matcoef else cf = NA
 						ans = list(y = y, cf = cf, converge = TRUE, loglik = likelihood(fit))
@@ -217,7 +217,7 @@
 		model = list()
 		model$spec = spec
 		model$data = data
-		model$index = index
+		model$index = dindex
 		model$period = period
 		model$n.ahead = n.ahead
 		model$forecast.length = forecast.length 
@@ -247,7 +247,7 @@
 		}
 		cf = vector(mode = "list", length = m)
 		for(i in 1:m){
-			cf[[i]]$index = index[tail(rollind[[i]],1) - out.sample[i]]
+			cf[[i]]$index = dindex[tail(rollind[[i]],1) - out.sample[i]]
 			cf[[i]]$coef = tmp[[i]]$cf
 		}
 		if(calculate.VaR){
@@ -268,7 +268,7 @@
 		model = list()
 		model$spec = spec
 		model$data = data
-		model$index = index
+		model$index = dindex
 		model$period = period
 		model$n.ahead = n.ahead
 		model$forecast.length = forecast.length 
@@ -317,14 +317,14 @@
 		spec = model$spec
 		datanames = model$datanames
 		data = model$data
-		index = model$index
+		dindex = model$index
 		period= model$period
 		T = NROW(data)
 		modelinc = spec@model$modelinc
 		calculate.VaR = model$calculate.VaR
 		VaR.alpha = model$VaR.alpha
 		if(modelinc[47]==1){
-			chk = all.equal(index, index(model$fixed.prob))
+			chk = all.equal(dindex, index(model$fixed.prob))
 			if(!is.logical(chk) | chk == FALSE){
 				print(paste("\n",chk,sep=""))
 				stop("\nrollstar-->error: data and fixed.probs indices do not match\n")
@@ -336,7 +336,7 @@
 			fex = FALSE
 		}
 		if(modelinc[3] > 0){
-			chk = all.equal(index, index(model$modeldata$mexdata))
+			chk = all.equal(dindex, index(model$modeldata$mexdata))
 			if(!is.logical(chk) | chk == FALSE){
 				print(paste("\n",chk,sep=""))
 				stop("\nrollstar-->error: data and external.regressor (mean) indices do not match\n")
@@ -348,7 +348,7 @@
 			mex = FALSE
 		}
 		if(modelinc[49]==2){
-			chk = all.equal(index, index(model$modeldata$s))
+			chk = all.equal(dindex, index(model$modeldata$s))
 			if(!is.logical(chk) | chk == FALSE){
 				print(paste("\n",chk,sep=""))
 				stop("\nrollstar-->error: data and 's' probability dynamics regressor indices do not match\n")
@@ -360,7 +360,7 @@
 			sxex = FALSE
 		}
 		if(modelinc[39]>0){
-			chk = all.equal(index, index(model$modeldata$vexdata))
+			chk = all.equal(dindex, index(model$modeldata$vexdata))
 			if(!is.logical(chk) | chk == FALSE){
 				print(paste("\n",chk,sep=""))
 				stop("\nrollstar-->error: data and external.regressor (variance) indices do not match\n")
@@ -411,7 +411,7 @@
 		if(any(distribution==c("ghyp"))) ghyp = TRUE else ghyp = FALSE
 		if( !is.null(cluster) ){
 			clusterEvalQ(cl = cluster, library(twinkle))
-			clusterExport(cluster, c("data", "index","s","refit.every",
+			clusterExport(cluster, c("data", "dindex","s","refit.every",
 							"keep.coef", "shaped", "skewed", "ghyp", 
 							"rollind", "spec", "out.sample", "mex", "vex", "sxex", "fex",
 							"solver", "solver.control", "fit.control", "n"), envir = environment())
@@ -424,7 +424,7 @@
 						if(vex) spec@model$modeldata$vexdata = vexdata[rollind[[i]],,drop=FALSE]
 						if(sxex) spec@model$modeldata$s = sxdata[rollind[[i]],,drop=FALSE]
 						if(fex) spec@model$fixed.prob = fprobs[rollind[[i]],,drop=FALSE]
-						fit = try(starfit(spec, xts::xts(data[rollind[[i]]], index[rollind[[i]]]), out.sample = out.sample[i], 
+						fit = try(starfit(spec, xts::xts(data[rollind[[i]]], dindex[rollind[[i]]]), out.sample = out.sample[i], 
 										solver = solver, solver.control = solver.control, 
 										fit.control = fit.control, n = n), silent=TRUE)
 						# 3 cases: General Error, Failure to Converge, Failure to invert Hessian (bad solution)
@@ -448,7 +448,7 @@
 							# use xts for indexing the forecasts
 							y = as.data.frame(cbind(ret, sig, skw, shp, shpgig, fp, rlz))
 							stx = paste("Prob[State=",1:ncol(fp),"]",sep="")
-							rownames(y) = tail(as.character(index[rollind[[i]]]), out.sample[i])						
+							rownames(y) = tail(as.character(dindex[rollind[[i]]]), out.sample[i])						
 							colnames(y) = c("Mu", "Sigma", "Skew", "Shape", "Shape(GIG)", stx, "Realized")
 							if(keep.coef) cf = fit@fit$robust.matcoef else cf = NA
 							ans = list(y = y, cf = cf, converge = TRUE, loglik = likelihood(fit))
@@ -460,7 +460,7 @@
 						if(vex) spec@model$modeldata$vexdata = vexdata[rollind[[i]],,drop=FALSE]
 						if(sxex) spec@model$modeldata$s = sxdata[rollind[[i]],,drop=FALSE]
 						if(fex) spec@model$fixed.prob = fprobs[rollind[[i]],,drop=FALSE]
-						fit = try(starfit(spec, xts(data[rollind[[i]]], index[rollind[[i]]]), out.sample = out.sample[i], 
+						fit = try(starfit(spec, xts(data[rollind[[i]]], dindex[rollind[[i]]]), out.sample = out.sample[i], 
 										solver = solver, solver.control = solver.control, 
 										fit.control = fit.control, n = n), silent=TRUE)
 						if(inherits(fit, 'try-error') || convergence(fit)!=0 || is.null(fit@fit$cvar)){
@@ -483,7 +483,7 @@
 							# use xts for indexing the forecasts
 							y = as.data.frame(cbind(ret, sig, skw, shp, shpgig, fp, rlz))
 							stx = paste("Prob[State=",1:ncol(fp),"]",sep="")
-							rownames(y) = tail(as.character(index[rollind[[i]]]), out.sample[i])						
+							rownames(y) = tail(as.character(dindex[rollind[[i]]]), out.sample[i])						
 							colnames(y) = c("Mu", "Sigma", "Skew", "Shape", "Shape(GIG)", stx, "Realized")
 							if(keep.coef) cf = fit@fit$robust.matcoef else cf = NA
 							ans = list(y = y, cf = cf, converge = TRUE, loglik = likelihood(fit))
@@ -501,7 +501,7 @@
 			model = list()
 			model$spec = spec
 			model$data = data
-			model$index = index
+			model$index = dindex
 			model$period = period
 			model$n.ahead = n.ahead
 			model$forecast.length = forecast.length 
@@ -531,7 +531,7 @@
 			}
 			cf = vector(mode = "list", length = m)
 			for(i in 1:m){
-				cf[[i]]$index = index[tail(rollind[[i]],1) - out.sample[i]]
+				cf[[i]]$index = dindex[tail(rollind[[i]],1) - out.sample[i]]
 				cf[[i]]$coef = forecast[[i]]$cf
 			}
 			if(calculate.VaR){
@@ -552,7 +552,7 @@
 			model = list()
 			model$spec = spec
 			model$data = data
-			model$index = index
+			model$index = dindex
 			model$period = period
 			model$n.ahead = n.ahead
 			model$forecast.length = forecast.length 

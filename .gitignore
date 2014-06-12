@@ -11,3 +11,5 @@ src/symbols.rds
 src/twinkle.o
 src/twinkle.so
 vignettes/The_Twinkle_Package.bbl
+src-i386/
+src-x64/
