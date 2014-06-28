@@ -158,10 +158,10 @@ nonlinearTest.fit <- function(object, data, robust = FALSE, sig.level = 0.05)
 		# Statistics
 		F.statistic = ((SSE0-SSE1)/n1)/(SSE1/(N-n0-n1))
 		F.pvalue = pf(F.statistic, n1, N - n1 - n0, lower.tail = FALSE)
-		F.H0 = qf(sig.level, n1, N-n1-n0)>=F.statistic
+		F.H0 = qf(sig.level, n1, N-n1-n0, lower.tail = FALSE)>=F.statistic
 		chisq.statistic = N*(SSE0 - SSE1)/SSE0
 		chisq.pvalue = pchisq(chisq.statistic, n1, lower.tail=FALSE)
-		chisq.H0 = chisq.statistic<=qchisq(sig.level,n1)
+		chisq.H0 = chisq.statistic<=qchisq(sig.level,n1, lower.tail = FALSE)
 		
 		return(list(hypothesis = "H0: Linear Model",
 						F.statistic = F.statistic, F.pvalue = F.pvalue, F.dof = c(n1, N-n0-n1), 
@@ -180,11 +180,11 @@ nonlinearTest.fit <- function(object, data, robust = FALSE, sig.level = 0.05)
 		
 		chisq.statistic = N - SSE1
 		chisq.pvalue = pchisq(chisq.statistic, n1, lower.tail=FALSE)
-		chisq.H0 = chisq.statistic<=qchisq(sig.level, n1)
+		chisq.H0 = chisq.statistic<=qchisq(sig.level, n1, lower.tail = FALSE)
 		
 		F.statistic = ((N - SSE1)/n1)/(SSE1/(N-n0-n1))
 		F.pvalue = pf(F.statistic, n1, N - n1 - n0, lower.tail = FALSE)
-		F.H0 = qf(sig.level, n1, N-n1-n0)>=F.statistic
+		F.H0 = qf(sig.level, n1, N-n1-n0, lower.tail = FALSE)>=F.statistic
 		
 		return(list(hypothesis = "H0: Linear Model",
 						F.statistic = F.statistic, F.pvalue = F.pvalue, F.dof = c(n1, N-n0-n1), 
@@ -272,10 +272,10 @@ nonlinearTest.spec <- function(object, data, robust = FALSE, sig.level = 0.05)
 		# Statistics
 		F.statistic = ((SSE0-SSE1)/n1)/(SSE1/(N-n0-n1))
 		F.pvalue = pf(F.statistic, n1, N - n1 - n0, lower.tail = FALSE)
-		F.H0 = qf(sig.level, n1, N-n1-n0)>=F.statistic
+		F.H0 = qf(sig.level, n1, N-n1-n0, lower.tail = FALSE)>=F.statistic
 		chisq.statistic = N*(SSE0 - SSE1)/SSE0
 		chisq.pvalue = pchisq(chisq.statistic, n1, lower.tail=FALSE)
-		chisq.H0 = chisq.statistic<=qchisq(sig.level,n1)
+		chisq.H0 = chisq.statistic<=qchisq(sig.level,n1, lower.tail = FALSE)
 		
 		return(list(hypothesis = "H0: Linear Model",
 						F.statistic = F.statistic, F.pvalue = F.pvalue, F.dof = c(n1, N-n0-n1), 
@@ -293,11 +293,11 @@ nonlinearTest.spec <- function(object, data, robust = FALSE, sig.level = 0.05)
 		
 		chisq.statistic = N - SSE1
 		chisq.pvalue = pchisq(chisq.statistic, n1, lower.tail=FALSE)
-		chisq.H0 = chisq.statistic<=qchisq(sig.level,n1)
+		chisq.H0 = chisq.statistic<=qchisq(sig.level,n1, lower.tail = FALSE)
 		
 		F.statistic = ((N - SSE1)/n1)/(SSE1/(N-n0-n1))
 		F.pvalue = pf(F.statistic, n1, N - n1 - n0, lower.tail = FALSE)
-		F.H0 = qf(sig.level, n1, N-n1-n0)>=F.statistic
+		F.H0 = qf(sig.level, n1, N-n1-n0, lower.tail = FALSE)>=F.statistic
 		
 		return(list(hypothesis = "H0: Linear Model",
 						F.statistic = F.statistic, F.pvalue = F.pvalue, F.dof = c(n1, N-n0-n1), 
