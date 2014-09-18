@@ -1337,10 +1337,10 @@ setMethod(f = "starspec", definition = .xstarspec)
     		distribution.model = model$modeldesc$distribution, 
 			start.pars = model$start.pars, fixed.pars = model$fixed.pars,
 			fixed.prob = model$fixed.prob)
-	idx = which(is.na(tmp@model$pars[,"LB"]))
-	tmp@model$pars[idx,"LB"] = object@model$pars[idx,"LB"]
-	idx = which(is.na(tmp@model$pars[,"UB"]))
-	tmp@model$pars[idx,"UB"] = object@model$pars[idx,"UB"]
+	idx = which(is.na(spec@model$pars[,"LB"]))
+	spec@model$pars[idx,"LB"] = object@model$pars[idx,"LB"]
+	idx = which(is.na(spec@model$pars[,"UB"]))
+	spec@model$pars[idx,"UB"] = object@model$pars[idx,"UB"]
 	return(spec)
 }
 
@@ -1372,7 +1372,7 @@ setMethod(f = "getspec", signature(object = "STARfit"), definition = .getstarspe
 	if(modelinc[17]>0) maOrder=modelinc[17] else maOrder=c(modelinc[4],modelinc[8],modelinc[12], modelinc[16])[1:modelinc[46]]
 	vt = model$modeldesc$variance.targeting
 	
-	tmp = starspec(mean.model = list(states = modelinc[46],
+	spec = starspec(mean.model = list(states = modelinc[46],
 					include.intercept = c(modelinc[1],modelinc[5], modelinc[9], modelinc[13]), 
 					arOrder = c(modelinc[2],modelinc[6],modelinc[10], modelinc[14])[1:modelinc[46]],
 					maOrder = maOrder,
@@ -1388,13 +1388,13 @@ setMethod(f = "getspec", signature(object = "STARfit"), definition = .getstarspe
 			distribution.model = model$modeldesc$distribution, 
 			start.pars = model$start.pars, fixed.pars = as.list(fixed.pars),
 			fixed.prob = model$fixed.prob)
-	idx = which(is.na(tmp@model$pars[,"LB"]))
-	tmp@model$pars[idx,"LB"] = object@model$pars[idx,"LB"]
-	tmp@model$pars[idx,"Transformed"] = object@model$pars[idx,"Transformed"]
-	idx = which(is.na(tmp@model$pars[,"UB"]))
-	tmp@model$pars[idx,"UB"] = object@model$pars[idx,"UB"]
-	tmp@model$pars[idx,"Transformed"] = object@model$pars[idx,"Transformed"]
-	return(tmp)
+	idx = which(is.na(spec@model$pars[,"LB"]))
+	spec@model$pars[idx,"LB"] = object@model$pars[idx,"LB"]
+	spec@model$pars[idx,"Transformed"] = object@model$pars[idx,"Transformed"]
+	idx = which(is.na(spec@model$pars[,"UB"]))
+	spec@model$pars[idx,"UB"] = object@model$pars[idx,"UB"]
+	spec@model$pars[idx,"Transformed"] = object@model$pars[idx,"Transformed"]
+	return(spec)
 }
 
 setReplaceMethod(f="setfixed", signature= c(object = "STARspec", value = "vector"), definition = .setstarfixed)
@@ -1425,7 +1425,7 @@ setReplaceMethod(f="setfixed", signature= c(object = "STARspec", value = "vector
 	if(modelinc[17]>0) maOrder=modelinc[17] else maOrder=c(modelinc[4],modelinc[8],modelinc[12], modelinc[16])[1:modelinc[46]]
 	vt = model$modeldesc$variance.targeting
 	
-	tmp = starspec(mean.model = list(states = modelinc[46],
+	spec = starspec(mean.model = list(states = modelinc[46],
 					include.intercept = c(modelinc[1],modelinc[5], modelinc[9], modelinc[13]), 
 					arOrder = c(modelinc[2],modelinc[6],modelinc[10], modelinc[14])[1:modelinc[46]],
 					maOrder = maOrder,
@@ -1442,13 +1442,13 @@ setReplaceMethod(f="setfixed", signature= c(object = "STARspec", value = "vector
 			fixed.pars = model$fixed.pars, start.pars = as.list(start.pars),
 			fixed.prob = model$fixed.prob)
 	# ToDo : Check that the starting pars are not outside the upper and lower bounds
-	idx = which(is.na(tmp@model$pars[,"LB"]))
-	tmp@model$pars[idx,"LB"] = object@model$pars[idx,"LB"]
-	tmp@model$pars[idx,"Transformed"] = object@model$pars[idx,"Transformed"]
-	idx = which(is.na(tmp@model$pars[,"UB"]))
-	tmp@model$pars[idx,"UB"] = object@model$pars[idx,"UB"]
-	tmp@model$pars[idx,"Transformed"] = object@model$pars[idx,"Transformed"]
-	return(tmp)
+	idx = which(is.na(spec@model$pars[,"LB"]))
+	spec@model$pars[idx,"LB"] = object@model$pars[idx,"LB"]
+	spec@model$pars[idx,"Transformed"] = object@model$pars[idx,"Transformed"]
+	idx = which(is.na(spec@model$pars[,"UB"]))
+	spec@model$pars[idx,"UB"] = object@model$pars[idx,"UB"]
+	spec@model$pars[idx,"Transformed"] = object@model$pars[idx,"Transformed"]
+	return(spec)
 }
 
 setReplaceMethod(f="setstart", signature= c(object = "STARspec", value = "vector"), definition = .setstarstart)
