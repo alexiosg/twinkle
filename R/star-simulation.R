@@ -20,8 +20,8 @@
 {
 	modelinc = model$modelinc
 	mxn = modelinc[3]
-	vxn = modelinc[36]
-	sxn = modelinc[19]
+	vxn = modelinc[39]
+	sxn = modelinc[20]
 	mar = max(c(modelinc[c(2,6,10,14,4,8,12,16,17)], ifelse(modelinc[49]==1, max(model$modeldata$ylags), 0)))
 	m = max(c(modelinc[32:33], mar))
 	# use coredata to extract pre-values since we do not work with xts in simulation
