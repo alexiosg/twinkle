@@ -161,8 +161,8 @@ trans2fun3d = function(object, colidx = c(1,2), fixed.values = NULL, doplot = TR
 			if(length(model$modeldata$lags)<2) stop("\ntwinkle-->error: transfun3d requires transition variable to have at least 2 columns.")
 			if(modelinc[48]==1) ytmp = model$modeldata$fun(as.numeric(model$modeldata$data[1:T])) else ytmp = as.numeric(model$modeldata$data[1:T])
 			for(i in 1:length(model$modeldata$lags)){
-			}
 				if(i==1) XL = lagf.numeric(ytmp, model$modeldata$ylags[i]) else XL = cbind(XL, lagf.numeric(ytmp, model$modeldata$ylags[i]))
+			}
 			XL = as.matrix(XL)
 			XL[is.na(XL)]=0
 		}
