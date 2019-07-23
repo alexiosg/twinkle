@@ -1,2 +1,6 @@
+2019-06-22  Alexios Ghalanos <alexios@4dscape.com>
+	* DESCRIPTION (Version): New version is 0.9-2
+	* Added missing imports and routine registration.
+
 2013-09-30  Alexios Ghalanos <alexios@4dscape.com>
 	* DESCRIPTION (Version): New version is 0.9-1

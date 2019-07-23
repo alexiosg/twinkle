@@ -13,3 +13,4 @@ src/twinkle.so
 vignettes/The_Twinkle_Package.bbl
 src-i386/
 src-x64/
+.Rproj.user
