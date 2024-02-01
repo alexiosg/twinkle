@@ -1,3 +1,7 @@
+2023-02-01  Alexios Ghalanos <alexios@4dscape.com>
+	* DESCRIPTION (Version): New version is 1.0.0
+	* Fix to gig.c, chaning DOUBLE_EPS to DBL_EPSILON
+
 2019-09-10  Alexios Ghalanos <alexios@4dscape.com>
 	* DESCRIPTION (Version): New version is 0.9-2
 	* Fix to missing reference vexdata in likelihood estimation.

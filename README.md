@@ -8,3 +8,5 @@ While the conditional mean equation is defined by the STARMAX dynamics, the cond
 The same number of conditional distributions are implemented as in the rugarch package.
 
 The package vignette provides for a detailed and formal treatment of the STARMAX model as well as the finer details of the estimation and forecast methodology implemented.
+
+This package was created many years ago and has not been actively maintained or tested. It is provided here for historical purposes and for those who may find it useful. It is not recommended for use in production or research without significant testing and validation.

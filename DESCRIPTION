@@ -1,8 +1,8 @@
 Package: twinkle
 Type: Package
 Title: Dynamic Smooth Transition ARMAX Models
-Version: 0.9-3
-Date: 2019-09-10
+Version: 1.0.0
+Date: 2024-02-01
 Author: alexios ghalanos <alexios@4dscape.com>
 Maintainer: alexios ghalanos <alexios@4dscape.com>
 Description: Dynamic Smooth Transition AutoRegressive Moving Average Models.
